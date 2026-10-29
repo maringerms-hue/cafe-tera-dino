@@ -18,7 +18,7 @@ var css=`
 .ctx h3{font-size:20px;font-weight:600;letter-spacing:-.02em;line-height:1.25}
 .ctx-p{font-size:18px;line-height:1.65;color:var(--mu);max-width:620px}.ctx-p+.ctx-p{margin-top:16px}
 .ctx-s{padding:110px 0;border-top:1px solid var(--ln);scroll-margin-top:80px}
-.ctx-head{display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:end;margin-bottom:48px}
+.ctx-head{display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:start;margin-bottom:52px}
 .ctx-cap{font-size:13px;line-height:1.5;color:var(--mu2);margin-top:14px}.ctx-cap b{color:var(--lime);font:12px var(--mono);margin-right:10px}
 .ctx-img{border-radius:14px;overflow:hidden;border:1px solid var(--ln);background:var(--card)}
 .ctx-btn{display:inline-flex;align-items:center;gap:12px;border-radius:100px;background:var(--lime);color:#0f0f0e!important;font-weight:600;font-size:15px;padding:14px 26px;border:1px solid var(--lime);cursor:pointer;font-family:inherit;transition:transform .2s,background .2s}
@@ -28,7 +28,7 @@ var css=`
 .ctx-hero{padding:150px 0 90px}.ctx-hero__g{display:grid;grid-template-columns:1.05fr 1fr;gap:64px;align-items:end}
 .ctx-sub{font-size:26px;letter-spacing:-.02em;margin-top:20px!important;color:#fff}.ctx-sub span{color:var(--lime)}
 .ctx-lead{font-size:21px;line-height:1.5;color:var(--mu)}
-.ctx-hero__v{margin-top:60px}
+.ctx .ctx-hero__v{margin-top:64px}
 .ctx-meta{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid rgba(198,242,78,.4);border-bottom:1px solid var(--ln);margin-top:56px}
 .ctx-meta>div{padding:22px 24px 22px 0}.ctx-meta>div+div{padding-left:24px;border-left:1px solid var(--ln)}
 .ctx-meta span{font:11px var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--mu2)}.ctx-meta p{font-size:15px;line-height:1.5;margin-top:8px!important}
@@ -69,7 +69,7 @@ var css=`
 .ctx-eyes{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-top:22px}.ctx-eyes img{width:100%;aspect-ratio:4/3;object-fit:cover}
 .ctx-tag{display:inline-block;font:11px var(--mono);letter-spacing:.12em;text-transform:uppercase;padding:5px 10px;border-radius:100px;margin-bottom:10px;background:rgba(255,255,255,.08);color:var(--mu)}.ctx-tag--ok{background:rgba(198,242,78,.14);color:var(--lime)}
 /* game */
-.ctx-sb{background:#f6f1e6;border-radius:14px;overflow:hidden;border:1px solid var(--ln)}
+.ctx-sb{background:#fff;border-radius:14px;overflow:hidden;border:1px solid var(--ln)}
 .ctx-screens{display:grid;grid-template-columns:repeat(3,1fr);gap:28px;margin-top:56px}.ctx-screens figure:nth-child(2){padding-top:50px}.ctx-screens figure:nth-child(3){padding-top:100px}
 .ctx-screens img{border-radius:20px;border:1px solid var(--ln)}.ctx-screens figcaption{margin-top:16px;font-size:14px;line-height:1.55;color:var(--mu2)}.ctx-screens figcaption strong{display:block;color:#fff;font-size:16px;margin-bottom:4px}
 .ctx-reward{display:grid;grid-template-columns:1fr auto;gap:40px;align-items:center;margin-top:64px;padding:34px 0;border-top:1px solid rgba(198,242,78,.4);border-bottom:1px solid rgba(198,242,78,.4)}
@@ -178,8 +178,8 @@ var html=`
 <section class="ctx-s" id="ctx-game"><div class="ctx-w">
  <p class="ctx-k"><b>08</b>Spielentwicklung · Nach der Bestellung</p>
  <div class="ctx-head"><h2>Bestellt.<br>Jetzt wird gespielt.</h2><p class="ctx-p">Während der Drink zubereitet wird, können Gäste freiwillig eine Runde spielen: Der Dino versteckt eine Frucht unter einem Becher, mischt – und der Gast tippt auf den richtigen Becher. Das Spiel verbindet die Wartezeit mit einer konkreten Café-Aktion.</p></div>
- <figure class="ctx-sb">${img('game-storyboard.webp','Handgezeichnetes Storyboard des Dino-Becherspiels in acht Bildern',3600,1860)}</figure>
- <p class="ctx-cap"><b>Storyboard</b>Vom Danke-Screen bis zum Saison-Rabatt – der Ablauf als Skizze, bevor das Spiel gebaut wurde.</p>
+ <figure class="ctx-sb">${img('game-storyboard.webp','UX-Storyboard des Dino-Becherspiels in acht Skizzen: nach der Bestellung, Beere merken, Becher verfolgen, Becher wählen, Farbe wechseln, passenden Matcha entdecken, Dinos sammeln, Rabatt',1536,1024)}</figure>
+ <p class="ctx-cap"><b>Storyboard</b>UX-Storyboard: vom Danke-Screen bis zum Saison-Rabatt – der Ablauf als Skizze, bevor das Spiel gebaut wurde.</p>
  <div class="ctx-screens">
   <figure>${img('game-start.webp','Spielstart mit drei Bechern und Sammlung 0 von 4',700,1256)}<figcaption><strong>01 · Beobachten & wählen</strong>Frucht merken, Becher verfolgen und den richtigen Becher antippen.</figcaption></figure>
   <figure>${img('game-win.webp','Gefunden: der Dino ist pink, Sammlung 1 von 4',700,1237)}<figcaption><strong>02 · Dinos sammeln</strong>Die gefundene Frucht färbt den Dino ein, der Fortschritt bleibt sichtbar.</figcaption></figure>
