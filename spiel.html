@@ -10,7 +10,11 @@ html,body{margin:0;height:100%;background:var(--latte);color:var(--ink);font-fam
 .bg .b1{width:62vmin;height:46vmin;left:-14vmin;top:-12vmin;background:#d3e4ad;border-radius:58% 42% 63% 37%/48% 55% 45% 52%}
 .bg .b2{width:58vmin;height:50vmin;right:-16vmin;bottom:-10vmin;background:#f7cbc6;border-radius:42% 58% 38% 62%/57% 43% 57% 43%;opacity:.85}
 #c{position:fixed;inset:0;width:100%;height:100%;display:block;z-index:1}
-.ui{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);display:flex;gap:8px;flex-wrap:wrap;justify-content:center;z-index:2;max-width:92vw}
+.ui{position:fixed;left:50%;bottom:calc(22px + env(safe-area-inset-bottom));transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:12px;z-index:2;max-width:92vw}
+.ui .tag{margin:0;width:max-content;max-width:min(88vw,520px);text-align:center;font:500 13px/1.4 system-ui,-apple-system,"Segoe UI",sans-serif;color:rgba(74,54,40,.72);transition:opacity .25s,transform .25s;text-wrap:balance}
+.ui .tag b{display:block;white-space:nowrap;font-weight:800;font-size:17px;letter-spacing:-.01em;color:#4a3628;margin-bottom:3px}
+.ui .tag span{display:block}
+.ui:has(.main.hide) .tag{opacity:0;transform:translateY(8px)}
 .top{position:fixed;left:50%;top:16px;transform:translateX(-50%);display:flex;gap:8px;flex-wrap:wrap;justify-content:center;z-index:2}
 button{appearance:none;border:0;border-radius:999px;padding:11px 16px;font:600 14px/1 inherit;background:#fffaf3;color:#3a2a20;cursor:pointer;box-shadow:0 6px 18px rgba(90,60,30,.16)}
 button.ghost{background:transparent;outline:1.5px solid rgba(74,54,40,.35)}
@@ -109,7 +113,7 @@ body.nodev .dev{display:none!important}
   <p class="fine" id="cardFine" hidden></p>
   <div class="row"><a class="btn primary" id="cardLink" href="#">Zum Drink →</a><button class="btn ghost" id="cardNext">Nächste Runde</button></div>
 </div>
-<div class="ui"><button class="main" data-g="play">▶ Spielen</button></div>
+<div class="ui"><p class="tag" id="tagline"><b>Dein Drink. Dein Moment. Dein Dino.</b><span id="tagsub">Finde die Frucht unter dem Becher und sammle alle 4 Dinos.</span></p><button class="main" data-g="play">▶ Spielen</button></div>
 <details class="dev"><summary>Test</summary><div>
   <button data-a="wave">👋 Winken</button><button data-a="lift_cup">Verstecken</button><button data-a="shuffle">Mischen</button>
   <button data-a="think">Überlegen</button><button data-a="eat">Lecker!</button><button data-a="sad">Schade</button><button id="cheat">✓ Richtiger Becher</button>
@@ -197,13 +201,17 @@ const look={pt:new THREE.Vector3(),hold:0,ptr:new THREE.Vector3(),ptrT:-1e9,sacc
 function lookAt(v,ms=900){ look.pt.copy(v); look.hold=performance.now()+ms; }
 const _eq4=new THREE.Quaternion(),_emid=new THREE.Vector3(),_egz=new THREE.Vector3(),_eq=new THREE.Quaternion(),_eq2=new THREE.Quaternion(),_eq3=new THREE.Quaternion(),_ev=new THREE.Vector3(),_ev2=new THREE.Vector3(),_ep=new THREE.Vector3(),_ew=new THREE.Vector3();
 const lookPlane=new THREE.Plane(new THREE.Vector3(0,0,1),-2.2), _lray=new THREE.Raycaster(), _lm=new THREE.Vector2();
-canvas.addEventListener('pointermove',e=>{ _lm.set(e.clientX/innerWidth*2-1,-(e.clientY/innerHeight)*2+1); _lray.setFromCamera(_lm,cam);
-  if(_lray.ray.intersectPlane(lookPlane,look.ptr)) look.ptrT=performance.now(); });
+const _lookPtr=e=>{ _lm.set(e.clientX/innerWidth*2-1,-(e.clientY/innerHeight)*2+1); _lray.setFromCamera(_lm,cam);
+  if(_lray.ray.intersectPlane(lookPlane,look.ptr)) look.ptrT=performance.now(); };
+canvas.addEventListener('pointermove',_lookPtr); canvas.addEventListener('pointerdown',_lookPtr);
 function eyeTarget(now){
   if(now<look.hold) return look.pt;
   if(now-look.ptrT<2500) return look.ptr;
-  if(current===actions.think){ const t=now*0.0007; return _ev2.set(0.55*Math.sin(t),1.35+0.12*Math.cos(1.7*t),1.0); } // dreamy eye-roll
-  if(now>look.saccT){ look.saccT=now+1200+Math.random()*2800; look.sacc.set((Math.random()-.5)*0.6,(Math.random()-.5)*0.35,0); }
+  if(current===actions.think){ // thinking: glance from cup to cup, now and then back to the guest
+    if(!look.thinkPt||now>look.thinkT){ look.thinkT=now+1100+Math.random()*900; const i=Math.floor(Math.random()*4);
+      look.thinkPt=(i<3&&typeof cups!=='undefined'&&cups[i])?cups[i].getWorldPosition(new THREE.Vector3()).add(new THREE.Vector3(0,0.12,0)):cam.position.clone(); }
+    return look.thinkPt; }
+  if(now>look.saccT){ look.saccT=now+2200+Math.random()*3000; look.sacc.set((Math.random()-.5)*0.28,(Math.random()-.5)*0.12,0); }
   return _ev2.copy(cam.position).add(look.sacc);
 }
 function updateEyes(dt){
@@ -366,6 +374,7 @@ function activePromo(){
   return PROMOS.find(p=>p.from<=md && md<=p.to)||null;
 }
 const PROMO=activePromo();
+if(PROMO){ const ts=document.getElementById('tagsub'); if(ts) ts.textContent=PROMO.label.split(' ').pop()+' Alle 4 Dinos finden = '+PROMO.off+' auf '+PROMO.drink+'.'; }
 if(PROMO){ const b2=document.querySelector('.bg .b2'); if(b2) b2.style.background=PROMO.soft; }
 function untilText(p){ const [m,d]=p.to.split('-'); return d+'.'+m+'.'; }
 function cupSVGc(bot,straw){ const id='cupclip'+(++cupN);
