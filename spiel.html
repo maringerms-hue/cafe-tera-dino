@@ -11,10 +11,17 @@ html,body{margin:0;height:100%;background:var(--latte);color:var(--ink);font-fam
 .bg .b2{width:58vmin;height:50vmin;right:-16vmin;bottom:-10vmin;background:#f7cbc6;border-radius:42% 58% 38% 62%/57% 43% 57% 43%;opacity:.85}
 #c{position:fixed;inset:0;width:100%;height:100%;display:block;z-index:1}
 .ui{position:fixed;left:50%;bottom:calc(22px + env(safe-area-inset-bottom));transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:12px;z-index:2;max-width:92vw}
-.ui .tag{margin:0;width:max-content;max-width:min(88vw,520px);text-align:center;font:500 13px/1.4 system-ui,-apple-system,"Segoe UI",sans-serif;color:rgba(74,54,40,.72);transition:opacity .25s,transform .25s;text-wrap:balance}
-.ui .tag b{display:block;white-space:nowrap;font-weight:800;font-size:17px;letter-spacing:-.01em;color:#4a3628;margin-bottom:3px}
-.ui .tag span{display:block}
-.ui:has(.main.hide) .tag{opacity:0;transform:translateY(8px)}
+.free{position:fixed;left:50%;top:auto;bottom:calc(90px + env(safe-area-inset-bottom));transform:translate(-50%,0);z-index:2;display:flex;flex-direction:column;align-items:center;gap:14px;transition:opacity .3s,transform .3s;pointer-events:none}
+.free.mid{bottom:auto;transform:translate(-50%,-50%)}
+body:has(.ui .main.hide) .free{opacity:0}
+.free .steps{list-style:none;margin:0;padding:0;display:flex;gap:6px;flex-wrap:nowrap}
+.free .steps li{display:flex;align-items:center;gap:6px;padding:6px 10px 6px 6px;border-radius:999px;background:rgba(255,250,243,.82);box-shadow:0 4px 14px rgba(90,60,30,.08);font:600 12px/1 system-ui,-apple-system,"Segoe UI",sans-serif;color:#4a3628;white-space:nowrap}
+.free .steps i{font-style:normal;width:20px;height:20px;border-radius:50%;display:grid;place-items:center;background:#4a3628;color:#fffaf3;font-size:11px;font-weight:800}
+.free.short .steps{display:none}
+@media (max-width:380px){.free .steps li{font-size:11px;padding:5px 8px 5px 5px}.free .steps{gap:4px}}
+.free .tag{margin:0;width:max-content;max-width:min(88vw,520px);text-align:center;font:500 13px/1.4 system-ui,-apple-system,"Segoe UI",sans-serif;color:rgba(74,54,40,.72);transition:opacity .25s,transform .25s;text-wrap:balance}
+.free .tag b{display:block;white-space:nowrap;font-weight:800;font-size:17px;letter-spacing:-.01em;color:#4a3628;margin-bottom:3px}
+.free .tag span{display:block}
 .top{position:fixed;left:50%;top:16px;transform:translateX(-50%);display:flex;gap:8px;flex-wrap:wrap;justify-content:center;z-index:2}
 button{appearance:none;border:0;border-radius:999px;padding:11px 16px;font:600 14px/1 inherit;background:#fffaf3;color:#3a2a20;cursor:pointer;box-shadow:0 6px 18px rgba(90,60,30,.16)}
 button.ghost{background:transparent;outline:1.5px solid rgba(74,54,40,.35)}
@@ -113,7 +120,8 @@ body.nodev .dev{display:none!important}
   <p class="fine" id="cardFine" hidden></p>
   <div class="row"><a class="btn primary" id="cardLink" href="#">Zum Drink →</a><button class="btn ghost" id="cardNext">Nächste Runde</button></div>
 </div>
-<div class="ui"><p class="tag" id="tagline"><b>Dein Drink. Dein Moment. Dein Dino.</b><span id="tagsub">Finde die Frucht unter dem Becher und sammle alle 4 Dinos.</span></p><button class="main" data-g="play">▶ Spielen</button></div>
+<div class="free" id="freebox"><p class="tag" id="tagline"><b>Dein Drink. Dein Moment. Dein Dino.</b><span id="tagsub">Finde die Frucht unter dem Becher und sammle alle 4 Dinos.</span></p><ol class="steps" aria-label="So geht’s"><li><i>1</i>Frucht merken</li><li><i>2</i>Verfolgen</li><li><i>3</i>Becher tippen</li></ol></div>
+<div class="ui"><button class="main" data-g="play">▶ Spielen</button></div>
 <details class="dev"><summary>Test</summary><div>
   <button data-a="wave">👋 Winken</button><button data-a="lift_cup">Verstecken</button><button data-a="shuffle">Mischen</button>
   <button data-a="think">Überlegen</button><button data-a="eat">Lecker!</button><button data-a="sad">Schade</button><button id="cheat">✓ Richtiger Becher</button>
@@ -490,6 +498,16 @@ document.querySelector('[data-g=play]').onclick=()=>startGame();
 // --- loop ---
 function resize(){const w=innerWidth,h=innerHeight;renderer.setSize(w,h,false);cam.aspect=w/h;cam.fov=cam.aspect>=1.2?30:Math.min(58,Math.max(29,2*Math.atan(0.19/cam.aspect)*180/Math.PI));cam.updateProjectionMatrix();}
 addEventListener('resize',resize); resize();
+// place slogan + steps in the free space between table and play button
+const _tb=new THREE.Box3().setFromObject(gT.scene), _tv=new THREE.Vector3();
+function placeFree(){ const fb=document.getElementById('freebox'), pb=document.querySelector('[data-g=play]'); if(!fb||!pb) return;
+  cam.updateMatrixWorld(); let yMax=-1e9;
+  for(let i=0;i<8;i++){ _tv.set(i&1?_tb.max.x:_tb.min.x, i&2?_tb.max.y:_tb.min.y, i&4?_tb.max.z:_tb.min.z).project(cam); yMax=Math.max(yMax,(1-_tv.y)/2*innerHeight); }
+  const btnTop=innerHeight-22-pb.offsetHeight; fb.classList.remove('short','mid'); fb.style.top='';
+  const h=fb.offsetHeight, room=btnTop-yMax;
+  if(room>h+40){ fb.classList.add('mid'); fb.style.top=Math.round(yMax+room/2)+'px'; }
+  else { fb.classList.add('short'); } }
+addEventListener('resize',()=>setTimeout(placeFree,30)); setTimeout(placeFree,50);
 const clock=new THREE.Clock(), tmp=new THREE.Vector3();
 renderer.setAnimationLoop(()=>{
   const dt=Math.min(clock.getDelta(),0.05); mixer.update(dt);
