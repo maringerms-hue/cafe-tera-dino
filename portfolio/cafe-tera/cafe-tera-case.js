@@ -178,7 +178,7 @@ var html=`
 <section class="ctx-s" id="ctx-game"><div class="ctx-w">
  <p class="ctx-k"><b>08</b>Spielentwicklung · Nach der Bestellung</p>
  <div class="ctx-head"><h2>Bestellt.<br>Jetzt wird gespielt.</h2><p class="ctx-p">Während der Drink zubereitet wird, können Gäste freiwillig eine Runde spielen: Der Dino versteckt eine Frucht unter einem Becher, mischt – und der Gast tippt auf den richtigen Becher. Das Spiel verbindet die Wartezeit mit einer konkreten Café-Aktion.</p></div>
- <figure class="ctx-sb">${img('game-storyboard.webp','UX-Storyboard des Dino-Becherspiels in acht Skizzen: nach der Bestellung, Beere merken, Becher verfolgen, Becher wählen, Farbe wechseln, passenden Matcha entdecken, Dinos sammeln, Rabatt',1536,1024)}</figure>
+ <figure class="ctx-sb"><a href="${A}game-storyboard.webp" target="_blank" rel="noopener" aria-label="Storyboard in voller Größe öffnen">${img('game-storyboard.webp','UX-Storyboard des Dino-Becherspiels in acht Skizzen: nach der Bestellung, Beere merken, Becher verfolgen, Becher wählen, Farbe wechseln, passenden Matcha entdecken, Dinos sammeln, Rabatt',1536,1024)}</a></figure>
  <p class="ctx-cap"><b>Storyboard</b>UX-Storyboard: vom Danke-Screen bis zum Saison-Rabatt – der Ablauf als Skizze, bevor das Spiel gebaut wurde.</p>
  <div class="ctx-screens">
   <figure>${img('game-start.webp','Spielstart mit drei Bechern und Sammlung 0 von 4',700,1256)}<figcaption><strong>01 · Beobachten & wählen</strong>Frucht merken, Becher verfolgen und den richtigen Becher antippen.</figcaption></figure>
