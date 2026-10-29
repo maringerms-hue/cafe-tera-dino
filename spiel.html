@@ -1,0 +1,494 @@
+<!doctype html>
+<html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Café Tera – Dino Spiel</title>
+<style>
+:root{--ink:#4a3628;--latte:#f8f0e5;--circle:#ecdcc7}
+html,body{margin:0;height:100%;background:var(--latte);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",sans-serif;overflow:hidden}
+.bg{position:fixed;inset:0;overflow:hidden;pointer-events:none;z-index:0}
+.bg i{position:absolute;display:block}
+.bg .circle{width:min(84vmin,720px);aspect-ratio:1;border-radius:50%;left:50%;top:44%;transform:translate(-50%,-50%);background:var(--circle)}
+.bg .b1{width:62vmin;height:46vmin;left:-14vmin;top:-12vmin;background:#d3e4ad;border-radius:58% 42% 63% 37%/48% 55% 45% 52%}
+.bg .b2{width:58vmin;height:50vmin;right:-16vmin;bottom:-10vmin;background:#f7cbc6;border-radius:42% 58% 38% 62%/57% 43% 57% 43%;opacity:.85}
+#c{position:fixed;inset:0;width:100%;height:100%;display:block;z-index:1}
+.ui{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);display:flex;gap:8px;flex-wrap:wrap;justify-content:center;z-index:2;max-width:92vw}
+.top{position:fixed;left:50%;top:16px;transform:translateX(-50%);display:flex;gap:8px;flex-wrap:wrap;justify-content:center;z-index:2}
+button{appearance:none;border:0;border-radius:999px;padding:11px 16px;font:600 14px/1 inherit;background:#fffaf3;color:#3a2a20;cursor:pointer;box-shadow:0 6px 18px rgba(90,60,30,.16)}
+button.ghost{background:transparent;outline:1.5px solid rgba(74,54,40,.35)}
+button:active{transform:scale(.97)}
+.t1{background:#f3a5b1}.t2{background:#ffcf69}.t3{background:#abb1e7}
+.toast{position:fixed;left:50%;top:112px;transform:translateX(-50%);z-index:3;background:#fffaf3;color:#3a2a20;padding:12px 20px;border-radius:999px;font:700 17px/1.2 inherit;box-shadow:0 8px 24px rgba(90,60,30,.18);opacity:0;transition:opacity .25s}
+.toast.on{opacity:1}
+.info{position:fixed;left:16px;top:16px;font-size:12px;opacity:.7;z-index:2}
+
+.info{display:none}
+/* --- collection badges --- */
+.badges{position:fixed;left:50%;top:14px;transform:translateX(-50%);display:flex;align-items:center;gap:10px;z-index:2;padding:8px 16px 8px 8px;background:rgba(255,250,243,.78);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);border-radius:999px;box-shadow:0 8px 22px rgba(90,60,30,.10)}
+.badge{appearance:none;border:0;background:none;box-shadow:none;padding:0;display:flex;flex-direction:column;align-items:center;gap:0;width:auto;padding:0;cursor:default;color:inherit}
+.badge .lbl{display:none!important}
+.badge .disc{width:48px;height:48px;border-radius:50%;display:grid;place-items:center;background:#ece2d4;box-shadow:inset 0 0 0 2px rgba(74,54,40,.07);transition:transform .25s}
+.badge .disc svg{width:30px;height:30px;filter:grayscale(1) brightness(1.2);opacity:.32}
+.badge .lbl{font:650 11px/1.3 system-ui,-apple-system,"Segoe UI",sans-serif;color:rgba(74,54,40,.42);white-space:nowrap}
+.badge.got{cursor:pointer}.badge.got .disc{background:var(--soft)}.badge.got .disc svg{filter:none;opacity:1}.badge.got .lbl{color:var(--ink)}
+.badge.got:hover .disc{transform:translateY(-2px) rotate(-4deg)}
+.badge:focus-visible{outline:none}.badge:focus-visible .disc{outline:2px solid var(--ink);outline-offset:2px}
+.badge.new .disc{animation:pop .8s cubic-bezier(.3,1.6,.5,1)}
+@keyframes pop{0%{transform:scale(.3)}55%{transform:scale(1.22)}100%{transform:scale(1)}}
+.count{font:800 13px/1 system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--ink);padding-left:4px;font-variant-numeric:tabular-nums}
+/* --- Dino speech bubble (beside the head, not above) --- */
+.bubble{position:fixed;left:0;top:0;z-index:3;max-width:min(220px,32vw);padding:13px 17px;background:#fffaf3;color:#3a2a20;border-radius:22px;font:650 16px/1.3 system-ui,-apple-system,"Segoe UI",sans-serif;box-shadow:0 10px 28px rgba(90,60,30,.18);opacity:0;transform:translate(var(--x,0),var(--y,0)) scale(.8);transform-origin:0 100%;transition:opacity .18s,transform .28s cubic-bezier(.3,1.5,.5,1);pointer-events:none}
+.bubble[data-side=l]{transform-origin:100% 100%}
+.bubble.on{opacity:1;transform:translate(var(--x,0),var(--y,0)) scale(1)}
+.bubble::after{content:"";position:absolute;bottom:14px;left:-7px;width:18px;height:18px;background:inherit;border-radius:3px;transform:rotate(45deg)}
+.bubble[data-side=l]::after{left:auto;right:-7px}
+.bubble.think::after{width:12px;height:12px;border-radius:50%;left:-14px;bottom:4px;transform:none;box-shadow:0 4px 10px rgba(90,60,30,.12)}
+.bubble.think::before{content:"";position:absolute;width:7px;height:7px;border-radius:50%;background:inherit;left:-24px;bottom:-4px;box-shadow:0 3px 8px rgba(90,60,30,.12)}
+.bubble.think[data-side=l]::after{left:auto;right:-14px}.bubble.think[data-side=l]::before{left:auto;right:-24px}
+/* --- flying matcha leaves --- */
+.leaf{position:fixed;left:0;top:0;z-index:3;pointer-events:none;will-change:transform,opacity}
+.leaf svg{display:block;width:100%;height:100%}
+/* --- drink card --- */
+.card{position:fixed;z-index:4;right:max(24px,4vw);top:50%;width:min(340px,calc(100vw - 32px));box-sizing:border-box;padding:18px 18px 20px;background:#fffaf3;border-radius:28px;color:var(--ink);box-shadow:0 22px 56px rgba(90,60,30,.24);opacity:0;transform:translate(36px,-50%);pointer-events:none;transition:opacity .35s,transform .5s cubic-bezier(.2,.9,.3,1)}
+.card.on{opacity:1;transform:translate(0,-50%);pointer-events:auto}
+.card .x{position:absolute;right:12px;top:12px;width:34px;height:34px;padding:0;border-radius:50%;font:600 18px/1 system-ui,sans-serif;background:rgba(255,250,243,.9);box-shadow:none;z-index:1}
+.cupwrap{height:178px;border-radius:22px;display:flex;align-items:flex-end;justify-content:center;gap:6px;padding-bottom:8px;box-sizing:border-box;background:radial-gradient(circle at 50% 62%,var(--soft) 0 56%,transparent 57%),#f5ece0}
+.cupwrap svg{height:156px;width:auto}
+.cupwrap.many svg{height:112px}
+.cupwrap img{height:166px;width:auto;display:block;filter:drop-shadow(0 6px 10px rgba(74,54,40,.18))}
+.cupwrap.many img{height:118px}
+.ticket[hidden],.fine[hidden]{display:none!important}
+.kicker{margin:16px 0 6px;font:750 11px/1 system-ui,sans-serif;letter-spacing:.12em;text-transform:uppercase;opacity:.5}
+.card h2{margin:0 0 8px;font:800 27px/1.08 system-ui,-apple-system,"Segoe UI",sans-serif;letter-spacing:-.01em}
+.card h2 em{font-style:normal;color:var(--accent)}
+.card .t{margin:0 0 16px;font:500 15px/1.45 system-ui,sans-serif;opacity:.78}
+.card .row{display:flex;gap:8px;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;justify-content:center;text-decoration:none;border-radius:999px;padding:12px 18px;font:700 14px/1 system-ui,sans-serif;cursor:pointer}
+.btn.primary{background:#4a3628;color:#fffaf3;box-shadow:0 8px 18px rgba(74,54,40,.25)}
+.btn.primary:hover{background:#3a2a1f}
+.btn.ghost{background:transparent;color:#4a3628;box-shadow:none;outline:1.5px solid rgba(74,54,40,.3)}
+/* --- bottom controls --- */
+.ui button.main{background:#4a3628;color:#fffaf3;padding:14px 24px;font-size:15px;transition:opacity .25s,transform .25s}
+.ui button.main.hide{opacity:0;transform:translateY(12px);pointer-events:none}
+.dev{position:fixed;left:12px;bottom:12px;z-index:2;font:600 12px/1 system-ui,sans-serif}
+.dev summary{cursor:pointer;opacity:.45;list-style:none;padding:6px 8px}
+.dev div{display:flex;flex-wrap:wrap;gap:6px;max-width:280px;margin-top:6px}
+.dev button{padding:7px 10px;font-size:12px}
+@media (max-width:700px){
+  .badges{gap:8px;padding:7px 14px 7px 7px}.badge{width:auto;padding:0}.badge .disc{width:38px;height:38px}.badge .disc svg{width:24px;height:24px}.badge .lbl{font-size:9px}
+  .bubble{font-size:14px;padding:11px 14px}
+  .card{left:16px;right:16px;width:auto;top:auto;bottom:16px;transform:translateY(40px)}
+  .card.on{transform:none}
+  .cupwrap{height:126px}.cupwrap svg{height:110px}.cupwrap.many svg{height:84px}.cupwrap:has(img:only-child){height:146px}.cupwrap img{height:134px}.cupwrap.many img{height:88px}
+  .card h2{font-size:23px}
+}
+@media (prefers-reduced-motion:reduce){.bubble,.card,.badge .disc{transition:none!important;animation:none!important}}
+
+/* --- seasonal coupon --- */
+.ticket{margin:0 0 14px;border:2px dashed color-mix(in srgb,var(--accent) 55%,transparent);border-radius:16px;padding:12px 14px;display:flex;align-items:center;justify-content:space-between;gap:10px;background:color-mix(in srgb,var(--soft) 45%,#fffaf3)}
+.ticket .code{font:800 20px/1 ui-monospace,"SF Mono",Menlo,monospace;letter-spacing:.06em;color:var(--ink)}
+.ticket .lbl2{display:block;font:700 10px/1 system-ui,sans-serif;letter-spacing:.12em;text-transform:uppercase;opacity:.5;margin-bottom:6px}
+.fine{margin:-4px 0 14px;font:500 11.5px/1.4 system-ui,sans-serif;opacity:.55}
+.card.coupon .t{margin-bottom:12px}
+body.embed .dev{display:none}
+body.embed .badges{left:50%}
+body.nodev .dev{display:none!important}
+</style>
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"}}</script>
+</head><body>
+<div class="bg"><i class="b1"></i><i class="b2"></i><i class="circle"></i></div>
+<canvas id="c"></canvas>
+<div class="info" id="info">Lade …</div>
+<div class="badges" id="badges" aria-label="Deine Dino-Sammlung"></div>
+<div class="bubble" id="bubble" data-side="r" role="status" aria-live="polite"><span class="txt"></span></div>
+<div class="card" id="card" role="dialog" aria-label="Dein Drink">
+  <button class="x" id="cardClose" aria-label="Schließen">×</button>
+  <div class="cupwrap"></div>
+  <p class="kicker" id="cardKicker">Dein Drink. Dein Moment.</p>
+  <h2 id="cardTitle"></h2>
+  <p class="t" id="cardText"></p>
+  <div class="ticket" id="cardTicket" hidden><div><span class="lbl2">Dein Code</span><span class="code" id="cardCode"></span></div></div>
+  <p class="fine" id="cardFine" hidden></p>
+  <div class="row"><a class="btn primary" id="cardLink" href="#">Zum Drink →</a><button class="btn ghost" id="cardNext">Nächste Runde</button></div>
+</div>
+<div class="ui"><button class="main" data-g="play">▶ Spielen</button></div>
+<details class="dev"><summary>Test</summary><div>
+  <button data-a="wave">👋 Winken</button><button data-a="lift_cup">Verstecken</button><button data-a="shuffle">Mischen</button>
+  <button data-a="think">Überlegen</button><button data-a="eat">Lecker!</button><button data-a="sad">Schade</button><button id="cheat">✓ Richtiger Becher</button>
+</div></details>
+<script type="module">
+import * as THREE from 'three';
+import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
+import {DRACOLoader} from 'three/addons/loaders/DRACOLoader.js';
+import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
+import {RoomEnvironment} from 'three/addons/environments/RoomEnvironment.js';
+const V=()=>'?v='+Date.now();
+const EMBED=new URLSearchParams(location.search).has('embed'); if(EMBED) document.body.classList.add('embed'); if(!new URLSearchParams(location.search).has('dev')) document.body.classList.add('nodev');
+const canvas=document.getElementById('c');
+const renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:true});
+renderer.setPixelRatio(Math.min(devicePixelRatio,2)); renderer.outputColorSpace=THREE.SRGBColorSpace;
+renderer.toneMapping=THREE.ACESFilmicToneMapping; renderer.toneMappingExposure=1.05;
+renderer.shadowMap.enabled=true; renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+const scene=new THREE.Scene();
+const pmrem=new THREE.PMREMGenerator(renderer);
+scene.environment=pmrem.fromScene(new RoomEnvironment(),0.04).texture; scene.environmentIntensity=0.5;
+const cam=new THREE.PerspectiveCamera(30,1,0.05,50); cam.position.set(0.3,1.15,3.25);
+const controls=new OrbitControls(cam,canvas); controls.target.set(0,0.40,0.38); controls.enableDamping=true; controls.enableZoom=false; controls.enablePan=false;
+controls.minAzimuthAngle=-0.6; controls.maxAzimuthAngle=0.6; controls.minPolarAngle=1.0; controls.maxPolarAngle=1.45;
+const key=new THREE.DirectionalLight(0xfff1dc,2.2); key.position.set(-1.4,2.6,2.4); key.castShadow=true;
+key.shadow.mapSize.set(2048,2048); Object.assign(key.shadow.camera,{left:-1,right:1,top:1.5,bottom:-0.6,near:0.5,far:8}); key.shadow.bias=-0.0005; key.shadow.normalBias=0.012;
+scene.add(key);
+const rim=new THREE.DirectionalLight(0xffc98a,1.2); rim.position.set(1.8,1.6,-2); scene.add(rim);
+scene.add(new THREE.HemisphereLight(0xfff4e6,0x8a6a50,0.6));
+const ground=new THREE.Mesh(new THREE.CircleGeometry(1.6,64),new THREE.ShadowMaterial({opacity:.2,color:0x5a3a1e}));
+ground.rotation.x=-Math.PI/2; ground.receiveShadow=true; scene.add(ground);
+const loader=new GLTFLoader(); { const dr=new DRACOLoader(); dr.setDecoderPath('https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/libs/draco/gltf/'); loader.setDRACOLoader(dr); }
+const DINO_GLB=(EMBED||innerWidth<700)?'cafe_tera_dino_mobile.glb':'cafe_tera_dino.glb';
+const load=u=>new Promise((res,rej)=>loader.load(u+V(),res,undefined,rej));
+const SLOTS=[-0.27,0,0.27], CUPZ=0.53, TOP=0.30;
+let mixer,actions={},current=null,dino,bones={},anchor=null,lids=[],bodyMat=null,lidMats=[],lidBase=[];
+const cups=[]; let slotOf=[0,1,2]; let fruit=null, fruits={}, fruitCup=1, fruitName='Raspberry';
+const tintU={uTint:{value:new THREE.Color('#ec6f82')},uAmt:{value:0}}, tintT={col:new THREE.Color('#ec6f82'),amt:0};
+const [gD,gT,gC,gF]=await Promise.all([load(DINO_GLB),load('table.glb'),load('cup.glb'),load('fruits.glb')]);
+dino=gD.scene; scene.add(dino);
+const mask=new THREE.TextureLoader().load('dino_skin_mask.png'+V()); mask.flipY=false; mask.colorSpace=THREE.NoColorSpace;
+dino.traverse(o=>{
+  if(o.isBone) bones[o.name]=o;
+  if(!o.isMesh) return;
+  const lid=o.name.startsWith('DINO_Eyelid'); o.castShadow=!lid; o.receiveShadow=!lid;
+  if(lid){lidMats.push(o.material); lidBase.push(o.material.color.clone()); return;}
+  if(o.name.startsWith('DINO_Eye')||o.name.startsWith('DINO_Lashes')) return;   // eyes + lashes keep their own colours
+  bodyMat=o.material;
+  o.material.onBeforeCompile=sh=>{ sh.uniforms.uMask={value:mask}; sh.uniforms.uTint=tintU.uTint; sh.uniforms.uAmt=tintU.uAmt;
+    sh.fragmentShader='uniform sampler2D uMask; uniform vec3 uTint; uniform float uAmt;\n'+sh.fragmentShader.replace('#include <map_fragment>',
+    `#include <map_fragment>
+     { float m=texture2D(uMask,vMapUv).r*uAmt; vec3 c=diffuseColor.rgb; float l=dot(c,vec3(0.2126,0.7152,0.0722));
+       diffuseColor.rgb=mix(c,uTint*(l/0.263),m); }`); };
+  o.material.needsUpdate=true;
+});
+lids=[bones['eyelid.L'],bones['eyelid.R']].filter(Boolean); anchor=bones['cup_anchor'];
+const table=gT.scene; table.traverse(o=>{if(o.isMesh){o.castShadow=true;o.receiveShadow=true;}}); scene.add(table);
+for(let i=0;i<3;i++){ const c=gC.scene.clone(true); c.scale.setScalar(0.8); c.position.set(SLOTS[i],TOP,CUPZ);
+  c.traverse(o=>{if(o.isMesh){o.castShadow=true;o.receiveShadow=true;}}); scene.add(c); cups.push(c); }
+gF.scene.children.slice().forEach(o=>{ const n=o.name.replace('FRUIT_',''); o.visible=false; o.traverse(m=>{if(m.isMesh)m.castShadow=true;}); scene.add(o); fruits[n]=o; });
+fruits.Mango.scale.setScalar(0.75);
+mixer=new THREE.AnimationMixer(dino);
+for(const c of gD.animations){ const a=mixer.clipAction(c); actions[c.name]=a; }
+['wave','lift_cup','eat','sad'].forEach(n=>{ if(actions[n]){actions[n].setLoop(THREE.LoopOnce); actions[n].clampWhenFinished=true;} });
+function play(name,fade=0.3){ const a=actions[name]; if(!a) return; if(current===a){a.reset().play();return;}
+  a.reset().setEffectiveWeight(1).play(); if(current) current.crossFadeTo(a,fade,false); else a.fadeIn(fade); current=a; }
+mixer.addEventListener('finished',e=>{ if(e.action===current) play('idle',0.35); });
+play('idle',0);
+
+// ================= EYES (look-at) =================
+const IRIS={L:new THREE.Vector3(-0.013,-0.045,0.999),R:new THREE.Vector3(0.081,-0.038,0.996)}; // rest gaze (Blender n -> three)
+dino.updateMatrixWorld(true);
+const eyeInfo=['L','R'].map(s=>{ const b=bones['eye'+s]||bones['eye.'+s]; if(!b) return null;
+  const qd=dino.getWorldQuaternion(new THREE.Quaternion()), qb=b.getWorldQuaternion(new THREE.Quaternion());
+  return {b, q0:b.quaternion.clone(), axis:IRIS[s].clone().normalize().applyQuaternion(qd).applyQuaternion(qb.invert()), cur:null}; }).filter(Boolean);
+// sockets face a little outward: a neutral look keeps each pupil centred in its own eye (no cross-eyed look)
+const SOCKET={L:new THREE.Vector3(-0.013,-0.045,0.999),R:new THREE.Vector3(0.081,-0.038,0.996)}, SPREAD=1.0; // cute: pupils slightly towards the nose
+{ const qd=dino.getWorldQuaternion(new THREE.Quaternion()), m0=new THREE.Vector3(), tp=new THREE.Vector3();
+  eyeInfo.forEach(e=>{ e.b.getWorldPosition(tp); m0.add(tp); }); m0.multiplyScalar(1/eyeInfo.length);
+  const g0=cam.position.clone().sub(m0).normalize();
+  eyeInfo.forEach((e,i)=>{ const s=SOCKET[i?'R':'L'].clone().applyQuaternion(qd); s.normalize();
+    const qa=new THREE.Quaternion().setFromUnitVectors(g0,s), qoff=new THREE.Quaternion().slerp(qa,SPREAD);
+    const P0=e.b.parent.getWorldQuaternion(new THREE.Quaternion());
+    e.qoffL=P0.clone().invert().multiply(qoff).multiply(P0); }); }
+const look={pt:new THREE.Vector3(),hold:0,ptr:new THREE.Vector3(),ptrT:-1e9,sacc:new THREE.Vector3(),saccT:0};
+function lookAt(v,ms=900){ look.pt.copy(v); look.hold=performance.now()+ms; }
+const _eq4=new THREE.Quaternion(),_emid=new THREE.Vector3(),_egz=new THREE.Vector3(),_eq=new THREE.Quaternion(),_eq2=new THREE.Quaternion(),_eq3=new THREE.Quaternion(),_ev=new THREE.Vector3(),_ev2=new THREE.Vector3(),_ep=new THREE.Vector3(),_ew=new THREE.Vector3();
+const lookPlane=new THREE.Plane(new THREE.Vector3(0,0,1),-2.2), _lray=new THREE.Raycaster(), _lm=new THREE.Vector2();
+canvas.addEventListener('pointermove',e=>{ _lm.set(e.clientX/innerWidth*2-1,-(e.clientY/innerHeight)*2+1); _lray.setFromCamera(_lm,cam);
+  if(_lray.ray.intersectPlane(lookPlane,look.ptr)) look.ptrT=performance.now(); });
+function eyeTarget(now){
+  if(now<look.hold) return look.pt;
+  if(now-look.ptrT<2500) return look.ptr;
+  if(current===actions.think){ const t=now*0.0007; return _ev2.set(0.55*Math.sin(t),1.35+0.12*Math.cos(1.7*t),1.0); } // dreamy eye-roll
+  if(now>look.saccT){ look.saccT=now+1200+Math.random()*2800; look.sacc.set((Math.random()-.5)*0.6,(Math.random()-.5)*0.35,0); }
+  return _ev2.copy(cam.position).add(look.sacc);
+}
+function updateEyes(dt){
+  const now=performance.now(), T=eyeTarget(now);
+  // one shared gaze direction from the point between the eyes -> both eyes always look the same way
+  const mid=_emid.set(0,0,0); for(const e of eyeInfo){ e.b.getWorldPosition(_ep); mid.add(_ep); } mid.multiplyScalar(1/eyeInfo.length);
+  const gaze=_egz.copy(T).sub(mid).normalize();
+  for(const e of eyeInfo){
+    e.b.quaternion.copy(e.q0); e.b.updateMatrixWorld(true);
+    const qb=e.b.getWorldQuaternion(_eq), d0=_ev.copy(e.axis).applyQuaternion(qb);
+    e.b.parent.getWorldQuaternion(_eq3); const qo=_eq4.copy(_eq3).multiply(e.qoffL).multiply(_eq3.invert());
+    const want=_ew.copy(gaze).applyQuaternion(qo);
+    const ang=d0.angleTo(want), MAX=0.6; if(ang>MAX) want.copy(d0).lerp(want,MAX/ang).normalize();
+    if(!e.cur) e.cur=want.clone(); else e.cur.lerp(want,1-Math.exp(-dt*16)).normalize();
+    _eq2.setFromUnitVectors(d0,e.cur).multiply(qb);
+    e.b.parent.getWorldQuaternion(_eq3).invert(); e.b.quaternion.copy(_eq3.multiply(_eq2)); e.b.updateMatrixWorld(true);
+  }
+}
+document.getElementById('info').textContent='Clips: '+gD.animations.map(a=>a.name).join(', ');
+// --- game-ish helpers ---
+let liftActive=false, shuffleT=null;
+function centerCup(){ return cups[slotOf.indexOf(1)]; }
+function doHide(){
+  // fruit appears under the middle cup while it is lifted
+  const cup=centerCup(); fruitCup=cups.indexOf(cup); liftActive=true;
+  lookAt(cup.position.clone().setY(TOP+0.05),2600);
+  Object.values(fruits).forEach(f=>f.visible=false); fruit=fruits[fruitName];
+  play('lift_cup',0.25);
+  setTimeout(()=>{ fruit.position.set(0,TOP,CUPZ); fruit.scale.multiplyScalar(0.001); fruit.visible=true; popIn(fruit);},1150);
+  setTimeout(()=>{ liftActive=false; },2050);
+}
+function popIn(o){ const s1=(o===fruits.Mango?0.75:1), t0=performance.now();
+  (function tick(){ const k=Math.min(1,(performance.now()-t0)/250); o.scale.setScalar(s1*(k<1?1-Math.pow(1-k,3)*(1-0.0):1)); if(k<1) requestAnimationFrame(tick); })(); }
+let doShuffle=function(){
+  play('shuffle',0.3); if(fruit) fruit.visible=false;
+  let n=0; const swaps=5;
+  (function next(){
+    if(n++>=swaps){ setTimeout(()=>play('think',0.4),200); return; }
+    let a=Math.floor(Math.random()*3), b=(a+1+Math.floor(Math.random()*2))%3;
+    const ia=slotOf.indexOf(a), ib=slotOf.indexOf(b); const ca=cups[ia], cb=cups[ib];
+    const xa=SLOTS[a], xb=SLOTS[b], t0=performance.now(), D=420;
+    (function step(){ const k=Math.min(1,(performance.now()-t0)/D), e=k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2;
+      ca.position.x=xa+(xb-xa)*e; ca.position.z=CUPZ+0.14*Math.sin(Math.PI*e);
+      cb.position.x=xb+(xa-xb)*e; cb.position.z=CUPZ;
+      if(k<1) requestAnimationFrame(step); else { slotOf[ia]=b; slotOf[ib]=a; setTimeout(next,60);} })();
+  })();
+}
+document.querySelectorAll('[data-a]').forEach(b=>b.onclick=()=>{ const n=b.dataset.a;
+  if(n==='lift_cup') doHide(); else if(n==='shuffle') doShuffle(()=>{gameState='choose'; toast('Wähle einen Becher!',0);}); else play(n,0.3); });
+document.querySelectorAll('.tint').forEach(b=>b.onclick=()=>{ const c=b.dataset.c; if(c){tintT.col.set(c);tintT.amt=1; if(b.dataset.f) fruitName=b.dataset.f;} else tintT.amt=0; });
+
+// ================= GAME =================
+const ORDER=['Raspberry','Mango','Blueberry','Matcha'];
+const COLORS={Raspberry:'#ec6f82',Mango:'#f6b233',Blueberry:'#7983de',Matcha:'#6f9e35'};
+const SOFT={Raspberry:'#f8d3d8',Mango:'#fde3ad',Blueberry:'#d7daf6',Matcha:'#dde9c6'};
+const DINOS={Raspberry:'Himbeer-Dino',Mango:'Mango-Dino',Blueberry:'Blaubeer-Dino',Matcha:'Matcha-Dino'};
+const HIDE={Raspberry:'die Himbeere',Mango:'die Mango',Blueberry:'die Blaubeere',Matcha:'ein Matcha-Blatt'};
+const IT=k=>k==='Matcha'?'das Blatt':'sie';
+// Drink cards (texts + links are placeholders – replace with the real menu pages)
+const DRINKS={
+  Raspberry:{pre:'Matcha',word:'Himbeere',text:'Du hast den Himbeer-Dino gefunden. Dazu passt unser Matcha Himbeere.',link:'#matcha-himbeere',cta:'Zum Matcha Himbeere'},
+  Mango:{pre:'Matcha',word:'Mango',text:'Du hast den Mango-Dino gefunden. Dazu passt unser Matcha Mango.',link:'#matcha-mango',cta:'Zum Matcha Mango'},
+  Blueberry:{pre:'Matcha',word:'Blaubeere',text:'Du hast den Blaubeer-Dino gefunden. Dazu passt unser Matcha Blaubeere.',link:'#matcha-blaubeere',cta:'Zum Matcha Blaubeere'},
+  Matcha:{pre:'',word:'Matcha',text:'Das Matcha-Blatt steckt in allen Tera-Drinks. Welcher wird dein Favorit?',link:'#drinks',cta:'Alle Matcha-Drinks'}};
+const ICON={
+ Raspberry:'<svg viewBox="0 0 40 40"><path d="M14 10c3-5 9-5 12 0-4 1.5-8 1.5-12 0z" fill="#5f8f2c"/>'+[[14,16],[20,15],[26,16],[11,22],[17,22],[23,22],[29,22],[14,28],[20,28],[26,28],[20,33]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="4.7" fill="#e0566c"/><circle cx="${x-1.5}" cy="${y-1.5}" r="1.3" fill="#f7a9b5"/>`).join('')+'</svg>',
+ Mango:'<svg viewBox="0 0 40 40"><defs><linearGradient id="gmango" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffd45e"/><stop offset="1" stop-color="#f08a24"/></linearGradient></defs><path d="M21 8c9 1 14 9 12 18-2 8-10 11-17 9S5 27 8 18c2-6 7-10 13-10z" fill="url(#gmango)"/><path d="M21 8c2-4 7-5 10-3-2 3-6 4-10 3z" fill="#5f8f2c"/><ellipse cx="15" cy="17" rx="3" ry="5.5" fill="#fff" opacity=".35" transform="rotate(30 15 17)"/></svg>',
+ Blueberry:'<svg viewBox="0 0 40 40"><circle cx="20" cy="22" r="13" fill="#5b66c6"/><circle cx="15" cy="17" r="3.6" fill="#a3aaee" opacity=".7"/><path d="M15 12l2.5 2 2.5-3 2.5 3 2.5-2-1 5h-8z" fill="#3b4392"/></svg>',
+ Matcha:'<svg viewBox="0 0 40 40"><path d="M20 4C9 12 8 26 20 36 32 26 31 12 20 4z" fill="#6f9e35"/><path d="M20 8v26M20 16l-5-4M20 22l6-5M20 28l-6-4" stroke="#c2de94" stroke-width="1.7" stroke-linecap="round" fill="none"/></svg>'};
+let gameState='ready';                       // ready | hiding | shuffling | choose | reveal
+let found=new Set();
+try{ found=new Set(JSON.parse(localStorage.getItem('teraDinoFound')||'[]').filter(k=>ORDER.includes(k))); }catch(e){}
+function saveFound(){ try{ localStorage.setItem('teraDinoFound',JSON.stringify([...found])); }catch(e){} }
+const wait=ms=>new Promise(r=>setTimeout(r,ms));
+const reduceMotion=matchMedia('(prefers-reduced-motion: reduce)').matches;
+function setTint(k){ if(!k||k==='Matcha') tintT.amt=0; else { tintT.col.set(COLORS[k]); tintT.amt=1; } }
+
+// --- speech bubble beside Dino's head ---
+const bub=document.getElementById('bubble'), bubTxt=bub.querySelector('.txt'); let bubT=0;
+function say(t,ms=2600,mode=''){ bubTxt.textContent=t; bub.classList.toggle('think',mode==='think'); bub.classList.add('on');
+  clearTimeout(bubT); if(ms) bubT=setTimeout(()=>bub.classList.remove('on'),ms); }
+const toast=say;
+const _bm=new THREE.Vector3(), _bR=new THREE.Vector3(), _bL=new THREE.Vector3(), _bp=new THREE.Vector3();
+function scr(v){ v.project(cam); return [(v.x*.5+.5)*innerWidth,(-v.y*.5+.5)*innerHeight]; }
+function updateBubble(){
+  if(!eyeInfo.length) return; _bm.set(0,0,0); eyeInfo.forEach(e=>{ e.b.getWorldPosition(_bp); _bm.add(_bp); }); _bm.multiplyScalar(1/eyeInfo.length);
+  const [rx,ry]=scr(_bR.copy(_bm).add({x:0.30,y:-0.07,z:0})), [lx,ly]=scr(_bL.copy(_bm).add({x:-0.30,y:-0.07,z:0}));
+  const w=bub.offsetWidth, h=bub.offsetHeight, top=innerWidth<=700?78:104; let x,y,side='r';
+  if(rx+w<innerWidth-12){ x=rx; y=ry-h; }
+  else if(lx-w>12){ x=lx-w; y=ly-h; side='l'; }
+  else { x=Math.max(12,Math.min(innerWidth-12-w,rx-w*0.2)); y=ry-h-110; }
+  y=Math.max(top,y); bub.style.setProperty('--x',x.toFixed(1)+'px'); bub.style.setProperty('--y',y.toFixed(1)+'px'); bub.dataset.side=side;
+}
+
+// --- collection badges ---
+const badgesEl=document.getElementById('badges');
+function renderBadges(newKey){
+  badgesEl.innerHTML=ORDER.map(k=>{ const g=found.has(k);
+    return `<button class="badge${g?' got':''}${k===newKey?' new':''}" data-k="${k}" style="--soft:${SOFT[k]}" ${g?'':'disabled'} aria-label="${g?DINOS[k]:'Noch nicht gefunden'}" title="${g?DINOS[k]:'Noch nicht gefunden'}"><span class="disc">${ICON[k]}</span><span class="lbl">${g?DINOS[k]:'? ? ?'}</span></button>`; }).join('')
+    +`<span class="count">${found.size}/${ORDER.length}</span>`;
+  badgesEl.querySelectorAll('.badge.got').forEach(b=>b.onclick=()=>{ if(gameState!=='ready'&&gameState!=='reveal') return;
+    const k=b.dataset.k; setTint(k); play('wave',0.3); say('Ich bin '+DINOS[k]+'!',2000); });
+}
+
+// --- matcha leaves burst out of Dino's mouth ---
+const LEAF='<svg viewBox="0 0 20 32"><path d="M10 1C2 9 1 21 10 31 19 21 18 9 10 1z" fill="currentColor"/><path d="M10 5v23" stroke="rgba(255,255,255,.5)" stroke-width="1.3" fill="none"/></svg>';
+function leafBurst(k){
+  const [ox,oy]=scr(new THREE.Vector3(0,0.66,0.45));
+  const cols=['#6f9e35','#86b545','#a6cd68','#5a8a2a'], N=reduceMotion?8:34, parts=[], withFruit=k&&k!=='Matcha';
+  for(let i=0;i<N;i++){ const el=document.createElement('span'); el.className='leaf'; const fr=withFruit&&i%2===0;
+    el.innerHTML=fr?ICON[k]:LEAF; el.style.color=cols[i%cols.length];
+    const s=0.7+Math.random()*0.9; if(fr){ el.style.width=el.style.height=(20*s)+'px'; } else { el.style.width=(14*s)+'px'; el.style.height=(22*s)+'px'; } document.body.appendChild(el);
+    const a=-Math.PI/2+(Math.random()-.5)*2.6, v=330+Math.random()*420;
+    parts.push({el,x:ox,y:oy,vx:Math.cos(a)*v,vy:Math.sin(a)*v,r:Math.random()*360,vr:(Math.random()-.5)*540,sw:Math.random()*6.28}); }
+  const t0=performance.now(); let last=t0;
+  (function f(now){ const dt=Math.min(0.033,(now-last)/1000); last=now; const T=(now-t0)/1000;
+    for(const q of parts){ q.vy=Math.min(q.vy+760*dt,170); q.vx*=0.97; q.x+=q.vx*dt+Math.sin(T*4+q.sw)*42*dt; q.y+=q.vy*dt; q.r+=q.vr*dt;
+      q.el.style.transform=`translate(${q.x.toFixed(1)}px,${q.y.toFixed(1)}px) rotate(${q.r.toFixed(0)}deg)`; q.el.style.opacity=Math.max(0,1-Math.max(0,T-1.6)/0.9); }
+    if(T<2.5) requestAnimationFrame(f); else parts.forEach(q=>q.el.remove()); })(t0);
+}
+
+// --- drink card ---
+const card=document.getElementById('card'), playBtn=document.querySelector('[data-g=play]'); let cupN=0;
+function cupSVG(k){ const id='cupclip'+(++cupN), top='#7fab3f', mid='#f7f0e6', bot=k==='Matcha'?'#cfe2a9':COLORS[k], straw=k==='Matcha'?'#86b545':COLORS[k];
+  return `<svg viewBox="0 0 120 170" aria-hidden="true"><defs><clipPath id="${id}"><path d="M20 46h80l-10 112q-1 8-9 8H39q-8 0-9-8z"/></clipPath></defs>
+  <rect x="62" y="2" width="9" height="60" rx="4.5" fill="${straw}" transform="rotate(10 66 30)"/>
+  <g clip-path="url(#${id})"><rect x="0" y="40" width="120" height="140" fill="#fbf6ef"/>
+   <path d="M0 62q30-8 60 0t60 0v70H0z" fill="${top}"/><path d="M0 104q30-7 60 0t60 0v30H0z" fill="${mid}"/><path d="M0 128q30-8 60 0t60 0v50H0z" fill="${bot}"/>
+   <rect x="34" y="70" width="18" height="16" rx="4" fill="#fff" opacity=".35" transform="rotate(-12 43 78)"/><rect x="62" y="82" width="16" height="14" rx="4" fill="#fff" opacity=".3" transform="rotate(14 70 89)"/>
+   <rect x="26" y="46" width="10" height="120" fill="#fff" opacity=".18"/></g>
+  <path d="M20 46h80l-10 112q-1 8-9 8H39q-8 0-9-8z" fill="none" stroke="rgba(74,54,40,.16)" stroke-width="2"/>
+  <rect x="14" y="36" width="92" height="12" rx="6" fill="#fffaf3" stroke="rgba(74,54,40,.16)" stroke-width="2"/></svg>`; }
+const PHOTO={Raspberry:'himbeere',Mango:'mango',Blueberry:'blaubeere'};
+function cupArt(k){ return PHOTO[k]?'<img class="cupphoto" src="app/assets/cup_'+PHOTO[k]+'.webp" alt="">':cupSVG(k); }
+function showCard(k){
+  const all=found.size===ORDER.length, d=DRINKS[k], cw=card.querySelector('.cupwrap');
+  if(all && PROMO) return showCoupon();
+  card.classList.remove('coupon'); document.getElementById('cardTicket').hidden=true; document.getElementById('cardFine').hidden=true; document.getElementById('cardLink').onclick=null;
+  card.style.setProperty('--soft',all?'#ecdcc7':SOFT[k]); card.style.setProperty('--accent',all?'#6f9e35':COLORS[k]);
+  cw.innerHTML=all?ORDER.map(cupArt).join(''):cupArt(k); cw.classList.toggle('many',all);
+  document.getElementById('cardKicker').textContent=all?'Sammlung komplett':'Dein Drink. Dein Moment.';
+  document.getElementById('cardTitle').innerHTML=all?'Alle <em>4 Dinos</em> gesammelt!':(d.pre?d.pre+' ':'')+'<em>'+d.word+'</em>';
+  document.getElementById('cardText').textContent=all?'Himbeere, Mango, Blaubeere und Matcha – entdecke jetzt alle Tera-Drinks.':d.text;
+  const a=document.getElementById('cardLink'); a.href=all?'#drinks':d.link; a.textContent=(all?'Alle Drinks ansehen':d.cta)+' →';
+  if(EMBED){ a.onclick=e=>{ e.preventDefault(); parent.postMessage({type:'drink',k:all?'Raspberry':k},'*'); }; }
+  document.getElementById('cardNext').textContent=all?'Neu sammeln':'Nächste Runde';
+  card.classList.add('on'); playBtn.classList.add('hide');
+}
+
+// ===== Seasonal promo: coupon only during a campaign window (edit here) =====
+// test with ?promo=halloween | ?promo=weihnachten | ?promo=off
+const PROMOS=[
+  {id:'halloween',  from:'10-20', to:'11-02', label:'Halloween-Aktion 🎃', drink:'Kürbis-Matcha', word:'Kürbis-Matcha', off:'10 %', code:'DINO-KUERBIS', color:'#e07b2e', soft:'#fbd7b4', cup:'#f0913f'},
+  {id:'weihnachten',from:'12-01', to:'12-26', label:'Weihnachts-Aktion 🎅', drink:'Santa-Matcha', word:'Santa-Matcha', off:'10 %', code:'DINO-SANTA', color:'#c8443f', soft:'#f5cdc9', cup:'#d9544e'},
+];
+function activePromo(){
+  const q=new URLSearchParams(location.search).get('promo'); if(q==='off') return null;
+  if(q) return PROMOS.find(p=>p.id===q)||null;
+  const d=new Date(), md=String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+  return PROMOS.find(p=>p.from<=md && md<=p.to)||null;
+}
+const PROMO=activePromo();
+if(PROMO){ const b2=document.querySelector('.bg .b2'); if(b2) b2.style.background=PROMO.soft; }
+function untilText(p){ const [m,d]=p.to.split('-'); return d+'.'+m+'.'; }
+function cupSVGc(bot,straw){ const id='cupclip'+(++cupN);
+  return `<svg viewBox="0 0 120 170" aria-hidden="true"><defs><clipPath id="${id}"><path d="M20 46h80l-10 112q-1 8-9 8H39q-8 0-9-8z"/></clipPath></defs>
+  <rect x="62" y="2" width="9" height="60" rx="4.5" fill="${straw}" transform="rotate(10 66 30)"/>
+  <g clip-path="url(#${id})"><rect x="0" y="40" width="120" height="140" fill="#fbf6ef"/>
+   <path d="M0 62q30-8 60 0t60 0v70H0z" fill="#7fab3f"/><path d="M0 104q30-7 60 0t60 0v30H0z" fill="#f7f0e6"/><path d="M0 128q30-8 60 0t60 0v50H0z" fill="${bot}"/>
+   <rect x="34" y="70" width="18" height="16" rx="4" fill="#fff" opacity=".35" transform="rotate(-12 43 78)"/><rect x="26" y="46" width="10" height="120" fill="#fff" opacity=".18"/></g>
+  <path d="M20 46h80l-10 112q-1 8-9 8H39q-8 0-9-8z" fill="none" stroke="rgba(74,54,40,.16)" stroke-width="2"/>
+  <rect x="14" y="36" width="92" height="12" rx="6" fill="#fffaf3" stroke="rgba(74,54,40,.16)" stroke-width="2"/></svg>`; }
+function showCoupon(){
+  const p=PROMO, cw=card.querySelector('.cupwrap');
+  card.classList.add('coupon'); card.style.setProperty('--soft',p.soft); card.style.setProperty('--accent',p.color);
+  cw.classList.remove('many'); cw.innerHTML=cupSVGc(p.cup,p.color);
+  document.getElementById('cardKicker').textContent=p.label;
+  document.getElementById('cardTitle').innerHTML=p.off+' auf deinen <em>'+p.word+'</em>';
+  document.getElementById('cardText').textContent='Alle 4 Dinos gesammelt – danke fürs Spielen! Zeig diesen Code an der Theke.';
+  const t=document.getElementById('cardTicket'); t.hidden=false; document.getElementById('cardCode').textContent=p.code;
+  const f=document.getElementById('cardFine'); f.hidden=false; f.textContent='1× pro Person · gültig bis '+untilText(p)+' · nur im Café Tera · nicht mit anderen Aktionen kombinierbar';
+  const a=document.getElementById('cardLink'); a.removeAttribute('href'); a.textContent='Code kopieren';
+  a.onclick=async e=>{ e.preventDefault(); try{ await navigator.clipboard.writeText(p.code); a.textContent='Kopiert ✓'; }catch(_){ a.textContent=p.code; } };
+  if(EMBED){ a.textContent='Gutschein einlösen →'; a.onclick=e=>{ e.preventDefault(); parent.postMessage({type:'coupon',code:p.code,off:parseInt(p.off)||10,label:p.label},'*'); }; }
+  document.getElementById('cardNext').textContent='Neu sammeln';
+  card.classList.add('on'); playBtn.classList.add('hide');
+}
+function hideCard(){ card.classList.remove('on'); }
+document.getElementById('cardNext').onclick=()=>startGame();
+document.getElementById('cardClose').onclick=()=>{ hideCard(); playBtn.classList.remove('hide'); };
+function setPlay(label){ playBtn.textContent=label; playBtn.classList.remove('hide'); }
+
+function tweenY(obj,to,D=350){ return new Promise(r=>{ const from=obj.position.y,t0=performance.now();
+  (function st(){ const k=Math.min(1,(performance.now()-t0)/D), e=1-Math.pow(1-k,3); obj.position.y=from+(to-from)*e; if(k<1) requestAnimationFrame(st); else r(); })(); }); }
+function resetCups(){ cups.forEach((c,i)=>{c.position.set(SLOTS[slotOf[i]],TOP,CUPZ);}); Object.values(fruits).forEach(f=>f.visible=false); }
+async function startGame(){
+  if(gameState!=='ready' && gameState!=='reveal') return;
+  hideCard(); playBtn.classList.add('hide');
+  if(found.size===ORDER.length){ found.clear(); saveFound(); renderBadges(); }
+  resetCups(); setTint(null);
+  fruitName=ORDER.find(k=>!found.has(k));
+  gameState='hiding'; say('Pass auf! Ich verstecke '+HIDE[fruitName]+' …',2700);
+  doHide();
+  await wait(3000);
+  gameState='shuffling'; say('Gut aufpassen! 👀',1500);
+  await new Promise(r=>{ doShuffle(r); });
+  gameState='choose'; say('Hmm … unter welchem Becher ist '+IT(fruitName)+'?',0,'think');
+}
+// doShuffle with callback
+doShuffle=function(done){
+  play('shuffle',0.3); if(fruit) fruit.visible=false;
+  let n=0; const swaps=6;
+  (function next(){
+    if(n++>=swaps){ play('think',0.4); done&&done(); return; }
+    let a=Math.floor(Math.random()*3), b=(a+1+Math.floor(Math.random()*2))%3;
+    const ia=slotOf.indexOf(a), ib=slotOf.indexOf(b); const ca=cups[ia], cb=cups[ib];
+    const xa=SLOTS[a], xb=SLOTS[b], t0=performance.now(), D=380;
+    (function step(){ const k=Math.min(1,(performance.now()-t0)/D), e=k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2;
+      ca.position.x=xa+(xb-xa)*e; ca.position.z=CUPZ+0.14*Math.sin(Math.PI*e);
+      cb.position.x=xb+(xa-xb)*e; cb.position.z=CUPZ; lookAt(ca.position,250);
+      if(k<1) requestAnimationFrame(step); else { slotOf[ia]=b; slotOf[ib]=a; setTimeout(next,50);} })();
+  })();
+};
+async function choose(i){
+  if(gameState!=='choose') return; gameState='reveal';
+  const cup=cups[i]; const fc=cups[fruitCup], k=fruitName;
+  fruit.position.set(fc.position.x,TOP,CUPZ); fruit.visible=true; fruit.scale.setScalar(fruit===fruits.Mango?0.75:1);
+  lookAt(cup.position,1400);
+  await tweenY(cup,TOP+0.14,380);
+  if(i===fruitCup){
+    found.add(k); saveFound();
+    say('Juhu, gefunden! 🎉',1400);
+    setTimeout(()=>{ play('eat',0.2); },300);
+    setTimeout(()=>{ // fruit hops into Dino's mouth
+      const p0=fruit.position.clone(), p1=new THREE.Vector3(0,0.63,0.43), t0=performance.now(), D=420, s0=fruit.scale.x;
+      (function hop(){ const q=Math.min(1,(performance.now()-t0)/D);
+        fruit.position.lerpVectors(p0,p1,q); fruit.position.y+=0.12*Math.sin(Math.PI*q); fruit.scale.setScalar(s0*(1-0.6*q));
+        lookAt(fruit.position,300);
+        if(q<1) requestAnimationFrame(hop); else fruit.visible=false; })();
+    },150);
+    setTimeout(()=>{ setTint(k); leafBurst(k); renderBadges(k); },700);
+    setTimeout(()=>tweenY(cup,TOP,420),1300);
+    setTimeout(()=>say('Mmh! Jetzt bin ich '+DINOS[k]+'!',2400),1500);
+    setTimeout(()=>{ showCard(k); playBtn.textContent=found.size===ORDER.length?'↺ Neu sammeln':'▶ Nächste Runde'; },3100);
+  } else {
+    say('Oh nein! Hier war '+IT(k)+'.',2200);
+    play('sad',0.25);
+    setTimeout(()=>{ tweenY(fc,TOP+0.14,380); lookAt(fc.position.clone().setY(TOP),1600); },500);
+    setTimeout(()=>{ tweenY(cup,TOP,420); tweenY(fc,TOP,420).then(()=>{ fruit.visible=false; }); },2300);
+    setTimeout(()=>{ say('Nochmal? Ich verstecke '+IT(k)+' neu!',0); setPlay('▶ Nochmal'); },2700);
+  }
+}
+document.getElementById('cheat').onclick=()=>{ if(gameState==='choose') choose(fruitCup); };
+// start screen
+renderBadges();
+setPlay(found.size===ORDER.length?'↺ Neu sammeln':found.size?'▶ Weiter sammeln':'▶ Spielen');
+setTimeout(()=>{ play('wave',0.3); say(PROMO&&found.size<ORDER.length?'Sammle alle 4 Dinos und hol dir '+PROMO.off+' auf den '+PROMO.drink+'! '+PROMO.label.split(' ').pop():(found.size?'Schön, dass du wieder da bist!':'Hallo! Findest du meine Früchte?'),4200); },700);
+// picking
+const ray=new THREE.Raycaster(), mouse=new THREE.Vector2(); let downXY=null;
+canvas.addEventListener('pointerdown',e=>{downXY=[e.clientX,e.clientY];});
+canvas.addEventListener('pointerup',e=>{
+  if(!downXY) return; const moved=Math.hypot(e.clientX-downXY[0],e.clientY-downXY[1]); downXY=null; if(moved>6) return;
+  mouse.set(e.clientX/innerWidth*2-1,-(e.clientY/innerHeight)*2+1); ray.setFromCamera(mouse,cam);
+  const hits=ray.intersectObjects(cups,true); if(!hits.length) return;
+  let o=hits[0].object; while(o && !cups.includes(o)) o=o.parent; if(o) choose(cups.indexOf(o));
+});
+canvas.addEventListener('pointermove',e=>{
+  if(gameState!=='choose'){ canvas.style.cursor=''; return; }
+  mouse.set(e.clientX/innerWidth*2-1,-(e.clientY/innerHeight)*2+1); ray.setFromCamera(mouse,cam);
+  const h=ray.intersectObjects(cups,true); canvas.style.cursor=h.length?'pointer':'';
+  cups.forEach(c=>{ const on=h.length && (h[0].object===c || c.getObjectById(h[0].object.id)); c.userData.hover=on?1:0; });
+});
+document.querySelector('[data-g=play]').onclick=()=>startGame();
+
+// --- loop ---
+function resize(){const w=innerWidth,h=innerHeight;renderer.setSize(w,h,false);cam.aspect=w/h;cam.fov=cam.aspect>=1.2?30:Math.min(58,Math.max(29,2*Math.atan(0.19/cam.aspect)*180/Math.PI));cam.updateProjectionMatrix();}
+addEventListener('resize',resize); resize();
+const clock=new THREE.Clock(), tmp=new THREE.Vector3();
+renderer.setAnimationLoop(()=>{
+  const dt=Math.min(clock.getDelta(),0.05); mixer.update(dt);
+  if(liftActive && anchor){ anchor.getWorldPosition(tmp); const c=cups[fruitCup]; c.position.copy(tmp); }
+  dino.updateMatrixWorld(true); updateEyes(dt);
+  const k=1-Math.exp(-dt*3.2); tintU.uTint.value.lerp(tintT.col,k); tintU.uAmt.value+=(tintT.amt-tintU.uAmt.value)*k;
+  lidMats.forEach((m,i)=>{const b=lidBase[i],l=0.2126*b.r+0.7152*b.g+0.0722*b.b; m.color.copy(b).lerp(tintU.uTint.value.clone().multiplyScalar(l/0.263),tintU.uAmt.value);});
+  if(gameState==='choose') cups.forEach(c=>{ const t=TOP+(c.userData.hover?0.015:0); c.position.y+=(t-c.position.y)*Math.min(1,dt*12); });
+  controls.update(); renderer.render(scene,cam); updateBubble();
+});
+</script></body></html>
