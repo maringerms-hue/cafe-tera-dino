@@ -63,7 +63,7 @@ var css=`
 .ctx-load .ctx-btn{pointer-events:none}.ctx-load small{font:11px var(--mono);letter-spacing:.08em;opacity:.85}
 .ctx-live{display:inline-flex;align-items:center;gap:8px;font:11px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--lime)}.ctx-live:before{content:"";width:8px;height:8px;border-radius:50%;background:var(--lime);box-shadow:0 0 0 4px rgba(198,242,78,.18)}
 .ctx-list{list-style:none;padding:0;margin-top:26px!important;border-top:1px solid var(--ln)}.ctx-list li{display:flex;gap:16px;padding:13px 0;border-bottom:1px solid var(--ln);font-size:15px;color:var(--mu)}.ctx-list li b{font:12px var(--mono);color:var(--lime);font-weight:400;min-width:24px;padding-top:2px}
-.ctx-note{font-size:13px;color:var(--mu2);margin-top:18px!important}.ctx-tl{font-size:14px;color:var(--mu);text-decoration:underline!important;text-underline-offset:5px}
+.ctx-walk{display:grid;grid-template-columns:minmax(0,520px) 1fr;gap:64px;align-items:center;margin-top:100px;padding-top:64px;border-top:1px solid var(--ln)}.ctx-walk__v{background:#e9dfd2;border-radius:18px;overflow:hidden;border:1px solid var(--ln)}.ctx-walk__v video{width:100%;height:auto;aspect-ratio:720/1010;background:#e9dfd2}@media(max-width:991px){.ctx-walk{grid-template-columns:1fr;gap:32px;margin-top:64px;padding-top:48px}.ctx-walk__v{max-width:460px}}.ctx-note{font-size:13px;color:var(--mu2);margin-top:18px!important}.ctx-tl{font-size:14px;color:var(--mu);text-decoration:underline!important;text-underline-offset:5px}
 /* 3D */
 .ctx-dev{display:grid;grid-template-columns:.8fr 1.2fr;gap:22px;align-items:start}.ctx-dev__r{display:grid;gap:22px}
 .ctx-eyes{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-top:22px}.ctx-eyes img{width:100%;aspect-ratio:4/3;object-fit:cover}
@@ -163,6 +163,9 @@ var html=`
  <div class="ctx-acts"><a class="ctx-btn ctx-btn--g" href="${APP}" target="_blank" rel="noopener">In neuem Tab öffnen <span aria-hidden="true">↗</span></a></div>
  <p class="ctx-note">Demo: Es wird nichts bestellt und nichts bezahlt. Optimiert für Smartphone-Größe.</p></div>
  <div class="ctx-demo__m"><div class="ctx-phone"><div class="ctx-phone__s" data-embed="${APP}" data-title="Café Tera Web-App (Demo)">${img('mobile-himbeere.webp','Vorschau der Café-Tera-Web-App',364,787)}<button type="button" class="ctx-load"><span class="ctx-btn">Web-App starten ${I_PLAY.replace('28','18').replace('28','18')}</span><small>läuft direkt hier auf der Seite</small></button></div></div></div></div>
+ <div class="ctx-walk"><figure class="ctx-walk__v"><video controls muted playsinline preload="none" poster="${A}app-walkthrough-poster.webp" width="720" height="1010" aria-label="Bildschirmaufnahme der Web-App: Drink wählen, bestellen, Danke-Seite und vier Spielrunden, 1:47 Minuten, ohne Ton"><source src="${A}app-walkthrough.mp4" type="video/mp4"></video></figure>
+ <div><p class="ctx-k">Bildschirmaufnahme · 1:47 · ohne Ton</p><h2>Der ganze Ablauf<br>in einer Aufnahme.</h2><p class="ctx-p" style="margin-top:24px">Vom ersten Tipp auf einen Drink bis zum vollständigen Dino-Set – aufgenommen in der fertigen Web-App auf dem Smartphone.</p>
+ <ul class="ctx-list"><li><b>01</b>Drink wählen und in den Warenkorb</li><li><b>02</b>Bestellung: Abholung, Angaben, Zahlung</li><li><b>03</b>Danke-Seite mit Einladung zum Spiel</li><li><b>04</b>Vier Runden – Himbeere, Mango, Blaubeere, Matcha</li><li><b>05</b>Mit dem passenden Drink zurück ins Menü</li></ul></div></div>
 </div></section>
 
 <section class="ctx-s" id="ctx-3d"><div class="ctx-w">
