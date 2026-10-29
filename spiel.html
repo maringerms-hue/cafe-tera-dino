@@ -4,7 +4,7 @@
 <title>Café Tera – Dino Spiel</title>
 <style>
 :root{color-scheme:only light}
-:root{--ink:#4a3628;--latte:#f8f0e5;--circle:#ecdcc7}
+:root{--ink:#4a3628;--latte:#fff4ec;--circle:#efdcc6}
 html,body{margin:0;height:100%;background:var(--latte);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",sans-serif;overflow:hidden}
 .bg{position:fixed;inset:0;overflow:hidden;pointer-events:none;z-index:0}
 .bg i{position:absolute;display:block}
@@ -103,8 +103,6 @@ button:active{transform:scale(.97)}
 .card.coupon .t{margin-bottom:12px}
 body.embed .dev{display:none}
 body.embed .badges{left:50%}
-body.look2 .bg .b1,body.look3 .bg .b1{background:#c4e294!important}
-body.look3 .free .tag b{color:#1f5a3b}
 body.nodev .dev{display:none!important}
 </style>
 <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"}}</script>
@@ -141,15 +139,7 @@ const EMBED=new URLSearchParams(location.search).has('embed'); if(EMBED) documen
 const canvas=document.getElementById('c');
 const renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:true});
 renderer.setPixelRatio(Math.min(devicePixelRatio,2)); renderer.outputColorSpace=THREE.SRGBColorSpace;
-renderer.toneMapping=THREE.ACESFilmicToneMapping; renderer.toneMappingExposure=1.05;
-// colour variants for review: ?look=1|2|3
-const LOOK=new URLSearchParams(location.search).get('look')||'';
-if(LOOK){ renderer.toneMapping=THREE.NeutralToneMapping; renderer.toneMappingExposure=1.0;
-  const R=document.documentElement.style;
-  if(LOOK==='2'){ R.setProperty('--latte','#fff4ec'); R.setProperty('--circle','#fbd3c6'); }
-  if(LOOK==='3'){ R.setProperty('--latte','#fff4ec'); R.setProperty('--circle','#1f5a3b'); }
-  if(LOOK!=='1') addEventListener('DOMContentLoaded',()=>{},{once:true});
-  document.body.classList.add('look'+LOOK); }
+renderer.toneMapping=THREE.NeutralToneMapping; renderer.toneMappingExposure=1.0; // keeps Dino's colours juicy (ACES washed them out)
 renderer.shadowMap.enabled=true; renderer.shadowMap.type=THREE.PCFSoftShadowMap;
 const scene=new THREE.Scene();
 const pmrem=new THREE.PMREMGenerator(renderer);
