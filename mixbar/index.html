@@ -20,6 +20,9 @@
   color-scheme: light;
 }
 * { box-sizing: border-box; }
+html.embed header, html.embed .note { display: none; }
+html.embed .scene-wrap { padding-top: 16px; }
+html.embed .toolbar { margin-bottom: 16px; }
 body { margin: 0; background: var(--cream); color: var(--deep); font: 400 16px/1.5 var(--f-body); }
 .inner { max-width: 1320px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
 
@@ -136,6 +139,7 @@ header .brand small { display: block; font: 500 12px/1.4 var(--f-body); letter-s
 <body>
 
 
+<script>if (/[?&]embed\b/.test(location.search)) document.documentElement.classList.add('embed');</script>
 <header>
   <div class="inner">
     <img src="assets/logo-full.png" alt="Café Tera – Small Sweet Moments">
