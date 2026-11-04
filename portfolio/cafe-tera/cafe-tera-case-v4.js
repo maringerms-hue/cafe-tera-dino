@@ -92,6 +92,8 @@ var css=`
 .ctx-reward h3{font-size:28px;line-height:1.2;max-width:560px}.ctx-reward p{font-size:15px;color:var(--mu);margin-top:12px!important;max-width:580px}
 .ctx-big{font-size:112px;line-height:.9;font-weight:600;letter-spacing:-.06em;color:var(--lime);text-align:right}.ctx-big small{display:block;font-size:15px;letter-spacing:0;font-weight:400;color:var(--mu);margin-top:10px}
 .ctx-play{margin-top:90px}
+.ctx-2v{display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:start}.ctx-list li strong{color:var(--tx);font-weight:600}
+@media(max-width:767px){.ctx-2v{grid-template-columns:1fr}.ctx-flow{grid-template-columns:1fr}.ctx-flow li+li{padding-left:0;border-left:0;border-top:1px solid var(--ln)}}
 .ctx-hlmix{margin-top:28px;padding:28px;border:1px solid var(--ln);border-radius:18px;background:var(--card);scroll-margin-top:80px}.ctx-hlmix__t{display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:end;margin-bottom:22px}.ctx-hlmix__t h3{font-size:clamp(26px,3vw,36px);margin-top:10px}.ctx-hlmix__t p{font-size:15px;line-height:1.6;color:var(--mu)}.ctx-hlmix .ctx-acts{margin-top:20px}
 @media(max-width:767px){.ctx-hlmix{padding:18px}.ctx-hlmix__t{grid-template-columns:1fr;gap:12px}}
 .ctx-wide{display:block;position:relative;width:100%;aspect-ratio:1400/788;border-radius:14px;overflow:hidden;border:1px solid var(--ln);background:#fff4ec;margin-top:8px}.ctx-wide>img{width:100%;height:100%;object-fit:contain}.ctx-wide iframe{position:absolute;inset:0;width:100%;height:100%;border:0;background:#fff4ec}
@@ -130,7 +132,7 @@ var html=`
  <figure class="ctx-hero__v ctx-img">${img('cover.webp','Café Tera im Überblick: Website mit Matcha Himbeere, mobile Bestell-App, Dino-Becherspiel auf dem Smartphone und der winkende 3D-Dino',2400,1500,' loading="eager" fetchpriority="high"')}</figure>
  <p class="ctx-cap">Ein Markenauftritt, vier Bausteine: Web-App, 3D-Charakter, Becherspiel und Motion-Logo.</p>
  <div class="ctx-meta"><div><span>Projekt</span><p>Eigenes Konzeptprojekt · Branding & Web-App</p></div><div><span>Mein Beitrag</span><p>Markenauftritt, Motion-Logo, UX/UI, Frontend, 3D-Charakter, Spielkonzept</p></div><div><span>Tools</span><p>Figma · Blender · HTML/CSS/JS · three.js · Kling AI</p></div><div><span>Jahr</span><p>2026</p></div></div>
- <nav class="ctx-nav" aria-label="Abschnitte der Case Study"><a href="#ctx-flow"><b>01</b>Aufgabe</a><a href="#ctx-system"><b>02</b>Design System</a><a href="#ctx-ui"><b>03</b>Produktwelten</a><a href="#ctx-proto"><b>04</b>Figma-Prototyp</a><a href="#ctx-app"><b>05</b>Web-App</a><a href="#ctx-3d"><b>06</b>3D-Maskottchen</a><a href="#ctx-game"><b>07</b>Spiel</a><a href="#ctx-mix"><b>08</b>Mix-Bar</a><a href="#ctx-logo"><b>09</b>Logo in Bewegung</a><a href="#ctx-film"><b>10</b>Brand Film</a><a href="#ctx-result"><b>11</b>Ergebnis</a></nav>
+ <nav class="ctx-nav" aria-label="Abschnitte der Case Study"><a href="#ctx-flow"><b>01</b>Aufgabe</a><a href="#ctx-system"><b>02</b>Design System</a><a href="#ctx-ui"><b>03</b>Produktwelten</a><a href="#ctx-proto"><b>04</b>Figma-Prototyp</a><a href="#ctx-app"><b>05</b>Web-App</a><a href="#ctx-3d"><b>06</b>3D-Maskottchen</a><a href="#ctx-game"><b>07</b>Spiel</a><a href="#ctx-mix"><b>08</b>Mix-Bar-Konzept</a><a href="#ctx-logo"><b>09</b>Logo in Bewegung</a><a href="#ctx-film"><b>10</b>Brand Film</a><a href="#ctx-result"><b>11</b>Ergebnis</a></nav>
 </div></section>
 
 <section class="ctx-hl" id="ctx-hl" aria-labelledby="ctx-hl-t"><div class="ctx-w">
@@ -225,11 +227,44 @@ var html=`
 </div></section>
 
 <section class="ctx-s" id="ctx-mix"><div class="ctx-w">
- <p class="ctx-k"><b>08</b>Ausblick · Markenerweiterung</p>
- <div class="ctx-head"><h2>Der Drink<br>zum Selbermixen.</h2><div><p class="ctx-p">Ein nächster Schritt für die Marke: Gäste bestellen im Café am Tablet und stellen sich ihren Lieblingsdrink dabei selbst zusammen – aus verschiedenen Zutaten, Schicht für Schicht, direkt im Bestellprozess. Wer mag, probiert jedes Mal einen neuen Mix.</p><p class="ctx-p">Das Konzept ist erweiterbar: Neue Sorten, saisonale Zutaten oder Aktionen kommen einfach als weitere Zutat ins Regal. Dieselbe Mix-Bar funktioniert später auch auf der Website oder als Mitmach-Aktion auf Social Media.</p></div></div>
- <a class="ctx-wide" href="#ctx-hlmix" aria-label="Zur Mix-Bar oben springen"><img src="${A}mixbar-poster.webp" alt="Tera Mix-Bar: Regal mit Zutaten, fertiger Drink mit Deckel, Bon und winkender Dino" loading="lazy" width="1400" height="788"></a>
- <div class="ctx-acts"><a class="ctx-btn ctx-btn--g" href="${MIX}" target="_blank" rel="noopener">Mix-Bar im neuen Tab <span aria-hidden="true">↗</span></a><a class="ctx-btn ctx-btn--g" href="${LABOR}" target="_blank" rel="noopener">Variante: geführtes Rezept <span aria-hidden="true">↗</span></a></div>
- <div class="ctx-3col"><div><h3>Für die Gäste</h3><p>Beim Bestellen am Tablet den eigenen Lieblingsdrink mixen und sehen, was im Becher landet – mit Preis in Echtzeit.</p></div><div><h3>Für das Café</h3><p>Neue Sorten und Saison-Aktionen lassen sich ohne neues Design ergänzen; jeder Mix endet beim Bon und im Warenkorb.</p></div><div><h3>Umsetzung</h3><p>Fotorealistische KI-Bilder, in Ebenen geschnitten. Gießen, Füllhöhe, Eis, Toppings und Bon entstehen im Code (HTML, CSS, GSAP); der Dino stammt aus dem 3D-Modell.</p></div></div>
+ <p class="ctx-k"><b>08</b>Konzept · Mix-Bar</p>
+ <div class="ctx-head"><h2>Bestellen,<br>das Spaß macht.</h2><div><p class="ctx-p">Bestell-Tablets in Cafés zeigen meist nur Listen: Produkt antippen, Größe wählen, bezahlen. Funktional – aber ohne jede Verbindung zur Marke. Die Idee für Café Tera: Der Gast stellt sich seinen Drink am Tablet selbst zusammen, so wie die Barista hinter der Theke. Aus dem Bestellen wird ein kleiner Moment mit der Marke.</p><p class="ctx-p">Zutaten stehen im Regal, der Becher auf der Theke. Greifen, über den Becher halten, eingießen – Schicht für Schicht entsteht der Drink, den man später wirklich in der Hand hält.</p></div></div>
+
+ <ol class="ctx-flow">
+  <li><i>01</i><b>Zutat greifen</b><span>Kanne, Glas oder Schale aus dem Regal ziehen – mit Maus oder Finger.</span></li>
+  <li><i>02</i><b>Eingießen</b><span>Über den Becher halten: Die Kanne kippt von selbst, gegossen wird, solange man hält.</span></li>
+  <li><i>03</i><b>Matcha aufschlagen</b><span>Erst mit dem Bambusbesen schlagen, dann gießen – wie im echten Ritual.</span></li>
+  <li><i>04</i><b>Toppings & Eis</b><span>Crunch, Schoko oder Kokos streuen, Eiswürfel einzeln in den Becher legen.</span></li>
+  <li><i>05</i><b>Fertig & Bon</b><span>Umrühren, Deckel drauf, der Bon kommt aus dem Drucker – der Dino sagt Danke.</span></li>
+ </ol>
+
+ <div class="ctx-head" style="margin-top:96px"><h3 style="font-size:clamp(26px,3vw,36px)">Interaktion:<br>einfach, aber verspielt.</h3><p class="ctx-p">Die Mix-Bar soll ohne Erklärung funktionieren – auch für Gäste, die nur schnell bestellen wollen. Deshalb folgt jede Geste einer klaren Logik aus dem echten Café.</p></div>
+ <ul class="ctx-list">
+  <li><b>01</b><span><strong>Bekannte Gesten statt Buttons.</strong> Greifen, halten, loslassen – jede Zutat verhält sich wie ihr echtes Vorbild. Niemand muss lernen, wie man gießt.</span></li>
+  <li><b>02</b><span><strong>Fehlertolerant.</strong> Die Kanne muss nicht genau getroffen werden: Über dem Becher richtet sie sich selbst aus. Loslassen daneben bringt die Zutat einfach zurück ins Regal.</span></li>
+  <li><b>03</b><span><strong>Sofortiges Feedback.</strong> Füllhöhe, Schichten und Preis ändern sich in Echtzeit. Der Drucker zählt mit, erledigte Zutaten bekommen einen Haken.</span></li>
+  <li><b>04</b><span><strong>Sinnvolle Reihenfolge, wo nötig.</strong> Matcha lässt sich erst nach dem Aufschlagen gießen – ein kurzer Hinweis erklärt warum. Sonst ist die Reihenfolge frei.</span></li>
+  <li><b>05</b><span><strong>Grenzen, die sich natürlich anfühlen.</strong> Ist der Becher voll, stoppt der Fluss; mehr als vier Eiswürfel passen nicht hinein.</span></li>
+  <li><b>06</b><span><strong>Ein klarer Abschluss.</strong> „Fertig machen“ fasst alles zusammen: Deckel, Bon, Warenkorb. Danach gehört der Drink dem Gast.</span></li>
+ </ul>
+
+ <div class="ctx-3col" style="margin-top:72px">
+  <div><h3>Spaß-Faktor</h3><p>Die Dino-Pfote als Cursor, Eiswürfel, die in den Becher plumpsen, ein winkender Dino am Ende: kleine Überraschungen, die den Gast zum Lächeln bringen – und zum Wiederkommen.</p></div>
+  <div><h3>Für das Café</h3><p>Toppings und Extras sind sichtbar im Regal statt versteckt im Menü – das steigert den Bonwert. Beliebte Mixe zeigen, welche Sorten ins feste Angebot gehören.</p></div>
+  <div><h3>Für die Marke</h3><p>Grün, Koralle und der Dino ziehen sich vom Logo bis zum Bon. Fotografierte Mixe werden zu Inhalten für Instagram – ein natürlicher Anlass zum Teilen.</p></div>
+ </div>
+
+ <div class="ctx-head" style="margin-top:110px"><h3 style="font-size:clamp(26px,3vw,36px)">Ein Becher,<br>in Ebenen gedacht.</h3><p class="ctx-p">Grundlage sind fotorealistische KI-Bilder im Look der Marke: ein leerer Becher und derselbe Becher, jeweils mit nur einer Zutat gefüllt. Ich habe sie in Ebenen geschnitten und exakt übereinandergelegt. Der Code zeigt von jeder Zutat nur den Streifen, der gerade gefüllt ist – so wirkt das Eingießen echt, obwohl jedes Bild still ist.</p></div>
+ <figure><div class="ctx-img">${img('mix-layers.webp','Becher in Ebenen: leerer Becher, Schicht Himbeere, Schicht Hafermilch, Schicht Matcha, Logo und Deckel, fertiger Drink',2232,588)}</div><figcaption class="ctx-cap"><b>Ebenen</b>Leerer Becher · Himbeere · Hafermilch · Matcha · Logo & Deckel · fertiger Drink</figcaption></figure>
+ <figure style="margin-top:40px"><div class="ctx-img">${img('mix-kit.webp','Zutaten-Set der Mix-Bar: Kannen mit Himbeere, Hafermilch und Mango, Matcha-Schale, Bambusbesen, Eisschale, drei Topping-Gläser und Bondrucker',1300,520)}</div><figcaption class="ctx-cap"><b>Zutaten-Set</b>Jede Zutat ist ein eigenes Bild. Eine neue Sorte braucht nur eine neue Kanne und eine neue Becher-Ebene.</figcaption></figure>
+
+ <div class="ctx-head" style="margin-top:110px"><h3 style="font-size:clamp(26px,3vw,36px)">Zwei Varianten,<br>eine Entscheidung.</h3><p class="ctx-p">Zuerst entstand ein geführtes Rezept: Schritt für Schritt zum Himbeer-Matcha. Klar und schnell, aber ohne Freiheit. Die Mix-Bar lässt den Gast selbst entscheiden – und macht genau daraus das Erlebnis.</p></div>
+ <div class="ctx-2v">
+  <figure><div class="ctx-img">${img('mix-labor.webp','Variante 1: geführtes Rezept mit Schrittliste, Becher und Bondrucker',1020,494)}</div><figcaption class="ctx-cap"><b>Variante 1</b>Geführtes Rezept – feste Reihenfolge, ideal für den schnellen Klassiker.</figcaption></figure>
+  <figure><div class="ctx-img">${img('mix-free.webp','Variante 2: freie Mix-Bar mit Regal, fertigem Drink, Bon und Dino',1020,489)}</div><figcaption class="ctx-cap"><b>Variante 2</b>Freie Mix-Bar – Zutaten frei kombinieren, mehr Spiel, mehr Toppings im Becher.</figcaption></figure>
+ </div>
+
+ <div class="ctx-reward"><div><p class="ctx-k" style="margin-bottom:14px!important">Erweiterbar</p><h3>Neue Sorte? Ein neues Glas ins Regal.</h3><p>Saisonale Zutaten wie Kürbis zu Halloween oder Zimt im Winter kommen als weiteres Element ins Regal – Layout, Logik und Bon bleiben gleich. Dieselbe Mix-Bar kann später auch auf der Website oder als Mitmach-Aktion auf Social Media laufen.</p></div><div class="ctx-big">∞<small>Mixe aus 9 Zutaten</small></div></div>
 </div></section>
 
 <section class="ctx-s" id="ctx-logo"><div class="ctx-w">
