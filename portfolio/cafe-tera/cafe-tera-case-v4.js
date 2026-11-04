@@ -1,4 +1,4 @@
-/* Café Tera – Case Study Layout v4 (Maria Springer): + Abschnitt 09 Mix-Bar. Ersetzt auf /projekte/cafe-tera den Standard-Inhalt des Templates. */
+/* Café Tera – Case Study Layout v4 (Maria Springer): + Mix-Bar, Logo-Abschnitt nach hinten. Ersetzt auf /projekte/cafe-tera den Standard-Inhalt des Templates. */
 (function(){
 if(!/\/projekte\/cafe-tera\/?$/.test(location.pathname)&&!window.CTX_PREVIEW)return;
 var A=window.CTX_BASE||'https://maringerms-hue.github.io/cafe-tera-dino/portfolio/cafe-tera/';
@@ -128,20 +128,20 @@ var html=`
  <figure class="ctx-hero__v ctx-img">${img('cover.webp','Café Tera im Überblick: Website mit Matcha Himbeere, mobile Bestell-App, Dino-Becherspiel auf dem Smartphone und der winkende 3D-Dino',2400,1500,' loading="eager" fetchpriority="high"')}</figure>
  <p class="ctx-cap">Ein Markenauftritt, vier Bausteine: Web-App, 3D-Charakter, Becherspiel und Motion-Logo.</p>
  <div class="ctx-meta"><div><span>Projekt</span><p>Eigenes Konzeptprojekt · Branding & Web-App</p></div><div><span>Mein Beitrag</span><p>Markenauftritt, Motion-Logo, UX/UI, Frontend, 3D-Charakter, Spielkonzept</p></div><div><span>Tools</span><p>Figma · Blender · HTML/CSS/JS · three.js · Kling AI</p></div><div><span>Jahr</span><p>2026</p></div></div>
- <nav class="ctx-nav" aria-label="Abschnitte der Case Study"><a href="#ctx-flow"><b>01</b>Aufgabe</a><a href="#ctx-logo"><b>02</b>Logo in Bewegung</a><a href="#ctx-system"><b>03</b>Design System</a><a href="#ctx-ui"><b>04</b>Produktwelten</a><a href="#ctx-proto"><b>05</b>Figma-Prototyp</a><a href="#ctx-app"><b>06</b>Web-App</a><a href="#ctx-3d"><b>07</b>3D-Maskottchen</a><a href="#ctx-game"><b>08</b>Spiel</a><a href="#ctx-mix"><b>09</b>Mix-Bar</a><a href="#ctx-film"><b>10</b>Brand Film</a><a href="#ctx-result"><b>11</b>Ergebnis</a></nav>
+ <nav class="ctx-nav" aria-label="Abschnitte der Case Study"><a href="#ctx-flow"><b>01</b>Aufgabe</a><a href="#ctx-system"><b>02</b>Design System</a><a href="#ctx-ui"><b>03</b>Produktwelten</a><a href="#ctx-proto"><b>04</b>Figma-Prototyp</a><a href="#ctx-app"><b>05</b>Web-App</a><a href="#ctx-3d"><b>06</b>3D-Maskottchen</a><a href="#ctx-game"><b>07</b>Spiel</a><a href="#ctx-mix"><b>08</b>Mix-Bar</a><a href="#ctx-logo"><b>09</b>Logo in Bewegung</a><a href="#ctx-film"><b>10</b>Brand Film</a><a href="#ctx-result"><b>11</b>Ergebnis</a></nav>
 </div></section>
 
 <section class="ctx-hl" id="ctx-hl" aria-labelledby="ctx-hl-t"><div class="ctx-w">
  <div class="ctx-hl__head"><div><p class="ctx-k">Highlights · in 30 Sekunden</p><h2 id="ctx-hl-t">Das Wichtigste zuerst.</h2></div><p class="ctx-p">Vier Bausteine, die man direkt erleben kann – die ganze Geschichte dahinter folgt ab Abschnitt 01.</p></div>
  <div class="ctx-hl__g">
   <article class="ctx-hlc"><div class="ctx-hlc__m ctx-hlc__m--3d"><video class="ctx-hlv" muted loop playsinline preload="metadata" poster="${A}dino-turntable-poster.webp" width="720" height="720" aria-label="3D-Dino dreht sich um die eigene Achse, ohne Ton"><source src="${A}dino-turntable.mp4" type="video/mp4"></video></div>
-   <div class="ctx-hlc__b"><span class="ctx-hlc__k"><b>07</b>3D-Charakter</span><h3>Vom Logo zur 3D-Figur.</h3><p>Modell, Rig und Mimik in Blender – exportiert für three.js und live im Browser animiert.</p><div><a class="ctx-btn ctx-btn--g" href="#ctx-3d">Entstehung ansehen <span aria-hidden="true">↓</span></a></div></div></article>
+   <div class="ctx-hlc__b"><span class="ctx-hlc__k"><b>06</b>3D-Charakter</span><h3>Vom Logo zur 3D-Figur.</h3><p>Modell, Rig und Mimik in Blender – exportiert für three.js und live im Browser animiert.</p><div><a class="ctx-btn ctx-btn--g" href="#ctx-3d">Entstehung ansehen <span aria-hidden="true">↓</span></a></div></div></article>
   <article class="ctx-hlc"><div class="ctx-hlc__m ctx-hlc__m--game">${img('game-start-screen.webp','Dino-Becherspiel: der 3D-Dino hinter drei Bechern',510,1105)}<span class="ctx-live">Live spielbar</span></div>
-   <div class="ctx-hlc__b"><span class="ctx-hlc__k"><b>08</b>3D-Spiel</span><h3>Eine Runde mit Dino.</h3><p>Becherspiel für die Wartezeit nach der Bestellung – vier Dinos sammeln, Matcha-Rabatt sichern.</p><div><button type="button" class="ctx-btn" data-start="ctx-play">Spiel starten ${I_PLAY.replace('28','16').replace('28','16')}</button></div></div></article>
+   <div class="ctx-hlc__b"><span class="ctx-hlc__k"><b>07</b>3D-Spiel</span><h3>Eine Runde mit Dino.</h3><p>Becherspiel für die Wartezeit nach der Bestellung – vier Dinos sammeln, Matcha-Rabatt sichern.</p><div><button type="button" class="ctx-btn" data-start="ctx-play">Spiel starten ${I_PLAY.replace('28','16').replace('28','16')}</button></div></div></article>
   <article class="ctx-hlc"><div class="ctx-hlc__m ctx-hlc__m--mix">${img('mixbar-poster.webp','Tera Mix-Bar: Zutaten im Regal, fertiger Drink, Bon und winkender Dino',1400,788)}<span class="ctx-live">Live mixen</span></div>
-   <div class="ctx-hlc__b"><span class="ctx-hlc__k"><b>09</b>Mix-Bar</span><h3>Den Drink selbst mixen.</h3><p>Zutat greifen, eingießen, Matcha aufschlagen, Toppings streuen – der Bon druckt mit, der Dino winkt.</p><div><button type="button" class="ctx-btn" data-start="ctx-mix">Selbst mixen ${I_PLAY.replace('28','16').replace('28','16')}</button></div></div></article>
+   <div class="ctx-hlc__b"><span class="ctx-hlc__k"><b>08</b>Mix-Bar</span><h3>Den Drink selbst mixen.</h3><p>Zutat greifen, eingießen, Matcha aufschlagen, Toppings streuen – der Bon druckt mit, der Dino winkt.</p><div><button type="button" class="ctx-btn" data-start="ctx-mix">Selbst mixen ${I_PLAY.replace('28','16').replace('28','16')}</button></div></div></article>
   <article class="ctx-hlc"><div class="ctx-hlc__m ctx-hlc__m--app">${img('mobile-himbeere.webp','Café-Tera-Web-App: Produktauswahl Matcha Himbeere',364,787)}<span class="ctx-live">Live</span></div>
-   <div class="ctx-hlc__b"><span class="ctx-hlc__k"><b>06</b>Web-App</span><h3>Bestellen in vier Farbwelten.</h3><p>Drink wählen, bezahlen, das Motion-Logo bestätigt – umgesetzt in HTML, CSS und JavaScript.</p><div><button type="button" class="ctx-btn ctx-btn--g" data-start="ctx-app-live">Web-App starten ${I_PLAY.replace('28','16').replace('28','16')}</button></div></div></article>
+   <div class="ctx-hlc__b"><span class="ctx-hlc__k"><b>05</b>Web-App</span><h3>Bestellen in vier Farbwelten.</h3><p>Drink wählen, bezahlen, das Motion-Logo bestätigt – umgesetzt in HTML, CSS und JavaScript.</p><div><button type="button" class="ctx-btn ctx-btn--g" data-start="ctx-app-live">Web-App starten ${I_PLAY.replace('28','16').replace('28','16')}</button></div></div></article>
  </div>
 </div></section>
 
@@ -152,23 +152,8 @@ var html=`
  <div class="ctx-branch"><strong>Optional nach der Bestellung ↗</strong><span>Spielen → vier farbige Dinos sammeln → 10 % auf den Aktions-Matcha</span></div>
 </div></section>
 
-<section class="ctx-s" id="ctx-logo"><div class="ctx-w">
- <p class="ctx-k"><b>02</b>Markenidentität · Logo in Bewegung</p>
- <div class="ctx-head"><h2>Das Logo<br>wird lebendig.</h2><div><p class="ctx-p">Der Dino aus dem Café-Logo ist das Herz der Marke. Für den digitalen Auftritt habe ich ihn als Motion-Logo animiert: Aus der Linienzeichnung wird Farbe, der Dino trinkt seinen Matcha – und ein Herz erscheint.</p><p class="ctx-p">Die Animation läuft direkt nach der Zahlung. Statt eines neutralen Ladebalkens bestätigt die Marke selbst: Deine Bestellung ist angekommen.</p></div></div>
- <div class="ctx-logo">
-  <div class="ctx-logo__v"><video muted playsinline preload="metadata" poster="${A}logo-animation-poster.webp" width="1544" height="1340" aria-label="Animiertes Café-Tera-Logo: der Dino wird farbig, trinkt Matcha und ein rotes Herz erscheint"><source src="${A}logo-animation.mp4" type="video/mp4"></video><span class="ctx-logo__tag">Motion-Logo · 5 s</span><button type="button" class="ctx-replay">↻ Nochmal abspielen</button></div>
-  <div class="ctx-stages">
-   <figure class="ctx-stage">${img('logo-01-linie.webp','Logo-Zustand 1: Linienzeichnung des Dinos',900,781)}<p><b>01</b>Linie – Ruhezustand</p></figure>
-   <figure class="ctx-stage">${img('logo-02-erwacht.webp','Logo-Zustand 2: Blätter färben sich, der Dino trinkt',900,781)}<p><b>02</b>Erwachen – erste Farbe</p></figure>
-   <figure class="ctx-stage">${img('logo-03-farbe.webp','Logo-Zustand 3: der Dino ist vollständig grün',900,781)}<p><b>03</b>Vollfarbe – Matcha-Grün</p></figure>
-   <figure class="ctx-stage">${img('logo-04-herz.webp','Logo-Zustand 4: ein rotes Herz über dem Becher',900,781)}<p><b>04</b>Herz – Bestellung bestätigt</p></figure>
-  </div>
- </div>
- <div class="ctx-3col"><div><h3>Feedback mit Charakter</h3><p>Die Animation ersetzt den Ladezustand und gibt eine klare, freundliche Rückmeldung nach der Zahlung.</p></div><div><h3>Aus Linie wird Farbe</h3><p>Der Farbverlauf erzählt in wenigen Sekunden, wofür das Café steht: frische Drinks und kleine, süße Momente.</p></div><div><h3>Eine Figur, viele Einsätze</h3><p>Derselbe Dino erscheint im Logo, in der App, als 3D-Maskottchen im Spiel und im Brand Film.</p></div></div>
-</div></section>
-
 <section class="ctx-s" id="ctx-system"><div class="ctx-w">
- <p class="ctx-k"><b>03</b>Farbe, Typografie & Komponenten</p>
+ <p class="ctx-k"><b>02</b>Farbe, Typografie & Komponenten</p>
  <div class="ctx-head"><h2>Ein System.<br>Vier Getränkewelten.</h2><p class="ctx-p">Creme, Grün und Koralle bilden die Basis. Jede Sorte bekommt ihre eigene Farbe – Struktur und Bedienung bleiben gleich. Abril Fatface setzt die großen Produktnamen, DM Sans übernimmt die funktionalen Texte.</p></div>
  <div class="ctx-sys"><figure class="ctx-img">${img('palette.webp','Design System: Basisfarben Creme, Grün, Koralle und die vier Getränkefarben',1800,1106)}</figure>
  <figure class="ctx-img">${img('components.webp','Typografie und Komponenten: Buttons, Chips, Mengenregler und Eingabefeld',1800,738)}</figure></div>
@@ -176,7 +161,7 @@ var html=`
 </div></section>
 
 <section class="ctx-s ctx-s--c" id="ctx-ui"><div class="ctx-w">
- <p class="ctx-k"><b>04</b>Produktwelten · Interface</p>
+ <p class="ctx-k"><b>03</b>Produktwelten · Interface</p>
  <div class="ctx-head"><h2>Die Sorte wechselt.<br>Die Logik bleibt.</h2><div><p class="ctx-p">Ein Tipp auf eine Sorte färbt Headline, Hintergrund, Buttons und die aktive Karte um. Die Seite bleibt ruhig und wiedererkennbar, während jedes Produkt seinen eigenen Auftritt bekommt.</p><p class="ctx-p">Mobil bündeln kompakte Auswahlkarten und eine feste Leiste mit Preis und Warenkorb die nächste Handlung.</p></div></div>
  <div class="ctx-mob ctx-mob--c">
   <figure>${img('mobile-himbeere.webp','Mobile Produktauswahl: Matcha Himbeere',364,787)}<figcaption>Himbeere</figcaption></figure>
@@ -187,7 +172,7 @@ var html=`
 </div></section>
 
 <section class="ctx-s ctx-s--c" id="ctx-proto"><div class="ctx-w">
- <p class="ctx-k"><b>05</b>Entwurfsphase · Figma</p>
+ <p class="ctx-k"><b>04</b>Entwurfsphase · Figma</p>
  <div class="ctx-demo ctx-demo--l ctx-demo--c"><div class="ctx-demo__m"><div class="ctx-phone"><div class="ctx-phone__s"><video controls muted playsinline preload="none" poster="${FIGMA_POS}" aria-label="Aufnahme des Figma-Prototyps: mobiler Bestellflow, ohne Ton"><source src="${FIGMA_VID}" type="video/mp4"></video></div></div></div>
  <div><h2>Den Ablauf gestalten.<br>Die Interaktion erproben.</h2><p class="ctx-p" style="margin-top:24px">Der klickbare Figma-Prototyp war die Grundlage für den Bestellflow. Verbundene Screens und Smart Animate machten Übergänge, Auswahlzustände und Rückmeldungen erlebbar, bevor eine Zeile Code geschrieben war.</p>
  <ul class="ctx-list"><li><b>01</b>Drink wählen und Farbwelt wechseln</li><li><b>02</b>Warenkorb, Menge und Abholung</li><li><b>03</b>Zahlung und Bestätigung</li></ul>
@@ -195,7 +180,7 @@ var html=`
 </div></section>
 
 <section class="ctx-s" id="ctx-app"><div class="ctx-w">
- <p class="ctx-k"><b>06</b>Umsetzung · HTML / CSS / JavaScript</p>
+ <p class="ctx-k"><b>05</b>Umsetzung · HTML / CSS / JavaScript</p>
  <div class="ctx-demo"><div><span class="ctx-live">Live · zum Ausprobieren</span><h2 style="margin-top:18px">Aus dem Entwurf<br>wird eine Web-App.</h2><p class="ctx-p" style="margin-top:24px">Die Umsetzung im Browser verbindet das Interface mit echter Interaktionslogik. Produktauswahl, Warenkorb, Zahlung, Logo-Animation und das anschließende Spiel bilden einen zusammenhängenden Ablauf.</p>
  <ul class="ctx-list"><li><b>01</b>Sorte wählen – die ganze App wechselt die Farbwelt</li><li><b>02</b>In den Warenkorb, bezahlen</li><li><b>03</b>Motion-Logo mit Herz bestätigt die Bestellung</li><li><b>04</b>Danke-Seite lädt zum Spiel mit Dino ein</li></ul>
  <div class="ctx-acts"><a class="ctx-btn ctx-btn--g" href="${APP}" target="_blank" rel="noopener">In neuem Tab öffnen <span aria-hidden="true">↗</span></a></div>
@@ -207,7 +192,7 @@ var html=`
 </div></section>
 
 <section class="ctx-s" id="ctx-3d"><div class="ctx-w">
- <p class="ctx-k"><b>07</b>Maskottchen · 3D in Blender</p>
+ <p class="ctx-k"><b>06</b>Maskottchen · 3D in Blender</p>
  <div class="ctx-head"><h2>Eine Markenfigur.<br>Eine neue Dimension.</h2><div><p class="ctx-p">Für das Spiel habe ich den Dino als 3D-Charakter weiterentwickelt: Modell aus eigenen Referenzansichten, Skelett und Gewichte, Mimik mit Kiefer und Lidern – vorbereitet für Animation im Browser.</p></div></div>
  <div class="ctx-dev"><figure><div class="ctx-img">${img('character-reference.webp','Charakterreferenz: der grüne Dino mit ausgebreiteten Armen',800,1000)}</div><figcaption class="ctx-cap"><b>01</b>Charakterentwurf · Proportionen und Ausdruck</figcaption></figure>
  <div class="ctx-dev__r"><figure><div class="ctx-img">${img('blender-side.webp','Blender: Seitenansicht des Dinos mit Skelett',1800,941)}</div><figcaption class="ctx-cap"><b>02</b>Blender · Modell und Rig in der Seitenansicht</figcaption></figure>
@@ -218,7 +203,7 @@ var html=`
 </div></section>
 
 <section class="ctx-s" id="ctx-game"><div class="ctx-w">
- <p class="ctx-k"><b>08</b>Spielentwicklung · Nach der Bestellung</p>
+ <p class="ctx-k"><b>07</b>Spielentwicklung · Nach der Bestellung</p>
  <div class="ctx-head"><h2>Bestellt.<br>Jetzt wird gespielt.</h2><p class="ctx-p">Während der Drink zubereitet wird, können Gäste freiwillig eine Runde spielen: Der Dino versteckt eine Frucht unter einem Becher, mischt – und der Gast tippt auf den richtigen Becher. Das Spiel verbindet die Wartezeit mit einer konkreten Café-Aktion.</p></div>
  <figure class="ctx-sb"><a href="${A}game-storyboard.webp" target="_blank" rel="noopener" aria-label="Storyboard in voller Größe öffnen">${img('game-storyboard.webp','UX-Storyboard des Dino-Becherspiels in acht Skizzen: nach der Bestellung, Beere merken, Becher verfolgen, Becher wählen, Farbe wechseln, passenden Matcha entdecken, Dinos sammeln, Rabatt',1536,1024)}</a></figure>
  <p class="ctx-cap"><b>Storyboard</b>UX-Storyboard: vom Danke-Screen bis zum Saison-Rabatt – der Ablauf als Skizze, bevor das Spiel gebaut wurde.</p>
@@ -235,11 +220,26 @@ var html=`
 </div></section>
 
 <section class="ctx-s" id="ctx-mix"><div class="ctx-w">
- <p class="ctx-k"><b>09</b>Ausblick · Markenerweiterung</p>
+ <p class="ctx-k"><b>08</b>Ausblick · Markenerweiterung</p>
  <div class="ctx-head"><h2>Der Drink<br>zum Selbermixen.</h2><div><p class="ctx-p">Ein nächster Schritt für die Marke: eine Mix-Bar, an der Gäste ihren Drink selbst zusammenstellen. Himbeere, Mango, Hafermilch, Eis, frisch aufgeschlagener Matcha und Toppings – Schicht für Schicht in den Becher. Der Bondrucker rechnet mit, am Ende winkt der Dino.</p><p class="ctx-p">Das Konzept ist erweiterbar: Neue Sorten, saisonale Zutaten oder Aktionen kommen einfach als weitere Zutat ins Regal – am Tablet im Café, auf der Website oder als Mitmach-Aktion auf Social Media.</p></div></div>
  <div class="ctx-wide" data-embed="${MIX}?embed=1" data-title="Tera Mix-Bar (Demo)"><img src="${A}mixbar-poster.webp" alt="Tera Mix-Bar: Regal mit Zutaten, fertiger Drink mit Deckel, Bon und winkender Dino" loading="lazy" width="1400" height="788"><button type="button" class="ctx-load"><span class="ctx-btn">Selbst mixen ${I_PLAY.replace('28','18').replace('28','18')}</span><small>Maus oder Finger · Zutat greifen und über den Becher halten</small></button></div>
  <div class="ctx-acts"><a class="ctx-btn ctx-btn--g" href="${MIX}" target="_blank" rel="noopener">Mix-Bar im neuen Tab <span aria-hidden="true">↗</span></a><a class="ctx-btn ctx-btn--g" href="${LABOR}" target="_blank" rel="noopener">Variante: geführtes Rezept <span aria-hidden="true">↗</span></a></div>
  <div class="ctx-3col"><div><h3>Für die Gäste</h3><p>Den eigenen Lieblingsdrink zusammenstellen und dabei sehen, was im Becher landet – mit Preis in Echtzeit.</p></div><div><h3>Für das Café</h3><p>Neue Sorten und Saison-Aktionen lassen sich ohne neues Design ergänzen; jeder Mix endet beim Bon und im Warenkorb.</p></div><div><h3>Umsetzung</h3><p>Fotorealistische KI-Bilder, in Ebenen geschnitten. Gießen, Füllhöhe, Eis, Toppings und Bon entstehen im Code (HTML, CSS, GSAP); der Dino stammt aus dem 3D-Modell.</p></div></div>
+</div></section>
+
+<section class="ctx-s" id="ctx-logo"><div class="ctx-w">
+ <p class="ctx-k"><b>09</b>Markenidentität · Logo in Bewegung</p>
+ <div class="ctx-head"><h2>Das Logo<br>wird lebendig.</h2><div><p class="ctx-p">Der Dino aus dem Café-Logo ist das Herz der Marke. Für den digitalen Auftritt habe ich ihn als Motion-Logo animiert: Aus der Linienzeichnung wird Farbe, der Dino trinkt seinen Matcha – und ein Herz erscheint.</p><p class="ctx-p">Die Animation läuft direkt nach der Zahlung. Statt eines neutralen Ladebalkens bestätigt die Marke selbst: Deine Bestellung ist angekommen.</p></div></div>
+ <div class="ctx-logo">
+  <div class="ctx-logo__v"><video muted playsinline preload="metadata" poster="${A}logo-animation-poster.webp" width="1544" height="1340" aria-label="Animiertes Café-Tera-Logo: der Dino wird farbig, trinkt Matcha und ein rotes Herz erscheint"><source src="${A}logo-animation.mp4" type="video/mp4"></video><span class="ctx-logo__tag">Motion-Logo · 5 s</span><button type="button" class="ctx-replay">↻ Nochmal abspielen</button></div>
+  <div class="ctx-stages">
+   <figure class="ctx-stage">${img('logo-01-linie.webp','Logo-Zustand 1: Linienzeichnung des Dinos',900,781)}<p><b>01</b>Linie – Ruhezustand</p></figure>
+   <figure class="ctx-stage">${img('logo-02-erwacht.webp','Logo-Zustand 2: Blätter färben sich, der Dino trinkt',900,781)}<p><b>02</b>Erwachen – erste Farbe</p></figure>
+   <figure class="ctx-stage">${img('logo-03-farbe.webp','Logo-Zustand 3: der Dino ist vollständig grün',900,781)}<p><b>03</b>Vollfarbe – Matcha-Grün</p></figure>
+   <figure class="ctx-stage">${img('logo-04-herz.webp','Logo-Zustand 4: ein rotes Herz über dem Becher',900,781)}<p><b>04</b>Herz – Bestellung bestätigt</p></figure>
+  </div>
+ </div>
+ <div class="ctx-3col"><div><h3>Feedback mit Charakter</h3><p>Die Animation ersetzt den Ladezustand und gibt eine klare, freundliche Rückmeldung nach der Zahlung.</p></div><div><h3>Aus Linie wird Farbe</h3><p>Der Farbverlauf erzählt in wenigen Sekunden, wofür das Café steht: frische Drinks und kleine, süße Momente.</p></div><div><h3>Eine Figur, viele Einsätze</h3><p>Derselbe Dino erscheint im Logo, in der App, als 3D-Maskottchen im Spiel und im Brand Film.</p></div></div>
 </div></section>
 
 <section class="ctx-s" id="ctx-film"><div class="ctx-w"><div class="ctx-film">
