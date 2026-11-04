@@ -37,13 +37,14 @@ var css=`
 /* highlights */
 .ctx-hl{padding:96px 0 110px;border-top:1px solid var(--ln)}
 .ctx-hl__head{display:flex;justify-content:space-between;align-items:end;gap:40px;margin-bottom:40px}.ctx-hl__head .ctx-p{max-width:440px;font-size:16px}
-.ctx-hl__g{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.ctx-hl__g{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+@media(max-width:1199px) and (min-width:768px){.ctx-hl__g{grid-template-columns:repeat(2,1fr)}}
 .ctx-hlc{display:flex;flex-direction:column;background:var(--card);border:1px solid var(--ln);border-radius:18px;overflow:hidden;transition:border-color .25s,transform .25s}
 .ctx-hlc:hover{border-color:rgba(198,242,78,.45);transform:translateY(-4px)}
 .ctx-hlc__m{position:relative;aspect-ratio:4/4.4;overflow:hidden}
 .ctx-hlc__m img,.ctx-hlc__m video{width:100%!important;height:100%!important;object-fit:cover;object-position:50% 22%;transition:transform .6s}
 .ctx-hlc:hover .ctx-hlc__m img,.ctx-hlc:hover .ctx-hlc__m video{transform:scale(1.03)}
-.ctx-hlc__m--3d{background:#aea7a0}.ctx-hlc__m--3d video{object-position:50% 45%}.ctx-hlc__m--game,.ctx-hlc__m--app{background:#fff4ec}.ctx-hlc__m--app img{object-position:50% 48%}
+.ctx-hlc__m--3d{background:#aea7a0}.ctx-hlc__m--3d video{object-position:50% 45%}.ctx-hlc__m--game,.ctx-hlc__m--app,.ctx-hlc__m--mix{background:#fff4ec}.ctx-hlc__m--mix img{object-position:46% 50%}.ctx-hlc__m--app img{object-position:50% 48%}
 .ctx-hlc__m .ctx-live{position:absolute;left:14px;top:14px;background:rgba(15,15,14,.78);padding:7px 12px;border-radius:100px}
 .ctx-hlc__b{display:flex;flex-direction:column;gap:10px;padding:22px 22px 24px;flex:1}
 .ctx-hlc__k{font:11px var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--mu2)}.ctx-hlc__k b{color:var(--lime);font-weight:400;margin-right:8px}
@@ -131,12 +132,14 @@ var html=`
 </div></section>
 
 <section class="ctx-hl" id="ctx-hl" aria-labelledby="ctx-hl-t"><div class="ctx-w">
- <div class="ctx-hl__head"><div><p class="ctx-k">Highlights · in 30 Sekunden</p><h2 id="ctx-hl-t">Das Wichtigste zuerst.</h2></div><p class="ctx-p">Drei Bausteine, die man direkt erleben kann – die ganze Geschichte dahinter folgt ab Abschnitt 01.</p></div>
+ <div class="ctx-hl__head"><div><p class="ctx-k">Highlights · in 30 Sekunden</p><h2 id="ctx-hl-t">Das Wichtigste zuerst.</h2></div><p class="ctx-p">Vier Bausteine, die man direkt erleben kann – die ganze Geschichte dahinter folgt ab Abschnitt 01.</p></div>
  <div class="ctx-hl__g">
   <article class="ctx-hlc"><div class="ctx-hlc__m ctx-hlc__m--3d"><video class="ctx-hlv" muted loop playsinline preload="metadata" poster="${A}dino-turntable-poster.webp" width="720" height="720" aria-label="3D-Dino dreht sich um die eigene Achse, ohne Ton"><source src="${A}dino-turntable.mp4" type="video/mp4"></video></div>
    <div class="ctx-hlc__b"><span class="ctx-hlc__k"><b>07</b>3D-Charakter</span><h3>Vom Logo zur 3D-Figur.</h3><p>Modell, Rig und Mimik in Blender – exportiert für three.js und live im Browser animiert.</p><div><a class="ctx-btn ctx-btn--g" href="#ctx-3d">Entstehung ansehen <span aria-hidden="true">↓</span></a></div></div></article>
   <article class="ctx-hlc"><div class="ctx-hlc__m ctx-hlc__m--game">${img('game-start-screen.webp','Dino-Becherspiel: der 3D-Dino hinter drei Bechern',510,1105)}<span class="ctx-live">Live spielbar</span></div>
    <div class="ctx-hlc__b"><span class="ctx-hlc__k"><b>08</b>3D-Spiel</span><h3>Eine Runde mit Dino.</h3><p>Becherspiel für die Wartezeit nach der Bestellung – vier Dinos sammeln, Matcha-Rabatt sichern.</p><div><button type="button" class="ctx-btn" data-start="ctx-play">Spiel starten ${I_PLAY.replace('28','16').replace('28','16')}</button></div></div></article>
+  <article class="ctx-hlc"><div class="ctx-hlc__m ctx-hlc__m--mix">${img('mixbar-poster.webp','Tera Mix-Bar: Zutaten im Regal, fertiger Drink, Bon und winkender Dino',1400,788)}<span class="ctx-live">Live mixen</span></div>
+   <div class="ctx-hlc__b"><span class="ctx-hlc__k"><b>09</b>Mix-Bar</span><h3>Den Drink selbst mixen.</h3><p>Zutat greifen, eingießen, Matcha aufschlagen, Toppings streuen – der Bon druckt mit, der Dino winkt.</p><div><button type="button" class="ctx-btn" data-start="ctx-mix">Selbst mixen ${I_PLAY.replace('28','16').replace('28','16')}</button></div></div></article>
   <article class="ctx-hlc"><div class="ctx-hlc__m ctx-hlc__m--app">${img('mobile-himbeere.webp','Café-Tera-Web-App: Produktauswahl Matcha Himbeere',364,787)}<span class="ctx-live">Live</span></div>
    <div class="ctx-hlc__b"><span class="ctx-hlc__k"><b>06</b>Web-App</span><h3>Bestellen in vier Farbwelten.</h3><p>Drink wählen, bezahlen, das Motion-Logo bestätigt – umgesetzt in HTML, CSS und JavaScript.</p><div><button type="button" class="ctx-btn ctx-btn--g" data-start="ctx-app-live">Web-App starten ${I_PLAY.replace('28','16').replace('28','16')}</button></div></div></article>
  </div>
@@ -269,7 +272,7 @@ function build(){var cs=document.querySelector('main.cs')||document.querySelecto
  // highlights: Spiel / Web-App direkt starten (Desktop: im Telefonrahmen weiter unten, Mobil: neuer Tab)
  [].forEach.call(root.querySelectorAll('[data-start]'),function(btn){btn.addEventListener('click',function(){var t=document.getElementById(btn.getAttribute('data-start'));if(!t)return;
   var l=t.querySelector('.ctx-load');if(l)l.click();
-  if(!matchMedia('(max-width: 767px)').matches){var ph=t.querySelector('.ctx-phone')||t;window.scrollTo({top:ph.getBoundingClientRect().top+window.pageYOffset-90,behavior:rm?'auto':'smooth'});}});});
+  if(!matchMedia('(max-width: 767px)').matches){var ph=t.querySelector('.ctx-phone')||t.querySelector('.ctx-wide')||t;window.scrollTo({top:ph.getBoundingClientRect().top+window.pageYOffset-90,behavior:rm?'auto':'smooth'});}});});
  // youtube
  var yt=root.querySelector('.ctx-yt');yt.querySelector('button').addEventListener('click',function(){var f=document.createElement('iframe');
   f.src='https://www.youtube-nocookie.com/embed/'+yt.getAttribute('data-yt')+'?autoplay=1&rel=0&playsinline=1';f.title='Café Tera Brand Film (YouTube)';f.setAttribute('allow','autoplay; encrypted-media; picture-in-picture; fullscreen');f.setAttribute('allowfullscreen','');yt.appendChild(f);});
