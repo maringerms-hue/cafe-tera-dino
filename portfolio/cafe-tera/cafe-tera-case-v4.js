@@ -37,8 +37,7 @@ var css=`
 /* highlights */
 .ctx-hl{padding:96px 0 110px;border-top:1px solid var(--ln)}
 .ctx-hl__head{display:flex;justify-content:space-between;align-items:end;gap:40px;margin-bottom:40px}.ctx-hl__head .ctx-p{max-width:440px;font-size:16px}
-.ctx-hl__g{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
-@media(max-width:1199px) and (min-width:768px){.ctx-hl__g{grid-template-columns:repeat(2,1fr)}}
+.ctx-hl__g{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
 .ctx-hlc{display:flex;flex-direction:column;background:var(--card);border:1px solid var(--ln);border-radius:18px;overflow:hidden;transition:border-color .25s,transform .25s}
 .ctx-hlc:hover{border-color:rgba(198,242,78,.45);transform:translateY(-4px)}
 .ctx-hlc__m{position:relative;aspect-ratio:4/4.4;overflow:hidden}
@@ -93,8 +92,11 @@ var css=`
 .ctx-reward h3{font-size:28px;line-height:1.2;max-width:560px}.ctx-reward p{font-size:15px;color:var(--mu);margin-top:12px!important;max-width:580px}
 .ctx-big{font-size:112px;line-height:.9;font-weight:600;letter-spacing:-.06em;color:var(--lime);text-align:right}.ctx-big small{display:block;font-size:15px;letter-spacing:0;font-weight:400;color:var(--mu);margin-top:10px}
 .ctx-play{margin-top:90px}
-.ctx-wide{position:relative;width:100%;aspect-ratio:16/11;border-radius:14px;overflow:hidden;border:1px solid var(--ln);background:#fff4ec;margin-top:8px}.ctx-wide>img{width:100%;height:100%;object-fit:contain}.ctx-wide iframe{position:absolute;inset:0;width:100%;height:100%;border:0;background:#fff4ec}
-@media(max-width:767px){.ctx-wide{aspect-ratio:1672/941}}
+.ctx-hlmix{margin-top:28px;padding:28px;border:1px solid var(--ln);border-radius:18px;background:var(--card);scroll-margin-top:80px}.ctx-hlmix__t{display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:end;margin-bottom:22px}.ctx-hlmix__t h3{font-size:clamp(26px,3vw,36px);margin-top:10px}.ctx-hlmix__t p{font-size:15px;line-height:1.6;color:var(--mu)}.ctx-hlmix .ctx-acts{margin-top:20px}
+@media(max-width:767px){.ctx-hlmix{padding:18px}.ctx-hlmix__t{grid-template-columns:1fr;gap:12px}}
+.ctx-wide{display:block;position:relative;width:100%;aspect-ratio:1400/788;border-radius:14px;overflow:hidden;border:1px solid var(--ln);background:#fff4ec;margin-top:8px}.ctx-wide>img{width:100%;height:100%;object-fit:contain}.ctx-wide iframe{position:absolute;inset:0;width:100%;height:100%;border:0;background:#fff4ec}
+.ctx-wide:has(iframe){aspect-ratio:16/11}
+@media(max-width:767px){.ctx-wide,.ctx-wide:has(iframe){aspect-ratio:1400/788}}
 /* film */
 .ctx-film{display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center}
 .ctx-yt{position:relative;border-radius:16px;overflow:hidden;border:1px solid var(--ln);background:#000;aspect-ratio:1200/1100}
@@ -138,10 +140,13 @@ var html=`
    <div class="ctx-hlc__b"><span class="ctx-hlc__k"><b>06</b>3D-Charakter</span><h3>Vom Logo zur 3D-Figur.</h3><p>Modell, Rig und Mimik in Blender – exportiert für three.js und live im Browser animiert.</p><div><a class="ctx-btn ctx-btn--g" href="#ctx-3d">Entstehung ansehen <span aria-hidden="true">↓</span></a></div></div></article>
   <article class="ctx-hlc"><div class="ctx-hlc__m ctx-hlc__m--game">${img('game-start-screen.webp','Dino-Becherspiel: der 3D-Dino hinter drei Bechern',510,1105)}<span class="ctx-live">Live spielbar</span></div>
    <div class="ctx-hlc__b"><span class="ctx-hlc__k"><b>07</b>3D-Spiel</span><h3>Eine Runde mit Dino.</h3><p>Becherspiel für die Wartezeit nach der Bestellung – vier Dinos sammeln, Matcha-Rabatt sichern.</p><div><button type="button" class="ctx-btn" data-start="ctx-play">Spiel starten ${I_PLAY.replace('28','16').replace('28','16')}</button></div></div></article>
-  <article class="ctx-hlc"><div class="ctx-hlc__m ctx-hlc__m--mix">${img('mixbar-poster.webp','Tera Mix-Bar: Zutaten im Regal, fertiger Drink, Bon und winkender Dino',1400,788)}<span class="ctx-live">Live mixen</span></div>
-   <div class="ctx-hlc__b"><span class="ctx-hlc__k"><b>08</b>Mix-Bar</span><h3>Den Drink selbst mixen.</h3><p>Zutat greifen, eingießen, Matcha aufschlagen, Toppings streuen – der Bon druckt mit, der Dino winkt.</p><div><button type="button" class="ctx-btn" data-start="ctx-mix">Selbst mixen ${I_PLAY.replace('28','16').replace('28','16')}</button></div></div></article>
   <article class="ctx-hlc"><div class="ctx-hlc__m ctx-hlc__m--app">${img('mobile-himbeere.webp','Café-Tera-Web-App: Produktauswahl Matcha Himbeere',364,787)}<span class="ctx-live">Live</span></div>
    <div class="ctx-hlc__b"><span class="ctx-hlc__k"><b>05</b>Web-App</span><h3>Bestellen in vier Farbwelten.</h3><p>Drink wählen, bezahlen, das Motion-Logo bestätigt – umgesetzt in HTML, CSS und JavaScript.</p><div><button type="button" class="ctx-btn ctx-btn--g" data-start="ctx-app-live">Web-App starten ${I_PLAY.replace('28','16').replace('28','16')}</button></div></div></article>
+ </div>
+ <div class="ctx-hlmix" id="ctx-hlmix">
+  <div class="ctx-hlmix__t"><div><span class="ctx-hlc__k"><b>08</b>Mix-Bar · Neu · live</span><h3>Den Drink selbst mixen.</h3></div><p>Im Café bestellen Gäste am Tablet – und mixen sich dabei ihren Lieblingsdrink selbst: aus Fruchtpüree, Hafermilch, Eis, frisch aufgeschlagenem Matcha und Toppings, direkt im Bestellprozess. Der Bondrucker rechnet mit, am Ende winkt der Dino.</p></div>
+  <div class="ctx-wide" data-embed="${MIX}?embed=1" data-title="Tera Mix-Bar (Demo)"><img src="${A}mixbar-poster.webp" alt="Tera Mix-Bar: Regal mit Zutaten, fertiger Drink mit Deckel, Bon und winkender Dino" loading="lazy" width="1400" height="788"><button type="button" class="ctx-load"><span class="ctx-btn">Selbst mixen ${I_PLAY.replace('28','18').replace('28','18')}</span><small>Maus oder Finger · Zutat greifen und über den Becher halten</small></button></div>
+  <div class="ctx-acts"><a class="ctx-btn ctx-btn--g" href="${MIX}" target="_blank" rel="noopener">Mix-Bar im neuen Tab <span aria-hidden="true">↗</span></a><a class="ctx-btn ctx-btn--g" href="#ctx-mix">Konzept dahinter <span aria-hidden="true">↓</span></a></div>
  </div>
 </div></section>
 
@@ -221,10 +226,10 @@ var html=`
 
 <section class="ctx-s" id="ctx-mix"><div class="ctx-w">
  <p class="ctx-k"><b>08</b>Ausblick · Markenerweiterung</p>
- <div class="ctx-head"><h2>Der Drink<br>zum Selbermixen.</h2><div><p class="ctx-p">Ein nächster Schritt für die Marke: eine Mix-Bar, an der Gäste ihren Drink selbst zusammenstellen. Himbeere, Mango, Hafermilch, Eis, frisch aufgeschlagener Matcha und Toppings – Schicht für Schicht in den Becher. Der Bondrucker rechnet mit, am Ende winkt der Dino.</p><p class="ctx-p">Das Konzept ist erweiterbar: Neue Sorten, saisonale Zutaten oder Aktionen kommen einfach als weitere Zutat ins Regal – am Tablet im Café, auf der Website oder als Mitmach-Aktion auf Social Media.</p></div></div>
- <div class="ctx-wide" data-embed="${MIX}?embed=1" data-title="Tera Mix-Bar (Demo)"><img src="${A}mixbar-poster.webp" alt="Tera Mix-Bar: Regal mit Zutaten, fertiger Drink mit Deckel, Bon und winkender Dino" loading="lazy" width="1400" height="788"><button type="button" class="ctx-load"><span class="ctx-btn">Selbst mixen ${I_PLAY.replace('28','18').replace('28','18')}</span><small>Maus oder Finger · Zutat greifen und über den Becher halten</small></button></div>
+ <div class="ctx-head"><h2>Der Drink<br>zum Selbermixen.</h2><div><p class="ctx-p">Ein nächster Schritt für die Marke: Gäste bestellen im Café am Tablet und stellen sich ihren Lieblingsdrink dabei selbst zusammen – aus verschiedenen Zutaten, Schicht für Schicht, direkt im Bestellprozess. Wer mag, probiert jedes Mal einen neuen Mix.</p><p class="ctx-p">Das Konzept ist erweiterbar: Neue Sorten, saisonale Zutaten oder Aktionen kommen einfach als weitere Zutat ins Regal. Dieselbe Mix-Bar funktioniert später auch auf der Website oder als Mitmach-Aktion auf Social Media.</p></div></div>
+ <a class="ctx-wide" href="#ctx-hlmix" aria-label="Zur Mix-Bar oben springen"><img src="${A}mixbar-poster.webp" alt="Tera Mix-Bar: Regal mit Zutaten, fertiger Drink mit Deckel, Bon und winkender Dino" loading="lazy" width="1400" height="788"></a>
  <div class="ctx-acts"><a class="ctx-btn ctx-btn--g" href="${MIX}" target="_blank" rel="noopener">Mix-Bar im neuen Tab <span aria-hidden="true">↗</span></a><a class="ctx-btn ctx-btn--g" href="${LABOR}" target="_blank" rel="noopener">Variante: geführtes Rezept <span aria-hidden="true">↗</span></a></div>
- <div class="ctx-3col"><div><h3>Für die Gäste</h3><p>Den eigenen Lieblingsdrink zusammenstellen und dabei sehen, was im Becher landet – mit Preis in Echtzeit.</p></div><div><h3>Für das Café</h3><p>Neue Sorten und Saison-Aktionen lassen sich ohne neues Design ergänzen; jeder Mix endet beim Bon und im Warenkorb.</p></div><div><h3>Umsetzung</h3><p>Fotorealistische KI-Bilder, in Ebenen geschnitten. Gießen, Füllhöhe, Eis, Toppings und Bon entstehen im Code (HTML, CSS, GSAP); der Dino stammt aus dem 3D-Modell.</p></div></div>
+ <div class="ctx-3col"><div><h3>Für die Gäste</h3><p>Beim Bestellen am Tablet den eigenen Lieblingsdrink mixen und sehen, was im Becher landet – mit Preis in Echtzeit.</p></div><div><h3>Für das Café</h3><p>Neue Sorten und Saison-Aktionen lassen sich ohne neues Design ergänzen; jeder Mix endet beim Bon und im Warenkorb.</p></div><div><h3>Umsetzung</h3><p>Fotorealistische KI-Bilder, in Ebenen geschnitten. Gießen, Füllhöhe, Eis, Toppings und Bon entstehen im Code (HTML, CSS, GSAP); der Dino stammt aus dem 3D-Modell.</p></div></div>
 </div></section>
 
 <section class="ctx-s" id="ctx-logo"><div class="ctx-w">
