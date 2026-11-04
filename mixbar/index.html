@@ -1,0 +1,677 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Tera Mix-Bar</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Abril+Fatface&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&family=Caveat:wght@600&family=VT323&family=Courier+Prime:wght@400;700&display=swap">
+<style>
+/* Layout: one 16:9 café scene (Tera wall, two coral shelves, counter). Ingredients stand on the shelves,
+   the cup on the counter, the printer to the right; a toolbar under the scene. Café Tera design-system tokens. */
+:root {
+  --cream: #FFF4EC; --green: #1F5A3B; --deep: #123B27; --coral: #F58A7C; --coral-deep: #D9584A;
+  --soft-pink: #FBC9C0; --white: #FFFFFF; --grey: #5C6B62; --line: #F0E2DA;
+  --f-display: "Abril Fatface", "Didot", Georgia, serif;
+  --f-body: "DM Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-script: "Caveat", "Bradley Hand", cursive;
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--cream); color: var(--deep); font: 400 16px/1.5 var(--f-body); }
+.inner { max-width: 1320px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+
+header .inner { display: flex; align-items: center; gap: 16px; padding-block: 14px; }
+header img { width: 56px; height: 56px; object-fit: contain; }
+header .brand { font: 400 22px/1 var(--f-display); color: var(--green); }
+header .brand small { display: block; font: 500 12px/1.4 var(--f-body); letter-spacing: .28em; text-transform: uppercase; color: var(--coral-deep); margin-top: 4px; }
+.cart { margin-left: auto; position: relative; width: 44px; height: 44px; border-radius: 999px; border: 1.5px solid var(--deep); display: grid; place-items: center; background: transparent; color: var(--deep); cursor: pointer; }
+.cart svg { width: 20px; height: 20px; }
+.badge { position: absolute; top: -4px; right: -4px; min-width: 20px; height: 20px; padding: 0 5px; border-radius: 999px; background: var(--coral-deep); color: var(--white); font: 700 11px/20px var(--f-body); text-align: center; }
+.badge[hidden] { display: none !important; }
+
+/* ---------- scene ---------- */
+.scene-wrap { padding-block: 8px 20px; }
+.scene {
+  position: relative; width: 100%; max-width: 100%; aspect-ratio: 1672 / 941; border-radius: 24px; overflow: hidden;
+  background: #f4dccd url(assets/scene.webp) center / cover no-repeat; container-type: inline-size;
+  touch-action: none; user-select: none; -webkit-user-select: none; cursor: none;
+  box-shadow: 0 30px 60px -36px rgba(18,59,39,.55);
+}
+.scene-title { position: absolute; left: 50%; top: 3.4%; transform: translateX(-50%); text-align: center; pointer-events: none; width: 38%; }
+.scene-title h1 { margin: 0; font: 400 3.1cqw/1 var(--f-display); color: var(--green); }
+.scene-title p { margin: .5cqw 0 0; font: 500 1.05cqw/1.35 var(--f-body); color: var(--deep); }
+.scene-title .script { font: 600 1.7cqw/1 var(--f-script); color: var(--coral-deep); display: block; margin-top: .4cqw; }
+
+.item { position: absolute; z-index: 10; transform-origin: 50% 50%; will-change: transform, left, top; }
+.item img { display: block; width: 100%; height: 100%; object-fit: contain; pointer-events: none; filter: drop-shadow(0 .5cqw .6cqw rgba(18,59,39,.28)); }
+.item .label {
+  position: absolute; left: 50%; top: 100%; transform: translate(-50%, .35cqw); white-space: nowrap;
+  font: 700 .78cqw/1.15 var(--f-body); color: var(--deep); background: var(--white); padding: .3cqw .55cqw; border-radius: .8cqw; text-align: center;
+  box-shadow: 0 .2cqw .6cqw rgba(18,59,39,.18); pointer-events: none; transition: opacity .2s;
+}
+.item.held .label { opacity: 0; }
+.item .label i { display: block; font-style: normal; font-weight: 500; color: var(--grey); }
+.item.used .label i::after { content: " ✓"; color: var(--green); font-weight: 700; }
+
+#cup { position: absolute; left: 35.35%; top: 22%; width: 29.3%; aspect-ratio: 1089 / 1445; z-index: 5; }
+#cup .layer, #cup .clip { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.clip { -webkit-mask-image: url(assets/cup-mask.png); mask-image: url(assets/cup-mask.png); -webkit-mask-size: 100% 100%; mask-size: 100% 100%; }
+.cup-shadow { position: absolute; left: 18%; width: 64%; top: 89.5%; height: 6%; border-radius: 50%; background: radial-gradient(closest-side, rgba(18,40,28,.38), transparent); }
+.surface { position: absolute; border-radius: 50%; filter: blur(1.5px); opacity: 0; pointer-events: none; }
+.ice { position: absolute; width: 19%; will-change: transform; }
+#stream { position: absolute; width: 1.9%; border-radius: 99px; transform-origin: 50% 0; transform: scaleY(0); pointer-events: none; }
+#lidWrap { position: absolute; inset: 0; pointer-events: none; }
+#lid { opacity: 0; }
+.toast { position: absolute; left: 50%; top: 12%; transform: translateX(-50%); z-index: 30; background: var(--deep); color: var(--cream); font: 700 1cqw/1 var(--f-body); padding: .8cqw 1.2cqw; border-radius: 99px; white-space: nowrap; opacity: 0; pointer-events: none; }
+
+.printer { position: absolute; left: 76%; top: 65.4%; width: 12%; aspect-ratio: 876 / 889; z-index: 6; pointer-events: none; transform-origin: 50% 100%; }
+.printer > img { position: absolute; inset: 0; width: 100%; height: 100%; filter: drop-shadow(0 .6cqw .6cqw rgba(18,40,28,.3)); }
+.pr-display { position: absolute; left: 27.05%; top: 61.2%; width: 46.2%; height: 14.3%; display: grid; place-items: center; font: 400 1.45cqw/1 "VT323", "Courier New", monospace; color: #ff9a86; text-shadow: 0 0 6px rgba(255,120,100,.75); }
+.pr-led { position: absolute; left: 47.6%; top: 82.9%; width: 4.6%; height: 1.6%; border-radius: 9px; background: #ff9a86; box-shadow: 0 0 8px 2px rgba(255,140,120,.8); opacity: 0; }
+.paper-clip { position: absolute; left: -60%; right: -60%; bottom: 76.9%; height: 420%; overflow: hidden; z-index: 2; }
+.paper-clip.free { overflow: visible; }
+.printer.on-top { z-index: 35; }
+.receipt {
+  position: absolute; left: 24.8%; bottom: 0; width: 50%; transform-origin: 50% 100%; opacity: 0;
+  background: #fffdf8; color: #2b2622; font: 400 .6cqw/1.45 "Courier Prime", "Courier New", monospace; padding: 7% 8% 9%;
+  box-shadow: 0 12px 26px -12px rgba(18,59,39,.45);
+  -webkit-mask: linear-gradient(#000, #000) 0 .5cqw / 100% calc(100% - .5cqw) no-repeat, conic-gradient(from -45deg at 50% 0, #000 90deg, transparent 0) 0 0 / 1cqw .5cqw repeat-x;
+          mask: linear-gradient(#000, #000) 0 .5cqw / 100% calc(100% - .5cqw) no-repeat, conic-gradient(from -45deg at 50% 0, #000 90deg, transparent 0) 0 0 / 1cqw .5cqw repeat-x;
+}
+.receipt .r-head { font-weight: 700; text-align: center; letter-spacing: .12em; font-size: .95cqw; }
+.receipt .r-sub, .receipt .r-date, .receipt .r-thanks { text-align: center; }
+.receipt .r-rule { border-top: 1px dashed rgba(43,38,34,.45); margin: 5% 0; }
+.receipt .r-row { display: flex; justify-content: space-between; gap: 6%; }
+.receipt .r-row span:last-child { white-space: nowrap; }
+.receipt .r-total { font-weight: 700; font-size: .9cqw; }
+.receipt .r-thanks { margin-top: 6%; }
+
+#paw { position: absolute; left: 0; top: 0; width: 2.6cqw; z-index: 40; pointer-events: none; }
+#paw svg { width: 100%; height: auto; display: block; transform: translate(-50%, -20%); filter: drop-shadow(0 .15cqw .25cqw rgba(18,40,28,.35)); }
+#paw .toes { transition: transform .15s; transform-origin: 50px 55px; }
+#paw.grab .toes { transform: translateY(8px) scale(.85); }
+#paw.grab svg { opacity: .55; }
+.item { cursor: none; }
+.item:hover:not(.held) img { filter: drop-shadow(0 .5cqw .6cqw rgba(18,59,39,.28)) brightness(1.06); }
+.item:hover:not(.held) { scale: 1.04; transition: scale .15s; }
+.pile { position: absolute; z-index: 11; width: 4.3%; aspect-ratio: 315 / 355; cursor: none; transition: scale .15s; }
+.pile img { width: 100%; height: 100%; object-fit: contain; pointer-events: none; filter: drop-shadow(0 .3cqw .3cqw rgba(18,59,39,.25)); }
+.pile:hover { scale: 1.1; }
+.pile.gone { opacity: 0; pointer-events: none; }
+.counter-front { position: absolute; left: 0; right: 0; bottom: 0; width: 100%; height: auto; top: 80.55%; z-index: 4; pointer-events: none; }
+#dino { position: absolute; left: 9%; top: 57%; width: 18%; aspect-ratio: 243 / 300; z-index: 3; pointer-events: none;
+  background: url(assets/dino-wave.webp) 0 0 / 1000% 500% no-repeat; opacity: 0; }
+.bubble { position: absolute; left: 24.5%; top: 55%; z-index: 12; pointer-events: none; opacity: 0;
+  background: var(--white); color: var(--coral-deep); font: 600 2cqw/1 var(--f-script); padding: .7cqw 1.2cqw; border-radius: 1.2cqw 1.2cqw 1.2cqw .2cqw;
+  box-shadow: 0 .4cqw 1cqw rgba(18,59,39,.2); white-space: nowrap; }
+.bit { position: absolute; width: 4.8%; will-change: transform; }
+.scene:not(:hover) #paw { opacity: 0; }
+
+/* ---------- toolbar ---------- */
+.toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 18px; padding: 18px 20px; margin-top: 18px; background: var(--white); border: 1.5px solid var(--line); border-radius: 20px; }
+.toolbar .sum { margin-right: auto; }
+.toolbar .sum .label { font-size: 13px; color: var(--grey); }
+.toolbar .sum .total { font: 700 24px/1.1 var(--f-body); font-variant-numeric: tabular-nums; }
+.toolbar .used { font-size: 14px; color: var(--grey); flex-basis: 100%; order: 3; margin: 0; }
+.btn { font: 700 15px/1 var(--f-body); padding: 14px 24px; border-radius: 999px; cursor: pointer; border: 1.5px solid var(--green); display: inline-flex; align-items: center; transition: transform .15s, background .2s; }
+.btn:active { transform: scale(.97); }
+.btn.primary { background: var(--green); color: var(--white); }
+.btn.primary:hover { background: var(--deep); }
+.btn.secondary { background: transparent; color: var(--green); }
+.btn:disabled { opacity: .45; cursor: default; }
+.btn:focus-visible, .cart:focus-visible { outline: 3px solid var(--coral-deep); outline-offset: 3px; }
+.note { font-size: 13px; color: var(--grey); margin: 14px 4px 40px; }
+@media (max-width: 700px) {
+  .scene { border-radius: 14px; }
+  .toolbar .btn { flex: 1 1 auto; justify-content: center; }
+}
+#fly { position: fixed; inset: 0; pointer-events: none; z-index: 50; }
+#flyCup { position: absolute; opacity: 0; }
+</style>
+<style>:root{padding:0}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+</head>
+<body>
+
+
+<header>
+  <div class="inner">
+    <img src="assets/logo-full.png" alt="Café Tera – Small Sweet Moments">
+    <div class="brand">Tera Mix-Bar<small>Drink-Labor · Variante 2</small></div>
+    <button class="cart" id="cart" aria-label="Warenkorb, 0 Artikel">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 7h12l-1.2 11.2a2 2 0 0 1-2 1.8H9.2a2 2 0 0 1-2-1.8L6 7Z"/><path d="M9 7V6a3 3 0 0 1 6 0v1"/></svg>
+      <span class="badge" id="badge" hidden>0</span>
+    </button>
+  </div>
+</header>
+
+<main class="inner">
+  <div class="scene-wrap">
+    <div class="scene" id="scene" aria-label="Mix-Bar: Zutaten mit der Maus greifen und über den Becher halten">
+      <div class="scene-title">
+        <h1>Mix dir deinen Drink.</h1>
+        <p>Schnapp dir eine Zutat und halte sie über den Becher. Matcha erst mit dem Bambusbesen aufschlagen, Eiswürfel einzeln aus der Schale nehmen.</p>
+        <span class="script">so viel du magst ♡</span>
+      </div>
+
+      <div id="cup">
+        <div class="cup-shadow"></div>
+        <img class="layer" src="assets/cup-clear.webp" alt="Becher von Café Tera">
+        <div id="liquids"></div>
+        <div class="surface" id="surface"></div>
+        <div id="stream"></div>
+        <div class="clip" id="iceClip"></div>
+        <div class="clip" id="bitClip"></div>
+        <div id="lidWrap"><img class="layer" id="lid" src="assets/lid-clear.webp" alt=""></div>
+        <img class="layer" src="assets/cup-logo.webp" alt="">
+      </div>
+
+      <div class="printer" id="printer">
+        <img src="assets/printer.webp" alt="Bondrucker">
+        <div class="pr-display" id="display">€ 0,00</div>
+        <i class="pr-led" id="led"></i>
+        <div class="paper-clip" id="paperClip"><div class="receipt" id="receipt"></div></div>
+      </div>
+
+      <div id="dino" aria-hidden="true"></div>
+      <img class="counter-front" src="assets/counter-front.webp" alt="">
+      <div class="bubble" id="bubble" aria-hidden="true">Danke! ♡</div>
+      <div class="toast" id="toast" role="status" aria-live="polite"></div>
+      <div id="paw" aria-hidden="true">
+        <svg viewBox="0 0 100 100">
+          <g class="toes" fill="#86B964" stroke="#3F6B35" stroke-width="3">
+            <ellipse cx="27" cy="38" rx="11" ry="13"/><ellipse cx="50" cy="29" rx="11" ry="13"/><ellipse cx="73" cy="38" rx="11" ry="13"/>
+            <path d="M24 24 l3 -9 l4 9Z M47 15 l3 -9 l4 9Z M70 24 l3 -9 l4 9Z" fill="#FFF4EC" stroke-width="2"/>
+          </g>
+          <path d="M22 62 C22 44, 78 44, 78 62 C80 82, 62 92, 50 92 C38 92, 20 82, 22 62Z" fill="#86B964" stroke="#3F6B35" stroke-width="3"/>
+          <ellipse cx="50" cy="68" rx="13" ry="10" fill="#F5A79A"/>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <div class="toolbar">
+    <div class="sum"><div class="label">Dein Drink</div><div class="total" id="sumText">€ 0,00</div></div>
+    <button class="btn primary" id="finish" disabled>Fertig machen</button>
+    <button class="btn secondary" id="addCart" disabled>In den Warenkorb</button>
+    <button class="btn secondary" id="reset">Neu starten</button>
+    <p class="used" id="used">Noch leer. Fang mit einer Zutat vom Regal an.</p>
+  </div>
+  <p class="note">Konzept-Variante 2 von Café Tera. Zutaten und Becher sind KI-Fotos in Ebenen; Gießen, Füllhöhe, Eis und Bon entstehen per Code. Funktioniert mit Maus und Touch.</p>
+</main>
+<div id="fly"><img id="flyCup" src="assets/cup-clear.webp" alt=""></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script>
+(() => {
+  const W = 1089, H = 1445, Y0 = 530, Y1 = 1296;
+  const wallL = y => 0.122649 * y + 187.78 + 3, wallR = y => -0.124622 * y + 904.62 - 3;
+  const yAt = f => Y1 - f * (Y1 - Y0);
+  const pctFromBottom = f => ((H - Y1) + f * (Y1 - Y0)) / H * 100;
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const T = reduce ? 0.3 : 1;
+  const MAX = 0.95;
+  const eur = c => '€ ' + (c / 100).toFixed(2).replace('.', ',');
+  const $ = s => document.querySelector(s);
+
+  // ingredient catalogue: position on the scene (% of scene), size (% of scene width), spout + paw grip (fraction of item box)
+  const JAR = { kind: 'sprinkle', w: 6.4, bottom: 49.6, grip: [0.84, 0.55], spout: [0.2, 0.05], tilt: -105, price: 50 };
+  const ITEMS = {
+    raspberry: { kind: 'liquid', label: 'Himbeere', img: 'jug-raspberry.webp', left: 4.5, bottom: 27.0, w: 8.5, aspect: 819 / 789, spout: [0.09, 0.11], grip: [0.86, 0.42], tilt: -62, price: 150,
+                 layer: 'liquid-raspberry.webp', stream: ['#e2425f', '#b5162f'], surf: 'rgba(236,92,112,.85)' },
+    milk:      { kind: 'liquid', label: 'Hafermilch', img: 'jug-milk.webp', left: 13.8, bottom: 27.0, w: 8.5, aspect: 818 / 789, spout: [0.09, 0.11], grip: [0.86, 0.42], tilt: -62, price: 90,
+                 layer: 'liquid-milk.webp', stream: ['#fbf6ea', '#e9e0cc'], surf: 'rgba(255,252,244,.9)' },
+    mango:     { kind: 'liquid', label: 'Mango', img: 'jug-mango.webp', left: 23.1, bottom: 27.0, w: 8.5, aspect: 818 / 794, spout: [0.09, 0.11], grip: [0.86, 0.42], tilt: -62, price: 150,
+                 layer: 'liquid-mango.webp', stream: ['#f6a224', '#d97a0c'], surf: 'rgba(250,180,70,.85)' },
+    matcha:    { kind: 'liquid', label: 'Matcha', img: 'bowl-powder.webp', left: 70, bottom: 27.0, w: 11, aspect: 834 / 980, spout: [0.02, 0.33], grip: [0.94, 0.42], tilt: -66, price: 250,
+                 layer: 'liquid-matcha.webp', stream: ['#a9c84a', '#7a9a2a'], surf: 'rgba(176,206,92,.9)' },
+    dryrasp:   { ...JAR, label: 'Himbeer-Crunch', img: 'jar-raspberry.webp', left: 6, aspect: 904 / 741, bits: 'raspberry' },
+    choco:     { ...JAR, label: 'Schoko-Crumble', img: 'jar-choco.webp', left: 14.2, aspect: 884 / 740, bits: 'choco' },
+    coconut:   { ...JAR, label: 'Kokos-Chips', img: 'jar-coconut.webp', left: 22.4, aspect: 895 / 736, bits: 'coconut' },
+    whisk:     { kind: 'whisk', label: 'Bambusbesen', img: 'chasen-up.webp', left: 83, bottom: 27.0, w: 5.4, aspect: 901 / 597, grip: [0.5, 0.1], price: 0 },
+    ice:       { kind: 'ice', label: 'Eis', img: 'ice-bowl.webp', left: 70.5, bottom: 49.6, w: 9.5, aspect: 847 / 1040, grip: [0.5, 0.45], price: 30 },
+  };
+  const CUBE = { kind: 'ice', w: 5.6, aspect: 355 / 315, grip: [0.5, 0.5] };
+  const BON_FINISH = { label: 'Becher + Deckel', price: 30 };
+
+  const scene = $('#scene'), cup = $('#cup'), liquids = $('#liquids'), stream = $('#stream'), surface = $('#surface');
+  const paw = $('#paw'), iceClip = $('#iceClip'), bitClip = $('#bitClip');
+  let state, held = null, sr = null, cartCount = 0, rafId = 0, lastT = 0;
+
+  // ---------- build shelf items ----------
+  const itemEls = {};
+  Object.entries(ITEMS).forEach(([id, it]) => {
+    const el = document.createElement('div');
+    el.className = 'item'; el.dataset.id = id;
+    el.innerHTML = `<img src="assets/${it.img}" alt="${it.label}"><span class="label">${it.label}<i>${eur(it.price)}</i></span>`;
+    if (id === 'matcha') el.querySelector('img').insertAdjacentHTML('afterend', '<img class="whisked" src="assets/bowl-whisked.webp" alt="" style="position:absolute;inset:0;opacity:0">');
+    if (it.price === 0) el.querySelector('.label').innerHTML = `${it.label}<i>zum Aufschlagen</i>`;
+    scene.appendChild(el);
+    itemEls[id] = el;
+  });
+  // loose ice cubes lying on top of the ice bowl
+  const PILE = [[0.14, -0.06, -14], [0.42, -0.16, 8], [0.66, -0.04, 22]];
+  const pileEls = PILE.map((_, i) => {
+    const d = document.createElement('div'); d.className = 'pile'; d.dataset.pile = i;
+    d.innerHTML = `<img src="assets/ice-${i + 1}.webp" alt="Eiswürfel">`; scene.appendChild(d); return d;
+  });
+  function placePile() {
+    const s = scene.getBoundingClientRect(), it = ITEMS.ice;
+    const bw = s.width * it.w / 100, bh = bw * it.aspect, bl = s.width * it.left / 100, bt = s.height * it.bottom / 100 - bh;
+    pileEls.forEach((d, i) => { const [fx, fy, r] = PILE[i]; gsap.set(d, { left: bl + fx * bw, top: bt + fy * bh, rotation: r }); });
+  }
+  function refillPile() {
+    if (pileEls.every(d => d.classList.contains('gone')) && state.ice.length < 4)
+      pileEls.forEach((d, i) => { d.classList.remove('gone'); gsap.fromTo(d, { y: -20, opacity: 0 }, { y: 0, opacity: 1, duration: .4, delay: .5 + i * .1 }); });
+  }
+
+  function placeHome(id) {
+    const it = ITEMS[id], el = itemEls[id];
+    const s = scene.getBoundingClientRect();
+    const w = s.width * it.w / 100, h = w * it.aspect;
+    gsap.set(el, { width: w, height: h, left: s.width * it.left / 100, top: s.height * it.bottom / 100 - h, rotation: 0 });
+    el.style.transformOrigin = `${it.grip[0] * 100}% ${it.grip[1] * 100}%`;   // the jug turns in the paw
+  }
+
+  // ---------- cup rendering ----------
+  function setBand(el, a, b, soft = 1.4) {
+    if (b <= a) { el.style.webkitMaskImage = el.style.maskImage = 'linear-gradient(transparent, transparent)'; return; }
+    const pa = pctFromBottom(a), pb = pctFromBottom(b);
+    const start = a <= 0.001 ? '#000 0%' : `transparent ${Math.max(0, pa - soft)}%, #000 ${pa}%`;
+    el.style.webkitMaskImage = el.style.maskImage = `linear-gradient(to top, ${start}, #000 ${Math.max(pa, pb - 0.6)}%, transparent ${pb}%)`;
+  }
+  function placeSurface(f, color) {
+    if (f <= 0.01) { surface.style.opacity = 0; return; }
+    const y = yAt(f), xl = wallL(y), xr = wallR(y), w = xr - xl, h = w * 0.07;
+    Object.assign(surface.style, { left: (xl + w * .02) / W * 100 + '%', width: (w * .96) / W * 100 + '%', top: (y - h / 2) / H * 100 + '%', height: h / H * 100 + '%',
+      background: `radial-gradient(60% 70% at 45% 40%, ${color}, transparent 75%)`, opacity: .75 });
+  }
+  function floatIce() {
+    const ys = yAt(state.level);
+    state.bits.forEach(b => { if (!b.falling) b.el.style.top = ((ys - 22 + b.dy) / H * 100) + '%'; });
+    const y = yAt(Math.max(state.level, 0.06));
+    state.ice.forEach((c, i) => { c.el.style.left = (c.x * 100 - 9.5) + '%'; c.el.style.top = ((y - 80 - (i % 3) * 10) / H * 100) + '%'; });
+  }
+  function topBand() { return state.bands[state.bands.length - 1]; }
+
+  // ---------- money ----------
+  const shown = { c: 0 };
+  function total() { return Object.keys(state.used).reduce((s, id) => s + ITEMS[id].price, 0) + (state.finished ? BON_FINISH.price : 0); }
+  function updateMoney() {
+    const t = total();
+    gsap.to(shown, { c: t, duration: .5 * T, onUpdate: () => { const s = eur(Math.round(shown.c)); $('#display').textContent = s; $('#sumText').textContent = s; } });
+    const names = Object.keys(state.used).map(id => ITEMS[id].label);
+    $('#used').textContent = names.length ? 'Im Becher: ' + names.join(', ') : 'Noch leer. Fang mit einer Zutat vom Regal an.';
+  }
+  function use(id) {
+    if (state.used[id]) return;
+    state.used[id] = true; itemEls[id].classList.add('used');
+    gsap.fromTo('#printer', { scaleY: 1 }, { scaleY: .97, duration: .08, yoyo: true, repeat: 1 });
+    gsap.fromTo('#led', { opacity: 1 }, { opacity: 0, duration: .5, delay: .15 });
+    updateMoney(); updateButtons();
+  }
+  function updateButtons() {
+    $('#finish').disabled = state.finished || state.busy || state.level < 0.1;
+    $('#addCart').disabled = !state.printed || state.inCart;
+    $('#addCart').textContent = state.inCart ? 'Im Warenkorb ✓' : 'In den Warenkorb';
+  }
+  function toast(t) { const el = $('#toast'); el.textContent = t; gsap.fromTo(el, { opacity: 0, y: 6 }, { opacity: 1, y: 0, duration: .3 }); gsap.to(el, { opacity: 0, delay: 1.8, duration: .4 }); }
+
+  // ---------- pointer + paw ----------
+  function local(e) { const s = scene.getBoundingClientRect(); return { x: e.clientX - s.left, y: e.clientY - s.top, s }; }
+  function movePaw(p) { gsap.set(paw, { x: p.x, y: p.y }); }
+  scene.addEventListener('pointermove', e => { const p = local(e); if (!held) movePaw(p); else drag(p); });
+  scene.addEventListener('pointerdown', e => {
+    if (state.finished || state.busy) return;
+    const p = local(e); movePaw(p);
+    let pc = e.target.closest('.pile');
+    let el = e.target.closest('.item');
+    if (!pc && el && ITEMS[el.dataset.id].kind === 'ice') pc = pileEls.find(d => !d.classList.contains('gone'));
+    if (pc) { e.preventDefault(); scene.setPointerCapture(e.pointerId); pickCube(pc, p); return; }
+    if (el && ITEMS[el.dataset.id].kind === 'ice') { toast('Genug Eis'); return; }
+    if (!el) return;
+    e.preventDefault(); scene.setPointerCapture(e.pointerId);
+    const id = el.dataset.id, it = ITEMS[id];
+    {
+      held = { id, el, it, pouring: false, band: null };
+      el.classList.add('held');
+      if (it.kind === 'whisk') el.querySelector('img').src = 'assets/chasen.webp';
+    }
+    paw.classList.add('grab');
+    gsap.killTweensOf(held.el);
+    drag(p);
+  });
+  const release = e => {
+    if (!held) return;
+    const h = held; held = null; paw.classList.remove('grab'); h.el.classList.remove('held');
+    stopPour(h); stopSprinkle(h); stopWhisk(h);
+    if (h.clone) {
+      if (overCupMouth(h)) { dropIce(h); h.el.remove(); refillPile(); }
+      else { const d = h.pile.getBoundingClientRect(), s = scene.getBoundingClientRect();
+        gsap.to(h.el, { left: d.left - s.left, top: d.top - s.top, rotation: gsap.getProperty(h.pile, 'rotation'), duration: .35, ease: 'power2.out',
+          onComplete: () => { h.el.remove(); h.pile.classList.remove('gone'); } }); }
+      return;
+    }
+    if (h.it.kind === 'whisk') h.el.querySelector('img').src = 'assets/chasen-up.webp';
+    goHome(h);
+  };
+  scene.addEventListener('pointerup', release);
+  scene.addEventListener('pointercancel', release);
+
+  function pickCube(pc, p) {
+    if (state.ice.length >= 4) { toast('Genug Eis'); return; }
+    const r = pc.getBoundingClientRect(), s = scene.getBoundingClientRect();
+    const cube = document.createElement('div');
+    cube.className = 'item held'; cube.style.pointerEvents = 'none';
+    cube.innerHTML = pc.innerHTML;
+    scene.appendChild(cube);
+    gsap.set(cube, { width: r.width * 1.15, height: r.width * 1.15 * CUBE.aspect, left: r.left - s.left, top: r.top - s.top, rotation: gsap.getProperty(pc, 'rotation') });
+    pc.classList.add('gone');
+    held = { id: 'ice', el: cube, it: { ...ITEMS.ice, ...CUBE }, clone: true, pile: pc, pouring: false };
+    paw.classList.add('grab');
+    drag(p);
+  }
+
+  function drag(p) {
+    const h = held, w = parseFloat(h.el.style.width), hh = parseFloat(h.el.style.height);
+    h.px = p.x; h.py = p.y;
+    const k = h.snap ? h.snap.v : 0, d = k ? desiredOffset(h) : { x: 0, y: 0 };
+    h.off = { x: d.x * k, y: d.y * k };
+    gsap.set(h.el, { left: p.x - h.it.grip[0] * w + h.off.x, top: p.y - h.it.grip[1] * hh + h.off.y });
+    gsap.set(paw, { x: p.x, y: p.y });
+    if (h.it.kind === 'liquid') {
+      const over = overCupMouth(h);
+      if (over && h.id === 'matcha' && state.matcha < 1) { if (!h.warned) { h.warned = true; toast('Erst mit dem Bambusbesen aufschlagen'); } }
+      else if (over && !h.pouring) startPour(h); else if (!over && h.pouring) stopPour(h);
+    }
+    if (h.it.kind === 'whisk') { const over = overBowl(h); if (over && !h.whisking) startWhisk(h); else if (!over && h.whisking) stopWhisk(h); }
+    if (h.it.kind === 'sprinkle') { const over = overCupMouth(h); if (over && !h.pouring) startSprinkle(h); else if (!over && h.pouring) stopSprinkle(h); }
+  }
+  // spout position; rotated = where it really is now (the jug rotates around the paw grip)
+  function spoutPoint(h, rotated = false, angle = null) {
+    const w = parseFloat(h.el.style.width), hh = parseFloat(h.el.style.height);
+    const l = parseFloat(h.el.style.left), t = parseFloat(h.el.style.top);
+    const sp = h.it.spout || [0.5, 1], g = h.it.grip;
+    const gx = l + g[0] * w, gy = t + g[1] * hh, vx = (sp[0] - g[0]) * w, vy = (sp[1] - g[1]) * hh;
+    const a = (angle != null ? angle : rotated ? gsap.getProperty(h.el, 'rotation') : 0) * Math.PI / 180;
+    return { x: gx + vx * Math.cos(a) - vy * Math.sin(a), y: gy + vx * Math.sin(a) + vy * Math.cos(a) };
+  }
+  function cupBox() { const s = scene.getBoundingClientRect(), c = cup.getBoundingClientRect(); return { l: c.left - s.left, t: c.top - s.top, w: c.width, h: c.height }; }
+  function overCupMouth(h) {
+    const c = cupBox(), rimY = c.t + c.h * 0.30;
+    if (h.it.kind === 'ice') { const l = parseFloat(h.el.style.left) + parseFloat(h.el.style.width) / 2, t = parseFloat(h.el.style.top) + parseFloat(h.el.style.height) / 2;
+      return l > c.l + c.w * .2 && l < c.l + c.w * .8 && t < rimY + c.h * .1 && t > rimY - c.h * .5; }
+    // forgiving: the held item just has to hang above the cup; it then slides itself into pouring position
+    const w = parseFloat(h.el.style.width), hh = parseFloat(h.el.style.height);
+    const cx = h.px - h.it.grip[0] * w + w / 2, bottom = h.py - h.it.grip[1] * hh + hh;
+    return cx > c.l + c.w * .05 && cx < c.l + c.w * .95 && bottom < rimY + c.h * .18 && bottom > rimY - c.h * .75;
+  }
+
+  // slide the held item so its tilted spout sits above the cup centre (recomputed on every move), and back again
+  function desiredOffset(h) {
+    const w = parseFloat(h.el.style.width), hh = parseFloat(h.el.style.height);
+    const sp = h.it.spout || [0.5, 1], g = h.it.grip, a = h.it.tilt * Math.PI / 180;
+    const vx = (sp[0] - g[0]) * w, vy = (sp[1] - g[1]) * hh;
+    const sx = h.px + vx * Math.cos(a) - vy * Math.sin(a), sy = h.py + vx * Math.sin(a) + vy * Math.cos(a);
+    const c = cupBox();
+    return { x: c.l + c.w * .46 - sx, y: Math.min(0, c.t + c.h * .2 - sy) };
+  }
+  function snapTo(h, on) {
+    h.snap = h.snap || { v: 0 };
+    gsap.to(h.snap, { v: on ? 1 : 0, duration: .3 * T, ease: 'power2.out', onUpdate: () => { if (held === h) drag({ x: h.px, y: h.py }); } });
+  }
+
+  // ---------- pouring ----------
+  function startPour(h) {
+    if (state.level >= MAX) { toast('Der Becher ist voll'); return; }
+    h.pouring = true; snapTo(h, true);
+    gsap.to(h.el, { rotation: h.it.tilt, duration: .35 * T, ease: 'power2.out' });
+    const tb = topBand();
+    if (tb && tb.id === h.id) h.band = tb;      // keep pouring into the same layer
+    else {
+      const img = document.createElement('img');
+      img.className = 'layer'; img.src = 'assets/' + h.it.layer; img.alt = '';
+      liquids.appendChild(img);
+      h.band = { id: h.id, a: state.level, b: state.level, el: img };
+      setBand(img, h.band.a, h.band.a);
+      state.bands.push(h.band);
+    }
+    stream.style.background = `linear-gradient(90deg, ${h.it.stream[1]}, ${h.it.stream[0]} 45%, ${h.it.stream[1]})`;
+    gsap.set(stream, { transformOrigin: '50% 0%' });
+    gsap.to(stream, { scaleY: 1, duration: .2, delay: .25 * T });
+    h.pourStart = performance.now() + 250 * T;
+    use(h.id);
+    lastT = performance.now();
+    cancelAnimationFrame(rafId); rafId = requestAnimationFrame(tick);
+  }
+  function stopPour(h) {
+    if (!h.pouring) return;
+    h.pouring = false; cancelAnimationFrame(rafId); snapTo(h, false);
+    gsap.set(stream, { transformOrigin: '50% 100%' });
+    gsap.to(stream, { scaleY: 0, duration: .18 });
+    gsap.to(h.el, { rotation: 0, duration: .3 * T, ease: 'power2.out' });
+  }
+  function tick(now) {
+    const h = held; if (!h || !h.pouring) return;
+    const dt = Math.min(0.05, (now - lastT) / 1000); lastT = now;
+    const c = cupBox(), sp = spoutPoint(h, true);
+    // stream geometry in cup coordinates (cup box is the positioning context)
+    const sx = (sp.x - c.l) / c.w * 100, sy = (sp.y - c.t) / c.h * 100;
+    const surfY = yAt(state.level) / H * 100;
+    Object.assign(stream.style, { left: (sx - .95) + '%', top: sy + '%', height: Math.max(0, surfY - sy + .8) + '%' });
+    if (now > h.pourStart && state.level < MAX) {
+      state.level = Math.min(MAX, state.level + 0.17 * dt);
+      h.band.b = state.level;
+      setBand(h.band.el, h.band.a, h.band.b);
+      placeSurface(state.level, h.it.surf); floatIce();
+      if (state.level >= MAX) { toast('Der Becher ist voll'); stopPour(h); updateButtons(); return; }
+    }
+    updateButtons();
+    rafId = requestAnimationFrame(tick);
+  }
+
+  // ---------- whisking ----------
+  function overBowl(h) {
+    if (state.matcha >= 1) return false;
+    const s = scene.getBoundingClientRect(), b = itemEls.matcha.getBoundingClientRect();
+    const tx = parseFloat(h.el.style.left) + parseFloat(h.el.style.width) / 2, ty = parseFloat(h.el.style.top) + parseFloat(h.el.style.height);
+    const bl = b.left - s.left, bt = b.top - s.top;
+    return tx > bl + b.width * .15 && tx < bl + b.width * .85 && ty > bt + b.height * .05 && ty < bt + b.height * .75;
+  }
+  function startWhisk(h) {
+    h.whisking = true;
+    const img = h.el.querySelector('img');
+    gsap.set(img, { clipPath: 'inset(0% 0% 22% 0%)' });
+    h.wig = gsap.to(img, { x: '18%', rotation: 7, duration: .09, yoyo: true, repeat: -1, ease: 'sine.inOut' });
+    h.bowlWig = gsap.to(itemEls.matcha.querySelectorAll('img'), { rotation: 1.5, duration: .09, yoyo: true, repeat: -1, ease: 'sine.inOut', transformOrigin: '50% 90%' });
+    let last = performance.now();
+    const step = now => {
+      if (!h.whisking) return;
+      state.matcha = Math.min(1, state.matcha + (now - last) / 1000 / 1.3); last = now;
+      itemEls.matcha.querySelector('.whisked').style.opacity = state.matcha;
+      if (state.matcha >= 1) { stopWhisk(h); toast('Matcha ist aufgeschlagen ✓'); itemEls.matcha.querySelector('.label').classList.add('ready'); return; }
+      h.raf = requestAnimationFrame(step);
+    };
+    h.raf = requestAnimationFrame(step);
+  }
+  function stopWhisk(h) {
+    if (!h.whisking) return;
+    h.whisking = false; cancelAnimationFrame(h.raf);
+    if (state.matcha >= .4 && state.matcha < 1) {   // half whisked is enough: finish it off
+      const o = { v: state.matcha };
+      gsap.to(o, { v: 1, duration: .5, onUpdate: () => { state.matcha = o.v; itemEls.matcha.querySelector('.whisked').style.opacity = o.v; },
+        onComplete: () => toast('Matcha ist aufgeschlagen ✓') });
+    }
+    h.wig && h.wig.kill(); h.bowlWig && h.bowlWig.kill();
+    gsap.set(h.el.querySelector('img'), { x: 0, rotation: 0, clipPath: 'inset(0% 0% 0% 0%)' });
+    gsap.to(itemEls.matcha.querySelectorAll('img'), { rotation: 0, duration: .2 });
+  }
+
+  // ---------- toppings ----------
+  function startSprinkle(h) {
+    h.pouring = true; use(h.id); snapTo(h, true);
+    gsap.to(h.el, { rotation: h.it.tilt, duration: .35 * T, ease: 'power2.out' });
+    h.timer = setInterval(() => { spawnBit(h); spawnBit(h); }, 90);
+    setTimeout(() => spawnBit(h), 300);
+  }
+  function stopSprinkle(h) {
+    if (!h.timer) return;
+    clearInterval(h.timer); h.timer = null; h.pouring = false; snapTo(h, false);
+    gsap.to(h.el, { rotation: 0, duration: .3 * T, ease: 'power2.out' });
+  }
+  function spawnBit(h) {
+    if (!held || held !== h) return;
+    if (state.bits.length >= 90) { toast('Genug Topping'); stopSprinkle(h); return; }
+    const c = cupBox(), sp = spoutPoint(h, true);
+    const sx = (sp.x - c.l) / c.w * W, sy = (sp.y - c.t) / c.h * H;
+    const ys = yAt(state.level), xl = wallL(ys) + 30, xr = wallR(ys) - 30;
+    const tx = Math.min(xr, Math.max(xl, sx + (Math.random() - .5) * 220));
+    const img = document.createElement('img');
+    img.className = 'bit'; img.alt = '';
+    img.src = `assets/bit-${h.it.bits}-${Math.floor(Math.random() * 4)}.webp`;
+    bitClip.appendChild(img);
+    const b = { el: img, dy: (Math.random() - .5) * 34, falling: true };
+    state.bits.push(b);
+    const w = 0.048 * W;
+    gsap.fromTo(img, { left: (sx - w / 2) / W * 100 + '%', top: sy / H * 100 + '%', rotation: Math.random() * 360, scale: .8 + Math.random() * .5 },
+      { left: (tx - w / 2) / W * 100 + '%', top: (ys - 22 + b.dy) / H * 100 + '%', rotation: '+=' + (Math.random() * 120 - 60), duration: .55 * T, ease: 'power2.in',
+        onComplete: () => { b.falling = false; floatIce(); } });
+  }
+
+  // ---------- ice ----------
+  function dropIce(h) {
+    if (state.ice.length >= 4) { toast('Genug Eis'); return; }
+    const c = cupBox();
+    const cx = (parseFloat(h.el.style.left) + parseFloat(h.el.style.width) / 2 - c.l) / c.w;
+    const img = document.createElement('img');
+    img.className = 'ice'; img.src = 'assets/' + ['ice-1.webp', 'ice-2.webp', 'ice-3.webp'][state.ice.length % 3]; img.alt = '';
+    iceClip.appendChild(img);
+    const cube = { el: img, x: Math.min(.66, Math.max(.32, cx)) };
+    state.ice.push(cube);
+    floatIce();
+    gsap.fromTo(img, { yPercent: -260, rotation: -30 + Math.random() * 60 }, { yPercent: 0, rotation: (Math.random() - .5) * 30, duration: .55 * T, ease: 'bounce.out' });
+    state.level = Math.min(MAX, state.level + 0.025);
+    const tb = topBand(); if (tb) { tb.b = state.level; setBand(tb.el, tb.a, tb.b); placeSurface(state.level, ITEMS[tb.id].surf); }
+    floatIce();
+    use('ice');
+  }
+
+  function goHome(h) {
+    const it = h.it, s = scene.getBoundingClientRect();
+    const w = s.width * it.w / 100, hh = w * it.aspect;
+    gsap.to(h.el, { left: s.width * it.left / 100, top: s.height * it.bottom / 100 - hh, rotation: 0, duration: .5 * T, ease: 'power3.out' });
+  }
+
+  // ---------- finish ----------
+  async function finish() {
+    if (state.finished) return;
+    state.busy = true; updateButtons();
+    const has = id => state.bands.some(b => b.id === id);
+    await new Promise(res => {
+      const tl = gsap.timeline({ onComplete: res });
+      tl.to(cup, { rotation: 1.6, duration: .12 * T, yoyo: true, repeat: 7, ease: 'sine.inOut', transformOrigin: '50% 90%' })
+        .to(state.ice.map(c => c.el), { rotation: '+=40', duration: 1 * T, stagger: .05 }, 0)
+        .set(cup, { rotation: 0 });
+      if (has('raspberry') && has('milk')) {
+        // raspberry + milk swirl into marbled layers; everything else stays on top
+        const rm = state.bands.filter(b => b.id === 'raspberry' || b.id === 'milk');
+        const a = Math.min(...rm.map(b => b.a)), b = Math.max(...rm.map(b => b.b));
+        const img = document.createElement('img'); img.className = 'layer'; img.src = 'assets/liquid-swirl.webp'; img.alt = ''; img.style.opacity = 0;
+        const firstOther = state.bands.find(x => x.id !== 'raspberry' && x.id !== 'milk' && x.a >= b - 0.001);
+        if (firstOther) liquids.insertBefore(img, firstOther.el); else liquids.appendChild(img);
+        setBand(img, a, b);
+        tl.to(img, { opacity: 1, duration: 1.2 * T }, .1);
+        tl.add(() => { rm.forEach(x => x.el.remove()); state.bands = state.bands.filter(x => !rm.includes(x)); state.bands.unshift({ id: 'milk', a, b, el: img }); state.bands.sort((p, q) => p.a - q.a); });
+      } else {
+        // soften the layer borders a little
+        tl.add(() => state.bands.forEach(x => setBand(x.el, x.a, x.b, 5)), .4);
+      }
+    });
+    // lid
+    await new Promise(res => {
+      const cut = (yAt(state.level) / H * 100).toFixed(2);
+      const wrap = $('#lidWrap'); wrap.style.webkitMaskImage = wrap.style.maskImage = `linear-gradient(to bottom, #000 ${cut}%, transparent ${cut}%)`;
+      gsap.timeline({ onComplete: res })
+        .fromTo('#lid', { opacity: 1, yPercent: -70 }, { yPercent: 0, duration: .75 * T, ease: 'power2.in' })
+        .to(cup, { scaleY: .985, duration: .08, yoyo: true, repeat: 1, transformOrigin: '50% 100%' });
+    });
+    state.finished = true; updateMoney();
+    toast('Dein Drink ist fertig');
+    await printReceipt();
+    state.printed = true; state.busy = false; updateButtons();
+    dinoWave();
+  }
+
+  function printReceipt() {
+    return new Promise(resolve => {
+      const r = $('#receipt'), now = new Date();
+      const rows = Object.keys(state.used).map(id => [ITEMS[id].label, ITEMS[id].price]).concat([[BON_FINISH.label, BON_FINISH.price]]);
+      r.innerHTML = `<div class="r-head">CAFÉ TERA</div><div class="r-sub">Dein Mix · to go</div>
+        <div class="r-date">${now.toLocaleDateString('de-DE')} ${now.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' })}</div>
+        <div class="r-rule"></div>${rows.map(([l, p]) => `<div class="r-row"><span>${l}</span><span>${eur(p)}</span></div>`).join('')}
+        <div class="r-rule"></div><div class="r-row r-total"><span>Summe</span><span>${eur(total())}</span></div><div class="r-thanks">Danke! Bis bald.</div>`;
+      const clip = $('#paperClip'); clip.classList.remove('free');
+      gsap.set(r, { opacity: 1, scale: .47, x: 0, y: 0, rotation: 0, zIndex: 0 });
+      const hgt = r.offsetHeight;
+      gsap.timeline({ onComplete: resolve })
+        .set('#led', { opacity: 1 })
+        .fromTo(r, { y: hgt }, { y: 0, duration: 1.4 * T, ease: 'steps(16)' })
+        .set('#led', { opacity: 0 })
+        .add(() => { clip.classList.add('free'); $('#printer').classList.add('on-top'); })
+        .to(r, { scale: 1.25, x: () => -r.offsetWidth * .5, y: () => -r.offsetWidth * .08, rotation: 4, duration: .7 * T, ease: 'back.out(1.4)' });
+    });
+  }
+
+  // Café Tera 3D dino (rendered from the GLB, 50 frames) pops up behind the counter and waves
+  function dinoWave() {
+    const d = $('#dino'), fr = { i: 0 }, N = 50;
+    const show = i => { const k = Math.floor(i) % N; d.style.backgroundPosition = `${(k % 10) * 100 / 9}% ${Math.floor(k / 10) * 100 / 4}%`; };
+    show(0);
+    gsap.timeline()
+      .fromTo(d, { opacity: 1, yPercent: 75 }, { yPercent: 0, duration: .6 * T, ease: 'back.out(1.6)' })
+      .to(fr, { i: N - 1, duration: 2.5, ease: 'none', onUpdate: () => show(fr.i) })
+      .fromTo('#bubble', { opacity: 0, scale: .6, transformOrigin: '0% 100%' }, { opacity: 1, scale: 1, duration: .35, ease: 'back.out(2)' }, '<0.3')
+      .to('#bubble', { opacity: 0, duration: .3 }, '+=0.2')
+      .to(d, { yPercent: 75, duration: .5 * T, ease: 'power2.in' }, '<')
+      .set(d, { opacity: 0 });
+  }
+
+  function addToCart() {
+    if (state.inCart || !state.printed) return;
+    state.inCart = true; updateButtons();
+    const c = cup.getBoundingClientRect(), k = $('#cart').getBoundingClientRect(), fc = $('#flyCup');
+    gsap.timeline()
+      .set(fc, { left: c.left, top: c.top, width: c.width, height: c.height, opacity: 1, rotation: 0 })
+      .to(fc, { left: k.left + k.width / 2 - 8, top: k.top + k.height / 2 - 10, width: 16, height: 21, rotation: 20, duration: .9 * T, ease: 'power3.in' })
+      .set(fc, { opacity: 0 })
+      .add(() => { cartCount++; const b = $('#badge'); b.hidden = false; b.textContent = cartCount; $('#cart').setAttribute('aria-label', `Warenkorb, ${cartCount} Artikel`); gsap.fromTo(b, { scale: 1.6 }, { scale: 1, duration: .4, ease: 'back.out(3)' }); });
+  }
+
+  function reset() {
+    gsap.globalTimeline.clear(); cancelAnimationFrame(rafId); held = null;
+    state = { level: 0, matcha: 0, bands: [], ice: [], bits: [], used: {}, finished: false, printed: false, inCart: false, busy: false };
+    liquids.innerHTML = ''; iceClip.innerHTML = ''; bitClip.innerHTML = '';
+    Object.keys(ITEMS).forEach(id => { itemEls[id].classList.remove('used', 'held'); placeHome(id); });
+    pileEls.forEach(d => { d.classList.remove('gone'); gsap.set(d, { opacity: 1, y: 0 }); }); placePile();
+    gsap.set(stream, { scaleY: 0 }); gsap.set('#lid', { opacity: 0, yPercent: 0 }); gsap.set(cup, { rotation: 0, scaleY: 1 });
+    gsap.set('#receipt', { opacity: 0, zIndex: 0 }); gsap.set(['#dino', '#bubble'], { opacity: 0 }); $('#paperClip').classList.remove('free'); $('#printer').classList.remove('on-top'); gsap.set('#led', { opacity: 0 });
+    surface.style.opacity = 0; paw.classList.remove('grab');
+    itemEls.matcha.querySelector('.whisked').style.opacity = 0; itemEls.whisk.querySelector('img').src = 'assets/chasen-up.webp';
+    scene.querySelectorAll('.item:not([data-id])').forEach(n => n.remove());
+    shown.c = 0; updateMoney(); updateButtons();
+  }
+
+  $('#finish').addEventListener('click', finish);
+  $('#addCart').addEventListener('click', addToCart);
+  $('#reset').addEventListener('click', reset);
+  window.addEventListener('resize', () => { if (!held) { Object.keys(ITEMS).forEach(placeHome); placePile(); } });
+  reset();
+  // expose for automated checks
+  window.__mix = { state: () => state, held: () => held, cupBox: () => cupBox(), sp: () => held && spoutPoint(held, true) };
+})();
+</script>
+
+</body>
+</html>

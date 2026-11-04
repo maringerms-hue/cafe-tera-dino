@@ -1,0 +1,642 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Café Tera Drinks</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Abril+Fatface&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&family=Caveat:wght@500;600&family=VT323&family=Courier+Prime:wght@400;700&display=swap">
+<style>
+/* Layout: Café Tera site, Drinks page. Matcha-green hero with the finished cup, then the cream "Drink-Labor":
+   blush photo stage (cup + printer) left, recipe steps right. Tokens taken 1:1 from the Café Tera design system in Figma. */
+:root {
+  --cream: #FFF4EC;
+  --green: #1F5A3B;
+  --deep: #123B27;
+  --coral: #F58A7C;
+  --coral-deep: #D9584A;
+  --soft-pink: #FBC9C0;
+  --white: #FFFFFF;
+  --grey: #5C6B62;
+  --line: #F0E2DA;
+  --himbeere: #C8213F;
+  --matcha: #A9CC88;
+  --studio: #F5D6CD;
+  --f-display: "Abril Fatface", "Didot", Georgia, serif;
+  --f-body: "DM Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-script: "Caveat", "Bradley Hand", cursive;
+  --r-card: 20px; --r-card-lg: 28px;
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body { background: var(--cream); color: var(--deep); font-family: var(--f-body); font-size: 16px; line-height: 1.5; margin: 0; }
+img { max-width: 100%; }
+.inner {
+  max-width: 1240px; margin: 0 auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+
+/* ---------- nav ---------- */
+.nav { background: var(--matcha); position: relative; z-index: 10; }
+.nav .inner { display: flex; align-items: center; gap: 36px; padding-block: 14px; }
+.nav .logo { width: 62px; height: 62px; object-fit: contain; }
+.nav ul { list-style: none; display: flex; gap: 30px; margin: 0; padding: 0; font-weight: 500; font-size: 15px; }
+.nav a { color: var(--deep); text-decoration: none; }
+.nav a[aria-current="page"] { border-bottom: 2px solid var(--deep); padding-bottom: 2px; }
+.nav .right { margin-left: auto; display: flex; align-items: center; gap: 18px; font-size: 14px; }
+.lang b { font-weight: 700; } .lang span { color: var(--grey); margin-left: 8px; }
+.cart {
+  position: relative; width: 44px; height: 44px; border-radius: 999px; border: 1.5px solid var(--deep);
+  display: grid; place-items: center; background: transparent; color: var(--deep); cursor: pointer;
+}
+.cart svg { width: 20px; height: 20px; }
+.cart .badge {
+  position: absolute; top: -4px; right: -4px; min-width: 20px; height: 20px; padding: 0 5px; border-radius: 999px;
+  background: var(--coral-deep); color: var(--white); font: 700 11px/20px var(--f-body); text-align: center;
+}
+.cart .badge[hidden] { display: none !important; }
+.btn {
+  font: 700 15px/1 var(--f-body); padding: 15px 26px; border-radius: 999px; cursor: pointer; text-decoration: none;
+  display: inline-flex; align-items: center; gap: 10px; border: 1.5px solid var(--green); transition: transform .15s, background .2s, color .2s;
+}
+.btn:active { transform: scale(.97); }
+.btn.primary { background: var(--green); color: var(--white); }
+.btn.primary:hover { background: var(--deep); }
+.btn.secondary { background: transparent; color: var(--green); }
+.btn.secondary:hover { background: rgba(31,90,59,.08); }
+.btn:disabled { opacity: .45; cursor: default; }
+.btn:focus-visible, .step:focus-visible, .cart:focus-visible { outline: 3px solid var(--coral-deep); outline-offset: 3px; }
+.nav .btn { padding: 12px 22px; font-size: 14px; }
+
+/* ---------- hero ---------- */
+.hero { background: var(--matcha); position: relative; overflow: hidden; }
+.hero::after {
+  content: ""; position: absolute; right: -18vw; top: 4%; width: 62vw; aspect-ratio: 1; border-radius: 50%;
+  background: #E7A3A0; z-index: 0;
+}
+.hero .inner { position: relative; z-index: 1; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: center; gap: 24px; padding-block: 40px 72px; }
+.eyebrow { font: 500 14px/1 var(--f-body); letter-spacing: .32em; text-transform: uppercase; color: var(--deep); }
+.hero h1 { font: 400 clamp(76px, 11vw, 158px)/0.9 var(--f-display); color: var(--coral-deep); margin: 22px 0 8px; letter-spacing: -0.01em; }
+.hero .sub { font: 400 clamp(28px, 3vw, 40px)/1 var(--f-display); letter-spacing: .42em; color: var(--deep); margin: 0 0 26px; }
+.hero p { max-width: 40ch; margin: 0 0 30px; font-size: 18px; }
+.hero .ctas { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; }
+.hero .price-chip { font-weight: 700; font-size: 18px; color: var(--deep); margin-left: 6px; }
+.hero-visual { position: relative; min-height: 560px; }
+.hero-cup { position: absolute; left: 50%; top: 50%; width: min(330px, 70%); transform: translate(-50%, -50%) rotate(12deg); filter: drop-shadow(0 30px 40px rgba(18,59,39,.28)); }
+.float { position: absolute; width: 90px; filter: drop-shadow(0 12px 14px rgba(18,59,39,.2)); }
+.script { position: absolute; font: 600 34px/1.05 var(--f-script); color: var(--coral-deep); transform: rotate(-8deg); }
+
+/* ---------- labor ---------- */
+.labor { padding-block: 88px 110px; }
+.labor-head { display: grid; gap: 14px; margin-bottom: 44px; max-width: 720px; }
+.labor-head .eyebrow { color: var(--coral-deep); }
+.labor h2 { font: 400 clamp(40px, 5vw, 64px)/1.02 var(--f-display); color: var(--green); margin: 0; text-wrap: balance; }
+.labor-head p { margin: 0; color: var(--grey); font-size: 17px; max-width: 56ch; }
+.labor-grid { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap: 56px; align-items: start; }
+
+.stage-card { background: var(--studio); border-radius: var(--r-card-lg); position: relative; container-type: inline-size; }
+.stage { position: relative; width: 100%; max-width: 100%; aspect-ratio: 1089 / 1445; border-radius: var(--r-card-lg); overflow: hidden; }
+.stage img.layer, .stage .clip { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; user-select: none; }
+.liquid[hidden] { display: none !important; }
+.clip { -webkit-mask-image: url(assets/cup-mask.png); mask-image: url(assets/cup-mask.png); -webkit-mask-size: 100% 100%; mask-size: 100% 100%; }
+.clip-lid { position: absolute; inset: 0; pointer-events: none; }
+#lid { opacity: 0; will-change: transform; }
+.surface { position: absolute; border-radius: 50%; filter: blur(1.5px); opacity: 0; pointer-events: none; }
+.ice { position: absolute; width: 19%; opacity: 0; will-change: transform; }
+.stream { position: absolute; width: 1.9%; border-radius: 99px; transform-origin: 50% 0; transform: scaleY(0); pointer-events: none; }
+.toast {
+  position: absolute; left: 50%; bottom: 4.5%; transform: translateX(-50%);
+  background: var(--deep); color: var(--cream); font: 700 13px/1 var(--f-body); padding: 11px 16px; border-radius: 99px; white-space: nowrap; opacity: 0; pointer-events: none;
+}
+
+.printer { position: absolute; left: -7%; bottom: -4%; width: 36%; aspect-ratio: 876 / 889; z-index: 5; pointer-events: none; transform-origin: 50% 100%; }
+.printer-img { position: absolute; inset: 0; width: 100%; height: 100%; }
+.pr-display { position: absolute; left: 27.05%; top: 61.2%; width: 46.2%; height: 14.3%; display: grid; place-items: center; font: 400 4.2cqw/1 "VT323", "Courier New", monospace; letter-spacing: .04em; color: #ff9a86; text-shadow: 0 0 6px rgba(255,120,100,.75); }
+.pr-led { position: absolute; left: 47.6%; top: 82.9%; width: 4.6%; height: 1.6%; border-radius: 9px; background: #ff9a86; box-shadow: 0 0 8px 2px rgba(255,140,120,.8); opacity: 0; }
+.paper-clip { position: absolute; left: -60%; right: -60%; bottom: 76.9%; height: 420%; overflow: hidden; z-index: 2; }
+.paper-clip.free { overflow: visible; }
+.receipt {
+  position: absolute; left: 24.8%; bottom: 0; width: 50%; transform-origin: 50% 100%; opacity: 0;
+  background: #fffdf8; color: #2b2622; font: 400 1.9cqw/1.45 "Courier Prime", "Courier New", monospace; padding: 7% 8% 9%;
+  box-shadow: 0 12px 26px -12px rgba(18,59,39,.45);
+  -webkit-mask: linear-gradient(#000, #000) 0 1.2cqw / 100% calc(100% - 1.2cqw) no-repeat, conic-gradient(from -45deg at 50% 0, #000 90deg, transparent 0) 0 0 / 2.4cqw 1.2cqw repeat-x;
+          mask: linear-gradient(#000, #000) 0 1.2cqw / 100% calc(100% - 1.2cqw) no-repeat, conic-gradient(from -45deg at 50% 0, #000 90deg, transparent 0) 0 0 / 2.4cqw 1.2cqw repeat-x;
+}
+.receipt .r-head { font-weight: 700; text-align: center; letter-spacing: .12em; font-size: 2.5cqw; }
+.receipt .r-sub, .receipt .r-date, .receipt .r-thanks { text-align: center; }
+.receipt .r-rule { border-top: 1px dashed rgba(43,38,34,.45); margin: 5% 0; }
+.receipt .r-row { display: flex; justify-content: space-between; gap: 6%; }
+.receipt .r-row span:last-child { white-space: nowrap; }
+.receipt .r-total { font-weight: 700; font-size: 2.3cqw; }
+.receipt .r-thanks { margin-top: 6%; }
+
+.panel { display: grid; gap: 18px; min-width: 0; }
+.steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+.step {
+  display: grid; grid-template-columns: 68px minmax(0, 1fr) auto; align-items: center; gap: 16px; width: 100%; text-align: left; cursor: pointer;
+  background: var(--white); color: var(--deep); border: 1.5px solid var(--line); border-radius: var(--r-card);
+  padding: 10px 16px 10px 10px; font: inherit; transition: border-color .2s, background .2s, opacity .2s, transform .15s;
+}
+.step:hover:not(:disabled) { border-color: var(--coral); }
+.step:active:not(:disabled) { transform: scale(.985); }
+.step:disabled { cursor: default; opacity: .5; }
+.step.is-next { border-color: var(--coral); background: #FFF0EB; opacity: 1; box-shadow: 0 10px 24px -16px rgba(217,88,74,.6); }
+.step.is-done { opacity: 1; }
+.thumb { width: 68px; height: 68px; border-radius: 14px; background: var(--studio); display: grid; place-items: center; overflow: hidden; }
+.thumb img { width: 84%; height: 84%; object-fit: contain; }
+.thumb.ice-thumb { background: var(--deep); }
+.step b { display: block; font: 700 16px/1.25 var(--f-body); }
+.step small { display: block; color: var(--grey); font-size: 13.5px; line-height: 1.35; margin-top: 2px; }
+.tag { font: 700 13px/1 var(--f-body); min-width: 64px; text-align: right; color: var(--deep); font-variant-numeric: tabular-nums; }
+.tag .check { display: inline-grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; background: var(--green); color: var(--white); font-size: 13px; }
+.step.is-next .tag { color: var(--coral-deep); }
+.summary {
+  display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;
+  padding: 18px 20px; background: var(--white); border-radius: var(--r-card); border: 1.5px solid var(--line);
+}
+.summary .label { font-size: 13px; color: var(--grey); }
+.summary .total { font: 700 24px/1.1 var(--f-body); font-variant-numeric: tabular-nums; }
+.actions { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+.link-btn { background: none; border: 0; color: var(--green); font: 700 14px/1 var(--f-body); cursor: pointer; text-decoration: underline; text-underline-offset: 3px; padding: 8px 4px; }
+.link-btn:disabled { opacity: .4; cursor: default; }
+.note { font-size: 13px; color: var(--grey); margin: 0; }
+
+footer { background: var(--deep); color: var(--cream); }
+footer .inner { padding-block: 34px; display: flex; flex-wrap: wrap; gap: 12px 32px; align-items: center; justify-content: space-between; font-size: 14px; }
+footer .script-f { font: 600 26px/1 var(--f-script); color: var(--coral); }
+
+#fly { position: fixed; inset: 0; pointer-events: none; z-index: 50; }
+#jug { position: absolute; left: 0; top: 0; opacity: 0; will-change: transform, left, top; }
+.fly-img { position: absolute; left: 0; top: 0; opacity: 0; }
+
+@media (max-width: 980px) {
+  .nav ul { display: none; }
+  .nav .inner { gap: 16px; }
+  .lang { display: none; }
+  .hero .inner { grid-template-columns: minmax(0, 1fr); padding-block: 16px 40px; }
+  .hero-visual { min-height: 420px; order: -1; }
+  .hero::after { width: 120vw; right: -50vw; top: 2%; }
+  .labor { padding-block: 56px 72px; }
+  .labor-grid { grid-template-columns: minmax(0, 1fr); gap: 40px; }
+  .stage-card { max-width: 420px; width: 100%; justify-self: center; }
+}
+@media (max-width: 520px) {
+  .nav .btn { display: none; }
+  .hero h1 { font-size: 72px; }
+  .hero .sub { letter-spacing: .3em; font-size: 26px; }
+  .hero p { font-size: 16px; }
+  .float { width: 64px; }
+  .script { display: none; }
+  .step { grid-template-columns: 56px minmax(0, 1fr) auto; gap: 12px; }
+  .thumb { width: 56px; height: 56px; }
+  .tag { min-width: 0; }
+}
+</style>
+<style>:root{padding:0}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+</head>
+<body>
+
+
+<header class="nav">
+  <div class="inner">
+    <img class="logo" src="assets/logo-full.png" alt="Café Tera – Small Sweet Moments">
+    <nav aria-label="Hauptnavigation"><ul>
+      <li><a href="#">Menu</a></li><li><a href="#">Tiramisu</a></li><li><a href="#labor" aria-current="page">Drinks</a></li>
+      <li><a href="#">Manti</a></li><li><a href="#">About</a></li><li><a href="#">Visit</a></li>
+    </ul></nav>
+    <div class="right">
+      <div class="lang"><b>DE</b><span>EN</span></div>
+      <button class="cart" id="cart" aria-label="Warenkorb, 0 Artikel">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 7h12l-1.2 11.2a2 2 0 0 1-2 1.8H9.2a2 2 0 0 1-2-1.8L6 7Z"/><path d="M9 7V6a3 3 0 0 1 6 0v1"/></svg>
+        <span class="badge" id="badge" hidden>0</span>
+      </button>
+      <a class="btn primary" href="#">Reservieren</a>
+    </div>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="inner">
+    <div>
+      <div class="eyebrow">Dein Drink. Dein Moment.</div>
+      <h1>Himbeere</h1>
+      <div class="sub">MATCHA</div>
+      <p>Himbeerpüree, cremige Hafermilch, Eis und frisch aufgeschlagener Matcha. Mix ihn dir selbst, Schicht für Schicht.</p>
+      <div class="ctas">
+        <a class="btn primary" href="#labor">Jetzt selbst mixen</a>
+        <a class="btn secondary" href="#">Unsere Story</a>
+        <span class="price-chip">€ 5,50</span>
+      </div>
+    </div>
+    <div class="hero-visual" aria-hidden="true">
+      <img class="float" src="assets/rasp-b.webp" alt="" style="left:4%;top:44%;transform:rotate(-18deg)">
+      <img class="float" src="assets/mint.webp" alt="" style="right:4%;top:2%;width:120px;transform:rotate(14deg)">
+      <img class="float" src="assets/rasp-a.webp" alt="" style="left:8%;bottom:10%;width:110px">
+      <img class="float" src="assets/rasp-c.webp" alt="" style="right:10%;bottom:4%;transform:rotate(22deg)">
+      <div class="script" style="left:0;top:4%">Real Ingredients<br>Real Happiness ♡</div>
+      <img class="hero-cup" src="assets/hero-cup.webp" alt="">
+    </div>
+  </div>
+</section>
+
+<section class="labor" id="labor">
+  <div class="inner">
+    <div class="labor-head">
+      <div class="eyebrow">Drink-Labor</div>
+      <h2>Mix deinen Himbeer-Matcha.</h2>
+      <p>Tippe auf die nächste Zutat. Jede Schicht landet im Becher, der Bondrucker rechnet mit. Zum Schluss: umrühren, Deckel drauf, Bon mitnehmen.</p>
+    </div>
+    <div class="labor-grid">
+      <div class="stage-card">
+        <div class="stage" id="stage">
+          <img class="layer" src="assets/cup-empty.webp" alt="Leerer Becher von Café Tera">
+          <img class="layer liquid" id="L-raspberry" src="assets/liquid-raspberry.webp" alt="">
+          <img class="layer liquid" id="L-milk" src="assets/liquid-milk.webp" alt="">
+          <img class="layer liquid" id="L-swirl" src="assets/liquid-swirl.webp" alt="">
+          <img class="layer liquid" id="L-matcha" src="assets/liquid-matcha.webp" alt="">
+          <div class="surface" id="surface"></div>
+          <div class="stream" id="stream"></div>
+          <div class="clip" id="iceClip">
+            <img class="ice" src="assets/ice-1.webp" alt="">
+            <img class="ice" src="assets/ice-2.webp" alt="">
+            <img class="ice" src="assets/ice-3.webp" alt="">
+          </div>
+          <div class="clip-lid" id="lidWrap"><img class="layer" id="lid" src="assets/lid-straw.webp" alt=""></div>
+          <img class="layer" src="assets/cup-logo.webp" alt="">
+          <div class="toast" id="toast" role="status" aria-live="polite"></div>
+        </div>
+        <div class="printer" id="printer">
+          <img class="printer-img" src="assets/printer.webp" alt="Bondrucker von Café Tera">
+          <div class="pr-display" id="display">€ 0,00</div>
+          <i class="pr-led" id="led"></i>
+          <div class="paper-clip" id="paperClip"><div class="receipt" id="receipt"></div></div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <ol class="steps">
+          <li><button class="step" data-step="raspberry"><span class="thumb"><img src="assets/jug-raspberry.webp" alt=""></span><span><b>Himbeere</b><small>Püree aus frischen Himbeeren</small></span><span class="tag">€ 1,50</span></button></li>
+          <li><button class="step" data-step="milk"><span class="thumb"><img src="assets/jug-milk.webp" alt=""></span><span><b>Hafermilch</b><small>Cremig und leicht süß</small></span><span class="tag">€ 0,90</span></button></li>
+          <li><button class="step" data-step="ice"><span class="thumb ice-thumb"><img src="assets/ice-1.webp" alt=""></span><span><b>Eis</b><small>Drei Würfel</small></span><span class="tag">€ 0,30</span></button></li>
+          <li><button class="step" data-step="matcha"><span class="thumb"><img src="assets/bowl-powder.webp" alt=""></span><span><b>Matcha zubereiten</b><small>Aufschlagen und eingießen</small></span><span class="tag">€ 2,50</span></button></li>
+          <li><button class="step" data-step="finish"><span class="thumb"><img src="assets/lid-thumb.webp" alt=""></span><span><b>Fertig machen</b><small>Umrühren, Deckel drauf, Bon drucken</small></span><span class="tag">€ 0,30</span></button></li>
+        </ol>
+        <div class="summary">
+          <div><div class="label">Dein Himbeer-Matcha</div><div class="total" id="sumText">€ 0,00</div></div>
+          <button class="btn primary" id="addCart" disabled>In den Warenkorb</button>
+        </div>
+        <div class="actions">
+          <button class="btn secondary" id="demo">Demo abspielen</button>
+          <button class="link-btn" id="reset">Neu starten</button>
+        </div>
+        <p class="note">Konzeptprojekt. Becher und Zutaten sind KI-Fotos, in Ebenen geschnitten; Füllhöhe, Struktur und Bon entstehen per Code.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="inner">
+    <span class="script-f">Small Sweet Moments</span>
+    <span>Café Tera · Konzept &amp; Design: Maria Springer</span>
+  </div>
+</footer>
+
+<div id="fly"><img id="jug" alt=""><img id="bowlB" class="fly-img" src="assets/bowl-whisked.webp" alt=""><img id="chasen" class="fly-img" src="assets/chasen.webp" alt=""><img id="flyCup" class="fly-img" src="assets/hero-cup.webp" alt=""></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script>
+(() => {
+  const W = 1089, H = 1445, Y0 = 530, Y1 = 1296;
+  const wallL = y => 0.122649 * y + 187.78 + 3;
+  const wallR = y => -0.124622 * y + 904.62 - 3;
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const T = reduce ? 0.25 : 1;
+
+  const ORDER = ['raspberry', 'milk', 'ice', 'matcha', 'finish'];
+  const PRICE = { raspberry: 150, milk: 90, ice: 30, matcha: 250, finish: 30 };
+  const BON = { raspberry: 'Himbeerpüree', milk: 'Hafermilch', ice: 'Eis', matcha: 'Matcha', finish: 'Becher + Deckel' };
+  const eur = c => '€ ' + (c / 100).toFixed(2).replace('.', ',');
+  const LIQ = {
+    raspberry: { amount: 0.30, jug: 'assets/jug-raspberry.webp', aspect: 819 / 789, origin: [0.09, 0.11], width: 0.42, tilt: -58, stream: ['#e2425f', '#b5162f'], surf: 'rgba(236,92,112,.85)' },
+    milk:      { amount: 0.36, jug: 'assets/jug-milk.webp', aspect: 818 / 789, origin: [0.09, 0.11], width: 0.42, tilt: -58, stream: ['#fbf6ea', '#e9e0cc'], surf: 'rgba(255,252,244,.9)' },
+    matcha:    { amount: 0.20, jug: 'assets/bowl-whisked.webp', aspect: 834 / 980, origin: [0.02, 0.33], width: 0.40, tilt: -64, stream: ['#a9c84a', '#7a9a2a'], surf: 'rgba(176,206,92,.9)' },
+  };
+
+  const $ = s => document.querySelector(s);
+  const stage = $('#stage'), stream = $('#stream'), surface = $('#surface'), toast = $('#toast');
+  const jug = $('#jug');
+  const ices = [...document.querySelectorAll('.ice')];
+  const els = { raspberry: $('#L-raspberry'), milk: $('#L-milk'), matcha: $('#L-matcha'), swirl: $('#L-swirl') };
+  const buttons = Object.fromEntries([...document.querySelectorAll('.step')].map(b => [b.dataset.step, b]));
+  const priceTags = Object.fromEntries(ORDER.map(s => [s, buttons[s].querySelector('.tag').innerHTML]));
+
+  let state, busy = false, demoRunning = false, cartCount = 0;
+
+  const pctFromBottom = f => ((H - Y1) + f * (Y1 - Y0)) / H * 100;
+  const yAt = f => Y1 - f * (Y1 - Y0);
+
+  function setBand(el, a, b, soft = 1.4) {
+    if (b <= a) { el.style.webkitMaskImage = el.style.maskImage = 'linear-gradient(transparent, transparent)'; return; }
+    const pa = pctFromBottom(a), pb = pctFromBottom(b);
+    const start = a <= 0.001 ? '#000 0%' : `transparent ${Math.max(0, pa - soft)}%, #000 ${pa}%`;
+    el.style.webkitMaskImage = el.style.maskImage = `linear-gradient(to top, ${start}, #000 ${Math.max(pa, pb - 0.6)}%, transparent ${pb}%)`;
+  }
+
+  function placeSurface(f, color) {
+    if (f <= 0.01) { surface.style.opacity = 0; return; }
+    const y = yAt(f), xl = wallL(y), xr = wallR(y), w = xr - xl, h = w * 0.07;
+    Object.assign(surface.style, {
+      left: (xl + w * 0.02) / W * 100 + '%', width: (w * 0.96) / W * 100 + '%',
+      top: (y - h / 2) / H * 100 + '%', height: h / H * 100 + '%',
+      background: `radial-gradient(60% 70% at 45% 40%, ${color}, transparent 75%)`, opacity: 0.75,
+    });
+  }
+
+  function placeIce(f) {
+    const y = yAt(f), xs = [0.31, 0.63, 0.47];
+    ices.forEach((img, i) => {
+      if (!state.ice) return;
+      Object.assign(img.style, { top: (y - 80 - i * 8) / H * 100 + '%', left: xs[i] * 100 - 9.5 + '%' });
+    });
+  }
+
+  function render() {
+    Object.values(els).forEach(el => { el.hidden = true; });
+    state.layers.forEach(l => { const el = els[l.name]; el.hidden = false; setBand(el, l.a, l.b); el.style.opacity = l.opacity ?? 1; });
+    const top = state.layers[state.layers.length - 1];
+    placeSurface(state.level, top ? LIQ[top.name === 'swirl' ? 'milk' : top.name].surf : 'transparent');
+    placeIce(state.level);
+  }
+
+  function updateButtons() {
+    const next = ORDER.find(s => !state.done.has(s));
+    ORDER.forEach(s => {
+      const b = buttons[s], done = state.done.has(s);
+      b.classList.toggle('is-done', done);
+      b.classList.toggle('is-next', s === next);
+      b.disabled = busy || done || s !== next;
+      b.querySelector('.tag').innerHTML = done ? '<span class="check" aria-label="erledigt">✓</span>' : priceTags[s];
+    });
+    const finished = state.done.size === ORDER.length;
+    $('#demo').disabled = busy || finished;
+    $('#reset').disabled = busy && !demoRunning;
+    const add = $('#addCart');
+    add.disabled = !finished || busy || state.inCart;
+    add.textContent = state.inCart ? 'Im Warenkorb ✓' : 'In den Warenkorb';
+  }
+
+  function showToast(text) {
+    toast.textContent = text;
+    gsap.fromTo(toast, { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.35 });
+    gsap.to(toast, { opacity: 0, delay: 2, duration: 0.4 });
+  }
+
+  // printer display + summary: total in cents, counts up
+  const display = $('#display'), sumText = $('#sumText');
+  const shown = { c: 0 };
+  function setDisplay(cents, animate = true) {
+    const paint = () => { const t = eur(Math.round(shown.c)); display.textContent = t; sumText.textContent = t; };
+    if (!animate) { shown.c = cents; paint(); return; }
+    gsap.to(shown, { c: cents, duration: 0.6 * T, ease: 'power2.out', onUpdate: paint });
+  }
+  function ring(step) {
+    state.total += PRICE[step] || 0;
+    setDisplay(state.total);
+    gsap.fromTo('#printer', { scaleY: 1 }, { scaleY: 0.97, duration: 0.08, yoyo: true, repeat: 1, ease: 'power1.out' });
+    gsap.fromTo('#led', { opacity: 1 }, { opacity: 0, duration: 0.5, delay: 0.15 });
+  }
+
+  function printReceipt() {
+    return new Promise(resolve => {
+      const r = $('#receipt');
+      const now = new Date();
+      const date = now.toLocaleDateString('de-DE') + ' ' + now.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
+      r.innerHTML = `<div class="r-head">CAFÉ TERA</div><div class="r-sub">Himbeer-Matcha · to go</div><div class="r-date">${date}</div>
+        <div class="r-rule"></div>
+        ${ORDER.map(s => `<div class="r-row"><span>${BON[s]}</span><span>${eur(PRICE[s])}</span></div>`).join('')}
+        <div class="r-rule"></div>
+        <div class="r-row r-total"><span>Summe</span><span>${eur(state.total)}</span></div>
+        <div class="r-thanks">Danke! Bis bald.</div>`;
+      const clip = $('#paperClip');
+      clip.classList.remove('free');
+      gsap.set(r, { opacity: 1, scale: 0.47, x: 0, y: 0, rotation: 0, zIndex: 0 });
+      const h = r.offsetHeight;
+      gsap.timeline({ onComplete: resolve })
+        .set('#led', { opacity: 1 })
+        .fromTo(r, { y: h }, { y: 0, duration: 1.4 * T, ease: 'steps(16)' })
+        .set('#led', { opacity: 0 })
+        .add(() => clip.classList.add('free'))
+        .to(r, { scale: 1, x: () => r.offsetWidth * 0.5, y: () => -r.offsetWidth * 0.1, rotation: -4, duration: 0.7 * T, ease: 'back.out(1.4)' });
+    });
+  }
+
+  function reset() {
+    gsap.globalTimeline.clear();
+    document.querySelectorAll('.thumb img').forEach(i => { i.style.visibility = ''; });
+    busy = false; demoRunning = false;
+    state = { level: 0, layers: [], done: new Set(), ice: false, total: 0, inCart: false };
+    setDisplay(0, false);
+    gsap.set('#receipt', { opacity: 0, zIndex: 0 });
+    gsap.set('#printer', { scaleY: 1 });
+    gsap.set('#led', { opacity: 0 });
+    $('#paperClip').classList.remove('free');
+    gsap.set(stream, { scaleY: 0 });
+    gsap.set(jug, { opacity: 0 });
+    gsap.set(ices, { opacity: 0, rotation: 0 });
+    gsap.set(toast, { opacity: 0 });
+    gsap.set(stage, { rotation: 0, scaleY: 1 });
+    gsap.set('#lid', { opacity: 0, yPercent: 0 });
+    gsap.set(['#bowlB', '#chasen', '#flyCup'], { opacity: 0 });
+    buttons.matcha.querySelector('.thumb img').src = 'assets/bowl-powder.webp';
+    render(); updateButtons();
+    // gentle float on hero decorations (restarted because the timeline was cleared)
+    if (!reduce) gsap.utils.toArray('.float').forEach((el, i) => gsap.to(el, { y: i % 2 ? 10 : -10, duration: 2.6 + i * 0.4, yoyo: true, repeat: -1, ease: 'sine.inOut' }));
+  }
+
+  function stageToViewport(fx, fy) {
+    const r = stage.getBoundingClientRect();
+    return { x: r.left + fx * r.width, y: r.top + fy * r.height, w: r.width, h: r.height };
+  }
+
+  function pour(name, fromCurrent = false) {
+    return new Promise(resolve => {
+      const cfg = LIQ[name];
+      const thumb = buttons[name].querySelector('.thumb img');
+      const tr = thumb.getBoundingClientRect();
+      const tgt = stageToViewport(0.40, 0.215);
+      const jw = tgt.w * cfg.width, jh = jw * cfg.aspect;
+      const ox = cfg.origin[0] * jw, oy = cfg.origin[1] * jh;
+      jug.src = cfg.jug;
+      gsap.set(jug, { transformOrigin: `${cfg.origin[0] * 100}% ${cfg.origin[1] * 100}%` });
+      if (!fromCurrent) gsap.set(jug, { width: tr.width, height: tr.width * cfg.aspect, left: tr.left, top: tr.top, rotation: 0, opacity: 1 });
+      thumb.style.visibility = 'hidden';
+
+      const a = state.level, b = Math.min(0.97, a + cfg.amount);
+      const layer = { name, a, b: a };
+      state.layers.push(layer);
+      setBand(els[name], a, a);
+      els[name].hidden = false;
+
+      const spoutY = 0.215 * H;
+      Object.assign(stream.style, {
+        left: (40 - 0.95) + '%', top: (spoutY / H * 100) + '%',
+        background: `linear-gradient(90deg, ${cfg.stream[1]}, ${cfg.stream[0]} 45%, ${cfg.stream[1]})`,
+      });
+      const setStream = f => { stream.style.height = ((yAt(f) - spoutY) / H * 100 + 0.8) + '%'; };
+      setStream(a);
+
+      const lv = { f: a };
+      gsap.timeline({ onComplete: () => { if (name === 'matcha') thumb.src = 'assets/bowl-whisked.webp'; thumb.style.visibility = ''; resolve(); } })
+        .to(jug, { left: tgt.x - ox, top: tgt.y - oy, width: jw, height: jh, duration: 0.7 * T, ease: 'power3.inOut' })
+        .to(jug, { rotation: cfg.tilt, duration: 0.4 * T, ease: 'power2.in' })
+        .set(stream, { transformOrigin: '50% 0%' })
+        .to(stream, { scaleY: 1, duration: 0.22 * T, ease: 'power1.in' })
+        .to(lv, { f: b, duration: 1.5 * T, ease: 'power1.inOut', onUpdate: () => {
+            layer.b = lv.f; state.level = lv.f;
+            setBand(els[name], layer.a, layer.b); setStream(lv.f); placeSurface(lv.f, cfg.surf); placeIce(lv.f);
+          } }, '<0.1')
+        .to(stream, { scaleX: 0.6, duration: 0.15 * T, yoyo: true, repeat: 5, ease: 'sine.inOut' }, '<')
+        .set(stream, { transformOrigin: '50% 100%' })
+        .to(stream, { scaleY: 0, duration: 0.2 * T, ease: 'power1.out' })
+        .to(jug, { rotation: 0, duration: 0.35 * T, ease: 'power2.out' }, '<')
+        .to(jug, { left: tr.left, top: tr.top, width: tr.width, height: tr.width * cfg.aspect, duration: 0.6 * T, ease: 'power3.inOut' })
+        .set(jug, { opacity: 0 });
+    });
+  }
+
+  function dropIce() {
+    return new Promise(resolve => {
+      state.ice = true;
+      const f0 = state.level;
+      placeIce(f0);
+      const tl = gsap.timeline({ onComplete: resolve });
+      ices.forEach((img, i) => {
+        tl.fromTo(img, { opacity: 1, yPercent: -260, rotation: -30 + i * 25 },
+          { yPercent: 0, rotation: (i - 1) * 12, duration: 0.55 * T, ease: 'bounce.out' }, i * 0.18 * T);
+      });
+      const lv = { f: f0 };
+      tl.to(lv, { f: Math.min(0.97, f0 + 0.04), duration: 0.6 * T, onUpdate: () => {
+        state.level = lv.f; const top = state.layers[state.layers.length - 1];
+        if (top) { top.b = lv.f; setBand(els[top.name], top.a, top.b); placeSurface(lv.f, LIQ[top.name].surf); }
+      } }, 0.2 * T);
+    });
+  }
+
+  function whisk() {
+    return new Promise(resolve => {
+      const thumbA = buttons.matcha.querySelector('.thumb img');
+      const ra = thumbA.getBoundingClientRect();
+      const sr = stage.getBoundingClientRect();
+      const aspect = 834 / 980;
+      const bw = sr.width * 0.40, bh = bw * aspect;
+      const bx = sr.left + sr.width * 0.30, by = sr.top + sr.height * 0.05;
+      const cw = sr.width * 0.15, ch = cw * 901 / 597;
+      const cx = bx + bw * 0.5 - cw / 2, cy = by + bh * 0.52 - ch;
+      const hidden = bh * (0.52 - 0.34);
+      const bowlB = $('#bowlB'), chasen = $('#chasen');
+      jug.src = 'assets/bowl-powder.webp';
+      gsap.set(jug, { transformOrigin: '50% 50%', width: ra.width, height: ra.width * aspect, left: ra.left, top: ra.top, rotation: 0, opacity: 1 });
+      gsap.set(bowlB, { width: bw, height: bh, left: bx, top: by, opacity: 0, rotation: 0 });
+      gsap.set(chasen, { width: cw, height: ch, left: cx, top: cy - sr.height * 0.35, opacity: 0, rotation: 0, x: 0, clipPath: 'inset(0px 0px 0px 0px)' });
+      thumbA.style.visibility = 'hidden';
+      gsap.timeline({ onComplete: () => {
+        jug.src = 'assets/bowl-whisked.webp';
+        gsap.set(jug, { left: bx, top: by, width: bw, height: bh, rotation: 0, opacity: 1 });
+        gsap.set(bowlB, { opacity: 0 });
+        resolve();
+      } })
+        .to(jug, { left: bx, top: by, width: bw, height: bh, duration: 0.7 * T, ease: 'power3.inOut' })
+        .to(chasen, { opacity: 1, top: cy, clipPath: `inset(0px 0px ${hidden}px 0px)`, duration: 0.45 * T, ease: 'power2.out' })
+        .to(chasen, { x: bw * 0.09, rotation: 7, duration: 0.09, yoyo: true, repeat: reduce ? 1 : 17, ease: 'sine.inOut' })
+        .to([jug, bowlB], { rotation: 1.5, duration: 0.09, yoyo: true, repeat: reduce ? 1 : 17, ease: 'sine.inOut', transformOrigin: '50% 90%' }, '<')
+        .to(bowlB, { opacity: 1, duration: 1.4 * T, ease: 'power1.in' }, '<0.2')
+        .set(jug, { opacity: 0 })
+        .to(chasen, { top: cy - sr.height * 0.3, clipPath: 'inset(0px 0px 0px 0px)', opacity: 0, x: 0, rotation: 0, duration: 0.4 * T, ease: 'power2.in' })
+        .set(bowlB, { rotation: 0, transformOrigin: '50% 50%' });
+    });
+  }
+
+  function swirl() {
+    return new Promise(resolve => {
+      const r = state.layers.find(l => l.name === 'raspberry');
+      const m = state.layers.find(l => l.name === 'milk');
+      const top = m ? m.b : r.b;
+      const sw = { name: 'swirl', a: 0, b: top, opacity: 0 };
+      state.layers.splice(state.layers.indexOf(m) + 1, 0, sw);
+      els.swirl.hidden = false; setBand(els.swirl, 0, top); els.swirl.style.opacity = 0;
+      gsap.timeline({ onComplete: () => {
+        state.layers = state.layers.filter(l => l.name !== 'raspberry' && l.name !== 'milk');
+        sw.opacity = 1; render(); resolve();
+      } })
+        .to(stage, { rotation: 1.6, duration: 0.12 * T, yoyo: true, repeat: 7, ease: 'sine.inOut', transformOrigin: '50% 90%' })
+        .to(ices, { rotation: '+=40', duration: 1.0 * T, ease: 'power1.inOut', stagger: 0.05 }, 0)
+        .to(els.swirl, { opacity: 1, duration: 1.2 * T, ease: 'power1.inOut' }, 0.1)
+        .set(stage, { rotation: 0 });
+    });
+  }
+
+  function dropLid() {
+    return new Promise(resolve => {
+      const cut = (yAt(state.level) / H * 100).toFixed(2);
+      const wrap = $('#lidWrap');
+      wrap.style.webkitMaskImage = wrap.style.maskImage = `linear-gradient(to bottom, #000 ${cut}%, transparent ${cut}%)`;
+      const lid = $('#lid');
+      gsap.timeline({ onComplete: resolve })
+        .fromTo(lid, { opacity: 1, yPercent: -62 }, { yPercent: 0, duration: 0.75 * T, ease: 'power2.in' })
+        .to(stage, { scaleY: 0.985, duration: 0.08, yoyo: true, repeat: 1, ease: 'power1.out', transformOrigin: '50% 100%' })
+        .to(lid, { yPercent: -2.5, duration: 0.14 * T, yoyo: true, repeat: 1, ease: 'power1.out' }, '<');
+    });
+  }
+
+  async function run(step) {
+    if (busy) return;
+    busy = true; updateButtons();
+    if (step === 'finish') { await swirl(); await dropLid(); ring(step); showToast('Dein Himbeer-Matcha ist fertig'); await printReceipt(); }
+    else if (step === 'ice') { await dropIce(); ring(step); }
+    else if (step === 'matcha') { await whisk(); await pour('matcha', true); ring(step); }
+    else { await pour(step); ring(step); }
+    state.done.add(step);
+    busy = false; updateButtons();
+  }
+
+  function addToCart() {
+    if (state.inCart || state.done.size !== ORDER.length) return;
+    state.inCart = true; updateButtons();
+    const s = stage.getBoundingClientRect(), c = $('#cart').getBoundingClientRect();
+    const fc = $('#flyCup');
+    const w = s.width * 0.5, h = w * 1311 / 698;
+    gsap.timeline()
+      .set(fc, { left: s.left + s.width * 0.25, top: s.top + s.height * 0.1, width: w, height: h, opacity: 1, rotation: 0 })
+      .to(fc, { left: c.left + c.width / 2 - 8, top: c.top + c.height / 2 - 15, width: 16, height: 30, rotation: 20, duration: 0.9 * T, ease: 'power3.in' })
+      .set(fc, { opacity: 0 })
+      .add(() => {
+        cartCount += 1;
+        const badge = $('#badge'); badge.hidden = false; badge.textContent = cartCount;
+        $('#cart').setAttribute('aria-label', `Warenkorb, ${cartCount} Artikel`);
+        gsap.fromTo(badge, { scale: 1.6 }, { scale: 1, duration: 0.4, ease: 'back.out(3)' });
+      });
+  }
+
+  Object.entries(buttons).forEach(([s, b]) => b.addEventListener('click', () => run(s)));
+  $('#reset').addEventListener('click', reset);
+  $('#addCart').addEventListener('click', addToCart);
+  $('#demo').addEventListener('click', async () => {
+    if (busy) return;
+    demoRunning = true;
+    for (const s of ORDER) { if (!demoRunning) return; if (!state.done.has(s)) await run(s); }
+    demoRunning = false; updateButtons();
+  });
+  window.addEventListener('resize', () => { if (!busy) render(); });
+
+  reset();
+})();
+</script>
+
+</body>
+</html>
