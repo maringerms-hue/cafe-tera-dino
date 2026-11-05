@@ -156,6 +156,28 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 
 /* ---------- dashboards ---------- */
 .dash{max-width:1240px;margin:0 auto;padding-block:24px 64px}
+.appshell{display:grid;grid-template-columns:232px minmax(0,1fr);min-height:calc(100vh - 52px);background:var(--paper)}
+.appshell .dash{max-width:1200px;margin:0;width:100%}
+.side-nav{background:var(--white);border-right:1px solid var(--line);padding:22px 14px 18px;display:flex;flex-direction:column;gap:4px;position:sticky;top:calc(52px + env(safe-area-inset-top,0px));height:calc(100vh - 52px);box-sizing:border-box}
+.side-nav .brand{display:flex;gap:10px;align-items:flex-start;padding:0 8px 18px}
+.side-nav .brand .plus{width:26px;height:26px;border-radius:7px;background:var(--teal);color:var(--white);display:grid;place-items:center;font-weight:700;flex:none}
+.side-nav .brand b{display:block;font-size:14px;color:var(--teal)}
+.side-nav .brand span{font-size:12px;color:var(--ink-2)}
+.nav-i{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:10px;font-size:14px;font-weight:600;color:var(--ink-2)}
+.nav-i svg{flex:none}
+.nav-i.on{background:var(--mint);color:var(--teal)}
+.nav-i .b{margin-left:auto;min-width:20px;height:20px;border-radius:10px;background:var(--teal);color:var(--white);font-size:11px;display:grid;place-items:center;padding:0 6px}
+.nav-i.off{opacity:.55}
+.side-nav .safe{margin-top:auto;background:var(--mint-3);border:1px solid var(--line);border-radius:12px;padding:12px;font-size:12px;color:var(--ink-2)}
+.side-nav .safe b{display:block;color:var(--ink);font-size:13px;margin-bottom:2px}
+.side-nav .me{display:flex;gap:10px;align-items:center;padding:12px 6px 0}
+.side-nav .me .av{width:36px;height:36px;border-radius:50%;background:var(--mint);color:var(--teal);font-weight:700;font-size:13px;display:grid;place-items:center;flex:none}
+.side-nav .me b{display:block;font-size:13px}.side-nav .me span{font-size:12px;color:var(--ink-2)}
+.greet{display:flex;align-items:center;gap:18px;background:var(--mint);border-radius:18px;padding:16px 20px;margin-bottom:18px}
+.greet img{width:64px;height:64px;border-radius:50%;flex:none}
+.greet h2{font-size:20px;color:var(--teal)}
+.greet p{margin:2px 0 0;font-size:14px;color:var(--ink)}
+@media (max-width:900px){.appshell{grid-template-columns:1fr}.side-nav{display:none}}
 .dhead{display:flex;align-items:flex-end;gap:12px 20px;flex-wrap:wrap;margin-bottom:18px}
 .dhead h1{font-size:26px;color:var(--teal)}
 .dhead .meta{color:var(--ink-2);font-size:14px}
@@ -494,12 +516,32 @@ function isLastChips(i){for(let j=i+1;j<S.chat.length;j++){if(S.chat[j].who!=='c
 
 /* ---------- MFA ---------- */
 let sel={mfa:null,arzt:null},tab='offen';
+const ICON={inbox:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 13h5l2 3h4l2-3h5"/><path d="M5 5h14l2 8v6H3v-6z"/></svg>',
+cal:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>',
+rx:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 8h6M9 12h6M9 16h4"/></svg>',
+ppl:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.8-3.5 3.4-5.5 6.5-5.5s5.7 2 6.5 5.5M16 4.5a3.5 3.5 0 0 1 0 7M18 14.6c1.8.8 3 2.6 3.5 5.4"/></svg>',
+alert:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l9.5 17h-19z"/><path d="M12 10v4.5M12 17.6v.1"/></svg>',
+chat:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z"/></svg>'};
+function shell(role,inner){
+  const c=counts();
+  const items=role==='mfa'?[['inbox','Eingang',c.mfa,true],['cal','Termine',0,false],['rx','Rezepte',S.reqs.filter(r=>r.type==='Rezept'&&r.status==='freigabe').length,false],['ppl','Patient:innen',0,false],['chat','Assistent',0,false]]
+                          :[['rx','Zur Unterschrift',c.arzt,true],['alert','Notfall-Hinweise',S.alerts.length,false],['cal','Termine',0,false],['ppl','Patient:innen',0,false]];
+  const me=role==='mfa'?['LW','Lisa Weber','Empfang (MFA)']:['LW','Dr. Lena Wagner','Hausärztin'];
+  const nav=items.map(([ic,l,n,on])=>`<div class="nav-i ${on?'on':'off'}" ${on?'aria-current="page"':'title="Im Prototyp nicht aktiv"'}>${ICON[ic]}${l}${n?`<span class="b">${n}</span>`:''}</div>`).join('');
+  return `<div class="appshell"><aside class="side-nav" aria-label="Praxis-Navigation"><div class="brand"><span class="plus">+</span><div><b>Praxis am Kurpark</b><span>Praxis-Dashboard</span></div></div>${nav}
+   <div class="safe"><b>Geschützter Bereich</b>Nur für das Praxisteam. Im Prototyp mit fiktiven Daten.</div>
+   <div class="me"><span class="av">${me[0]}</span><div><b>${me[1]}</b><span>${me[2]}</span></div></div></aside>${inner}</div>`;
+}
+function greet(role){const c=counts();
+  if(role==='mfa')return `<div class="greet"><img src="${IMG.happy}" alt=""><div><h2>Guten Morgen, Frau Weber.</h2><p>${c.mfa} ${c.mfa===1?'Anfrage wartet':'Anfragen warten'} auf den Empfang · ${c.arzt} bei der Ärztin · ${S.appts.filter(a=>a.isNew).length} neue Termine per Chat</p></div></div>`;
+  return `<div class="greet"><img src="${IMG.happy}" alt=""><div><h2>Guten Morgen, Frau Dr. Wagner.</h2><p>${c.arzt} ${c.arzt===1?'Anfrage wartet':'Anfragen warten'} auf Ihre Unterschrift · ${S.alerts.length} Notfall-Hinweise heute</p></div></div>`;
+}
 function viewMfa(){
   const open=S.reqs.filter(r=>r.status==='neu'),wait=S.reqs.filter(r=>r.status==='freigabe'),done=S.reqs.filter(r=>!['neu','freigabe'].includes(r.status));
   const shown=tab==='offen'?open:tab==='arzt'?wait:done;
   if(!sel.mfa||!S.reqs.find(r=>r.id===sel.mfa))sel.mfa=(shown[0]||{}).id||null;
   const r=S.reqs.find(x=>x.id===sel.mfa);
-  return `<section class="dash gut"><div class="dhead"><div><h1>Eingang aus dem Chat</h1><div class="meta">Empfang · Praxis am Kurpark · Donnerstag, 5. November</div></div>
+  return shell('mfa',`<section class="dash gut">${greet('mfa')}<div class="dhead"><div><h1>Eingang aus dem Chat</h1><div class="meta">Empfang · Praxis am Kurpark · Donnerstag, 5. November</div></div>
    <div class="kpis"><span class="kpi">Offen <b>${open.length}</b></span><span class="kpi">Bei Ärztin <b>${wait.length}</b></span><span class="kpi">Notfall-Hinweise heute <b>${S.alerts.length}</b></span></div></div>
    <div class="grid">
     <div class="panel"><div class="tabs" role="toolbar" aria-label="Filter">
@@ -512,7 +554,7 @@ function viewMfa(){
       ${alertsHtml()}
       <div class="panel"><h2>Termine</h2>${apptsHtml()}</div>
     </div>
-   </div></section>`}
+   </div></section>`)}
 function listHtml(arr,role){if(!arr.length)return '<div class="empty">Hier ist gerade nichts. Neue Anfragen aus dem Chat erscheinen automatisch.</div>';
   return '<div class="list" role="listbox" aria-label="Anfragen">'+arr.map(r=>`<button class="item ${r.urgent?'u':''}" role="option" data-sel="${r.id}" aria-selected="${sel[role]===r.id}"><span class="bar"></span><span style="min-width:0"><span class="t"><span class="type">${esc(r.type)}</span>${esc(r.who)}${r.ex?'<span class="ex">Beispiel</span>':''}${r.mine&&!r.ex?'<span class="ex" style="color:var(--coral);border-color:var(--coral)">Ihr Test</span>':''}</span><span class="d" style="display:block">${esc(r.text)}</span></span><span class="tm">${r.time}<br>${pill(r.status)}</span></button>`).join('')+'</div>'}
 function detailMfa(r){
@@ -532,14 +574,14 @@ function viewArzt(){
   const wait=S.reqs.filter(r=>r.status==='freigabe');const done=S.reqs.filter(r=>['freigegeben','abgelehnt'].includes(r.status)&&(r.type==='Rezept'||r.type==='Überweisung'));
   if(!sel.arzt||!wait.find(r=>r.id===sel.arzt))sel.arzt=(wait[0]||{}).id||null;
   const r=S.reqs.find(x=>x.id===sel.arzt);
-  return `<section class="dash gut"><div class="dhead"><div><h1>Zur Unterschrift</h1><div class="meta">Dr. L. Wagner · nur Anfragen, die eine ärztliche Entscheidung brauchen</div></div>
+  return shell('arzt',`<section class="dash gut">${greet('arzt')}<div class="dhead"><div><h1>Zur Unterschrift</h1><div class="meta">Dr. L. Wagner · nur Anfragen, die eine ärztliche Entscheidung brauchen</div></div>
    <div class="kpis"><span class="kpi">Warten <b>${wait.length}</b></span><span class="kpi">Heute entschieden <b>${done.length}</b></span></div></div>
    <div class="grid">
     <div class="panel"><h2>Wartet auf Unterschrift <span class="n">${wait.length}</span></h2>${listHtml(wait,'arzt')}
       ${done.length?'<h2 style="border-top:1px solid var(--line)">Entschieden</h2>'+'<ul class="list">'+done.map(d=>`<li style="padding:10px 16px;border-bottom:1px solid var(--line);font-size:13px;display:flex;justify-content:space-between;gap:8px"><span><span class="type">${esc(d.type)}</span>${esc(d.who)} · ${esc(d.text.slice(0,40))}</span>${pill(d.status)}</li>`).join('')+'</ul>':''}</div>
     <div class="panel">${r?detailArzt(r):'<div class="empty">Alles erledigt. Neue Rezepte und Überweisungen leitet der Empfang hierher weiter.</div>'}</div>
     <div class="side" style="min-width:0">${alertsHtml()}</div>
-   </div></section>`}
+   </div></section>`)}
 function detailArzt(r){return `<div class="detail"><div><span class="type">${esc(r.type)}</span>${pill(r.status)}</div><h3>${esc(r.who)}</h3>
   <dl><dt>Geb.-Datum</dt><dd>${esc(r.born)}</dd><dt>Eingang</dt><dd>${r.time} Uhr · Chat</dd>${r.detail?`<dt>Weg</dt><dd>${esc(r.detail)}</dd>`:''}${r.last?`<dt>Historie</dt><dd>${esc(r.last)}</dd>`:''}</dl>
   <div class="quote">${esc(r.text)}</div>${r.auto?'<div style="font-size:13px;color:var(--ink-2)">Direkt vom Chat: Dauermedikation, Empfang musste nichts tun.</div>':''}
