@@ -181,7 +181,7 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .foot{font-size:11.5px;color:var(--ink-2);padding:0 14px 10px;background:var(--white);display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}
 .foot button{border:0;background:none;padding:0;color:var(--teal);font-weight:600;font-size:12px;text-decoration:underline}
 @media (max-width:560px){.chat{inset:calc(52px + env(safe-area-inset-top,0px)) 0 0 0;right:0;bottom:0;width:100%;max-width:100%;height:auto;border-radius:18px 18px 0 0}}
-@media (max-width:640px){.chat{top:calc(96px + env(safe-area-inset-top,0px))}.toast{bottom:auto;top:calc(104px + env(safe-area-inset-top,0px))}}
+@media (max-width:640px){.chat{top:calc(96px + env(safe-area-inset-top,0px))}body .toast{bottom:auto;top:calc(104px + env(safe-area-inset-top,0px))}}
 
 /* ---------- dashboards ---------- */
 .dash{max-width:1240px;margin:0 auto;padding-block:24px 64px}
@@ -293,7 +293,7 @@ button.nav-i:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
 .mviews button[aria-pressed="true"]{background:var(--mint);border-color:var(--mint);color:var(--teal)}
 @media (max-width:900px){.mviews{display:flex;flex-wrap:wrap}.appshell{grid-template-columns:minmax(0,1fr)}.dash{min-width:0}}
 @media (max-width:420px){.mviews button{padding:6px 11px;font-size:13px}.greet{gap:10px;padding:12px 14px}.greet .gt{font-size:17px}}
-.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--white);padding:10px 16px;border-radius:12px;font-size:14px;z-index:80;max-width:calc(100vw - 32px)}
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--white);padding:10px 16px;border-radius:12px;font-size:14px;z-index:80;width:max-content;max-width:calc(100vw - 32px);text-align:center}
 </style>
 
 <header class="tbar"><div class="tbar-in gut">
