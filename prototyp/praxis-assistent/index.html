@@ -258,6 +258,23 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .alert{border-color:#F0B9BE}
 .alert > h2{background:var(--red-bg);color:var(--red)}
 .ex{font-size:10.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-2);border:1px solid var(--line);border-radius:5px;padding:0 5px;margin-left:6px}
+button.nav-i{background:none;border:0;width:100%;text-align:left;font:inherit;font-size:14px;font-weight:600;color:var(--ink-2);cursor:pointer}
+button.nav-i:hover{background:var(--mint-3)}
+button.nav-i:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
+.setgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,290px),1fr));gap:16px;align-items:start}
+.setp .bd{padding:14px 16px 16px;display:flex;flex-direction:column;gap:12px;font-size:14px}
+.setp label{display:flex;flex-direction:column;gap:5px;font-size:13px;font-weight:600;color:var(--ink-2)}
+.setp input[type=text]{border:1.5px solid var(--line);border-radius:10px;padding:9px 10px;font-size:15px;background:var(--mint-3);color:var(--ink);width:100%}
+.setp .sw{flex-direction:row;align-items:flex-start;gap:10px;font-size:14px;font-weight:500;color:var(--ink);cursor:pointer;line-height:1.35}
+.setp .sw input{width:18px;height:18px;margin:1px 0 0;flex:none;accent-color:var(--teal)}
+.setp .sw.dis{color:var(--ink-2);cursor:default}
+.setp .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.setp .muted{margin:0;font-size:13px;color:var(--ink-2)}
+.setacts{margin-top:16px}
+.mviews{display:none;gap:6px;margin:0 0 14px}
+.mviews button{border:1.5px solid var(--line);background:var(--white);border-radius:999px;padding:7px 14px;font-size:14px;font-weight:600;color:var(--ink-2)}
+.mviews button[aria-pressed="true"]{background:var(--mint);border-color:var(--mint);color:var(--teal)}
+@media (max-width:900px){.mviews{display:flex}}
 .toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--white);padding:10px 16px;border-radius:12px;font-size:14px;z-index:80;max-width:calc(100vw - 32px)}
 </style>
 
@@ -307,11 +324,13 @@ function seed(){
       {id:'R2',type:'Frage',who:'Jonas K.',born:'02.11.1990',time:'08:47',text:'Brauche ich für die Grippeimpfung einen Termin oder kann ich vorbeikommen?',status:'neu',ex:true,hist:['08:47 per Chat eingegangen']},
       {id:'R3',type:'Rückruf',who:'Ingrid W.',born:'30.06.1941',time:'09:05',text:'Bitte um Rückruf wegen Befund vom Labor.',phone:'0611 98 76 54',reach:'ab 11 Uhr',tries:0,status:'neu',ex:true,hist:['09:05 per Chat eingegangen']}
     ],
-    alerts:[{time:'07:58',who:'Anonym',text:'„Starke Schmerzen in der Brust“ – Assistent hat auf 112 hingewiesen.',ex:true}]
+    alerts:[{time:'07:58',who:'Anonym',text:'„Starke Schmerzen in der Brust“ – Assistent hat auf 112 hingewiesen.',ex:true}],
+    settings:DEF_SETTINGS()
   };
 }
+function DEF_SETTINGS(){return {vac:false,vacFrom:'09.11.2026',vacTo:'13.11.2026',vertretung:'Praxis am Park, Telefon 0611 654 321',types:{termin:true,rezept:true,ueberw:true,frage:true},booking:'chat',rev:0}}
 let S;
-function load(){try{const v=localStorage.getItem(KEY);S=v?JSON.parse(v):seed()}catch(e){S=seed()}}
+function load(){try{const v=localStorage.getItem(KEY);S=v?JSON.parse(v):seed()}catch(e){S=seed()}if(!S.settings)S.settings=DEF_SETTINGS()}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 load();
 window.addEventListener('storage',e=>{if(e.key===KEY){load();render()}});
@@ -325,7 +344,7 @@ document.querySelectorAll('[data-go]').forEach(b=>b.addEventListener('click',()=
 let resetArm=false;
 $('#resetBtn').addEventListener('click',e=>{
   if(!resetArm){resetArm=true;e.target.textContent='Wirklich neu starten?';setTimeout(()=>{resetArm=false;e.target.textContent='Neu starten'},3500);return}
-  resetArm=false;e.target.textContent='Neu starten';S=seed();save();ui={};sel={mfa:null,arzt:null};toast('Alles zurückgesetzt – Beispieldaten geladen.');go('start')});
+  resetArm=false;e.target.textContent='Neu starten';S=seed();save();ui={};sel={mfa:null,arzt:null};mfaView='inbox';toast('Alles zurückgesetzt – Beispieldaten geladen.');go('start')});
 function toast(t){const el=$('#toast');el.textContent=t;el.hidden=false;clearTimeout(toast.t);toast.t=setTimeout(()=>el.hidden=true,3000)}
 
 /* ---------- helpers ---------- */
@@ -352,15 +371,22 @@ function bot(items,delay){
 function user(text){push({who:'user',text});renderChat()}
 function showTyping(on){const log=$('#log');if(!log)return;let t=$('#typing');if(on&&!t){t=document.createElement('div');t.id='typing';t.className='typing';t.innerHTML='<i></i><i></i><i></i>';t.setAttribute('aria-label','Assistent schreibt');log.appendChild(t);log.scrollTop=log.scrollHeight}if(!on&&t)t.remove()}
 const MENU=[['termin_neu','Termin vereinbaren'],['termin_versch','Termin verschieben'],['termin_absage','Termin absagen'],['rezept','Rezept bestellen'],['ueberw','Überweisung anfragen'],['frage','Frage an das Praxisteam'],['zeiten','Öffnungszeiten & Anfahrt']];
-function menu(text){return [{who:'bot',text:text||'Wobei kann ich Ihnen helfen?'},{who:'chips',opts:MENU.map(([k,l])=>({k,l})).concat([{k:'meine',l:'Meine Termine & Anfragen',sec:true}])}]}
+const TYPE_OF={termin_neu:'termin',termin_versch:'termin',termin_absage:'termin',rezept:'rezept',ueberw:'ueberw',frage:'frage'};
+const TYPE_NAME={termin:'Termine',rezept:'Rezeptanfragen',ueberw:'Überweisungsanfragen',frage:'Fragen an das Team'};
+function activeMenu(){return MENU.filter(([k])=>!TYPE_OF[k]||S.settings.types[TYPE_OF[k]])}
+const extBooking=()=>S.settings.booking==='extern';
+function vacLine(){const s=S.settings;return s.vac?` Die Praxis ist vom ${esc(s.vacFrom)} bis ${esc(s.vacTo)} im Urlaub. Vertretung: ${esc(s.vertretung)}.`:''}
+function vacNotice(){const s=S.settings;if(s.vac&&S.vacShown!==s.rev){S.vacShown=s.rev;push({who:'card',html:`<div class="h" style="color:var(--teal)">Praxis im Urlaub</div>Vom ${esc(s.vacFrom)} bis ${esc(s.vacTo)} ist die Praxis geschlossen. Vertretung: <b>${esc(s.vertretung)}</b>.<div style="margin-top:6px;color:var(--ink-2)">Ihre Anliegen nehme ich trotzdem an – das Team bearbeitet sie nach dem Urlaub. Im Notfall: 112.</div>`})}}
+function menu(text){return [{who:'bot',text:text||'Wobei kann ich Ihnen helfen?'},{who:'chips',opts:activeMenu().map(([k,l])=>({k,l})).concat([{k:'meine',l:'Meine Termine & Anfragen',sec:true}])}]}
 function myReqs(){return S.reqs.filter(r=>r.mine)}
 function followUp(){return [{who:'bot',text:'Kann ich sonst noch etwas für Sie tun?'},{who:'chips',wrap:true,opts:[{k:'menu',l:'Ja, etwas anderes'},{k:'bye',l:'Nein, danke',sec:true}]}]}
 const profileCard=()=>({who:'card',html:`<span style="color:var(--ink-2)">Testprofil: <b style="color:var(--ink)">${esc(S.profile.name)}</b>, geb. ${S.profile.born}. Im echten Betrieb bestätigen Patient:innen ihre Identität, z. B. mit Geburtsdatum und SMS-Code.</span>`});
 function startChat(intent){
   if(S.started)return;S.started=true;
   push({who:'bot',text:'Guten Tag! Ich bin der digitale Assistent der Praxis am Kurpark. Ich nehme Ihre Anliegen rund um die Uhr an – das Praxisteam antwortet in der Sprechzeit.'});
+  vacNotice();
   push(profileCard());
-  if(!intent){push({who:'chips',opts:MENU.map(([k,l])=>({k,l}))})}
+  if(!intent){push({who:'chips',opts:activeMenu().map(([k,l])=>({k,l}))})}
   push({who:'card',html:'<span style="color:var(--ink-2)">Ich stelle keine Diagnosen. Bei Notfällen rufen Sie bitte die <b>112</b>.</span>'});
   save();
 }
@@ -433,6 +459,9 @@ const TEXT={
 function act(k,label){
   const silent=['meine','back','cancel'];
   if(label&&!silent.includes(k))user(label);
+  const ty=TYPE_OF[k];
+  if(ty&&!S.settings.types[ty]){S.flow=null;return bot([{who:'card',html:`<div class="h" style="color:var(--teal)">Gerade nicht über den Chat möglich</div>${TYPE_NAME[ty]} nimmt die Praxis im Moment nicht über den Chat an.${S.settings.vac?vacLine():' Telefon: 0611 123 456.'}`},...menu('Wobei kann ich sonst helfen?').slice(1)])}
+  if(ty==='termin'&&extBooking()){S.flow=null;return bot([{who:'card',html:`<div class="h" style="color:var(--teal)">Termine online buchen</div>Termine vergibt die Praxis über ihr Online-Buchungssystem (z. B. Doctolib). Dort sehen Sie alle freien Zeiten, können verschieben oder absagen und bekommen eine Bestätigung.<div class="note">Im Prototyp öffnet sich kein externer Dienst. Im echten Betrieb führt hier ein Button direkt zur Online-Buchung der Praxis.</div>`},...followUp()])}
   switch(k){
     case 'menu': S.flow=null; return bot(menu());
     case 'newtopic': if(S.flow){S.flow=null;return bot(menu('Ihr angefangenes Anliegen habe ich verworfen. Wobei kann ich helfen?'))} return bot(menu());
@@ -499,9 +528,10 @@ function paintSheet(){const chat=$('.chat');if(!chat)return;let sh=$('#sheet');i
   if(!sh){sh=document.createElement('div');sh.id='sheet';sh.className='sheet';sh.setAttribute('role','dialog');sh.setAttribute('aria-label','Meine Termine und Anfragen');chat.appendChild(sh)}
   const ap=S.appts.filter(a=>a.mine).sort((a,b)=>ord(a.day)-ord(b.day)||a.time.localeCompare(b.time));
   const rq=myReqs().filter(r=>r.type!=='Termin');
+  const tOk=S.settings.types.termin&&!extBooking();
   sh.innerHTML=`<div class="sh-head"><h2>Meine Termine & Anfragen</h2><button class="x" id="shClose" aria-label="Schließen">×</button></div><div class="sh-body">
-   <h3>Termine</h3>${ap.length?ap.map(a=>`<div class="ap ${a.status==='abgesagt'?'cancelled':''}"><div class="when">${a.day} · ${a.time} Uhr ${a.status==='abgesagt'?'<span class="pill p-grey">Abgesagt</span>':'<span class="pill p-ok">Bestätigt</span>'}</div><div class="what">${esc(a.what)}${a.doc?' · '+esc(a.doc):''}</div>${a.status==='ok'?`<div class="acts"><button class="btn ghost sm" data-sh="tvp:${a.id}">Verschieben</button><button class="btn ghost sm danger" data-sh="abp:${a.id}">Termin absagen</button></div>`:''}</div>`).join(''):'<p class="muted">Keine Termine.</p>'}
-   <div class="acts" style="margin-top:4px"><button class="btn ghost" data-sh="termin_neu">Neuer Termin</button></div>
+   <h3>Termine</h3>${ap.length?ap.map(a=>`<div class="ap ${a.status==='abgesagt'?'cancelled':''}"><div class="when">${a.day} · ${a.time} Uhr ${a.status==='abgesagt'?'<span class="pill p-grey">Abgesagt</span>':'<span class="pill p-ok">Bestätigt</span>'}</div><div class="what">${esc(a.what)}${a.doc?' · '+esc(a.doc):''}</div>${a.status==='ok'&&tOk?`<div class="acts"><button class="btn ghost sm" data-sh="tvp:${a.id}">Verschieben</button><button class="btn ghost sm danger" data-sh="abp:${a.id}">Termin absagen</button></div>`:''}</div>`).join(''):'<p class="muted">Keine Termine.</p>'}
+   ${tOk?'<div class="acts" style="margin-top:4px"><button class="btn ghost" data-sh="termin_neu">Neuer Termin</button></div>':`<p class="muted" style="font-size:13px">${extBooking()?'Termine buchen, verschieben und absagen Sie über die Online-Buchung der Praxis.':'Termine nimmt die Praxis gerade nicht über den Chat an. Telefon: 0611 123 456.'}</p>`}
    <h3>Anfragen</h3>${rq.length?rq.map(r=>`<div class="ap"><div class="when">${esc(r.type)} <span class="pill ${(STATUS[r.status]||['','p-grey'])[1]}">${PSTATUS[r.status]}</span></div><div class="what">${esc(r.text)}</div>${r.answer?`<div class="quote">${esc(r.answer)}</div>`:''}${r.status==='wartet'?`<div class="acts"><button class="btn sm" data-sh="reply:${r.id}">Auf die Rückfrage antworten</button></div>`:''}</div>`).join(''):'<p class="muted">Noch keine Anfragen.</p>'}
    <p class="muted" style="font-size:12.5px">${WAIT}</p>
    </div><div class="sh-foot"><button class="btn" id="shBack">Zurück zum Chat</button></div>`;
@@ -534,10 +564,10 @@ function viewStart(){return `<section class="start gut">
   <img src="${IMG.wave}" alt="Das Maskottchen des Praxis-Assistenten winkt"></div>
   <div class="cards">
    <div class="rcard"><div class="who">Rolle 1</div><h3>Patient:in</h3><p>Sie sind auf der Website der Praxis und öffnen den Chat – als Testprofil „${esc(S.profile.name)}“.</p><ul><li>Termin buchen, verschieben oder absagen</li><li>Rezept oder Überweisung anfragen</li><li>Eine Frage an das Team stellen</li></ul><button class="go" data-go="patient">Als Patient:in testen</button></div>
-   <div class="rcard"><div class="who">Rolle 2</div><h3>Empfang (MFA)</h3><p>Hier landen alle Anfragen aus dem Chat.</p><ul><li>Fragen beantworten, Rückrufe erledigen</li><li>Neue Medikamente und Überweisungen prüfen</li><li>Neue, verschobene und abgesagte Termine sehen</li></ul><button class="go" data-go="mfa">Als MFA testen</button></div>
+   <div class="rcard"><div class="who">Rolle 2</div><h3>Empfang (MFA)</h3><p>Hier landen alle Anfragen aus dem Chat.</p><ul><li>Fragen beantworten, Rückrufe erledigen</li><li>Neue Medikamente und Überweisungen prüfen</li><li>Neue, verschobene und abgesagte Termine sehen</li><li>Urlaub, Vertretung und Chat-Angebot einstellen</li></ul><button class="go" data-go="mfa">Als MFA testen</button></div>
    <div class="rcard"><div class="who">Rolle 3</div><h3>Ärztin</h3><p>Nur das, was eine ärztliche Entscheidung braucht.</p><ul><li>Rezepte unterschreiben, Überweisungen freigeben</li><li>Rückfrage stellen oder einen Termin verlangen</li><li>Hinweise auf mögliche Notfälle sehen</li></ul><button class="go" data-go="arzt">Als Ärztin testen</button></div>
   </div>
-  <div class="hint"><b>So funktioniert der Test:</b> Wechseln Sie oben zwischen den Rollen. Ein Rezept für ein Dauermedikament geht direkt an die Ärztin zur Unterschrift; neue Medikamente und Überweisungen prüft zuerst der Empfang. Antworten der Praxis erscheinen im Chat der Patient:in. Die Eingaben bleiben nur in diesem Browser; „Neu starten“ setzt alles zurück. Einträge mit <span class="ex">Beispiel</span> sind vorbereitete Testdaten. Im echten Betrieb bestätigen Patient:innen ihre Identität (z. B. Geburtsdatum und SMS-Code) – das ist im Prototyp durch das Testprofil ersetzt.</div>
+  <div class="hint"><b>So funktioniert der Test:</b> Wechseln Sie oben zwischen den Rollen. Ein Rezept für ein Dauermedikament geht direkt an die Ärztin zur Unterschrift; neue Medikamente und Überweisungen prüft zuerst der Empfang. Antworten der Praxis erscheinen im Chat der Patient:in. Unter „Empfang → Assistent“ tragen Sie Urlaub und Vertretung ein, schalten einzelne Anliegen ab oder überlassen die Terminbuchung einem bestehenden System wie Doctolib. Die Eingaben bleiben nur in diesem Browser; „Neu starten“ setzt alles zurück. Einträge mit <span class="ex">Beispiel</span> sind vorbereitete Testdaten. Im echten Betrieb bestätigen Patient:innen ihre Identität (z. B. Geburtsdatum und SMS-Code) – das ist im Prototyp durch das Testprofil ersetzt.</div>
  </section>`}
 function viewSite(){return `<div class="site">
   <header class="shead"><div class="shead-in gut"><div class="logo"><span class="plus">+</span>Praxis am Kurpark</div>
@@ -573,7 +603,7 @@ function bindSite(){
       $('#mineBtn').onclick=openSheet;$('#newBtn').onclick=()=>{sheetOpen=false;paintSheet();act('newtopic','Neues Anliegen')};
       seenCount=S.chat.length;renderChat();const lg=$('#log');lg.scrollTop=lg.scrollHeight;if(S.unread===0&&S.chat.length<=4)lg.scrollTop=0;setTimeout(()=>{const i=$('#msgIn');if(i&&matchMedia('(min-width:561px)').matches)i.focus()},50)}};
   $('#app').querySelectorAll('.site > header [data-open], .hero [data-open]').forEach(b=>b.addEventListener('click',()=>openChat(b.dataset.open)));
-  function openChat(intent){const wasOpen=S.chatOpen;S.chatOpen=true;S.unread=0;startChat(intent);save();if(!wasOpen)paint();
+  function openChat(intent){const wasOpen=S.chatOpen;S.chatOpen=true;S.unread=0;startChat(intent);vacNotice();save();if(!wasOpen)paint();
     if(intent){if(S.flow&&S.flow.name===({termin_neu:'neu',rezept:'rezept'})[intent])return;act(intent,INTENT_LABEL[intent])}}
   paint();
 }
@@ -600,7 +630,7 @@ function renderChat(){
 function isLastChips(i){for(let j=i+1;j<S.chat.length;j++){const w=S.chat[j].who;if(w!=='card')return false}return true}
 
 /* ---------- dashboards ---------- */
-let sel={mfa:null,arzt:null},tab='offen',ui={};
+let sel={mfa:null,arzt:null},tab='offen',ui={},mfaView='inbox';
 const ICON={inbox:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 13h5l2 3h4l2-3h5"/><path d="M5 5h14l2 8v6H3v-6z"/></svg>',
 cal:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>',
 rx:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 8h6M9 12h6M9 16h4"/></svg>',
@@ -609,10 +639,14 @@ alert:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="curre
 chat:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z"/></svg>'};
 function shell(role,inner){
   const c=counts();
-  const items=role==='mfa'?[['inbox','Eingang',c.mfa,true],['cal','Termine',0,false],['ppl','Patient:innen',0,false],['chat','Assistent',0,false]]
-                          :[['rx','Zur Unterschrift',c.arzt,true],['cal','Termine',0,false],['ppl','Patient:innen',0,false]];
+  const items=role==='mfa'?[['inbox','Eingang',c.mfa,'inbox'],['cal','Termine',0,null],['ppl','Patient:innen',0,null],['chat','Assistent',0,'settings']]
+                          :[['rx','Zur Unterschrift',c.arzt,'inbox'],['cal','Termine',0,null],['ppl','Patient:innen',0,null]];
+  const cur=role==='mfa'?mfaView:'inbox';
   const me=role==='mfa'?['LW','Lisa Weber','Empfang (MFA)']:['LW','Dr. Lena Wagner','Hausärztin'];
-  const nav=items.map(([ic,l,n,on])=>on?`<div class="nav-i on" aria-current="page">${ICON[ic]}${l}${n?`<span class="b">${n}</span>`:''}</div>`:`<div class="nav-i off">${ICON[ic]}<span>${l}<small>Im Prototyp nicht verfügbar</small></span></div>`).join('');
+  const badge=n=>n?`<span class="b">${n}</span>`:'';
+  const nav=items.map(([ic,l,n,v])=>v===null?`<div class="nav-i off">${ICON[ic]}<span>${l}<small>Im Prototyp nicht verfügbar</small></span></div>`
+    :v===cur?`<div class="nav-i on" aria-current="page">${ICON[ic]}${l}${badge(n)}</div>`
+    :`<button type="button" class="nav-i" data-view="${v}">${ICON[ic]}${l}${badge(n)}</button>`).join('');
   return `<div class="appshell"><aside class="side-nav" aria-label="Praxis-Navigation"><div class="brand"><span class="plus">+</span><div><b>Praxis am Kurpark</b><span>Praxis-Dashboard</span></div></div>${nav}
    <div class="safe"><b>Geschützter Bereich</b>Nur für das Praxisteam. Im Prototyp mit fiktiven Daten.</div>
    <div class="me"><span class="av">${me[0]}</span><div><b>${me[1]}</b><span>${me[2]}</span></div></div></aside>${inner}</div>`;
@@ -624,12 +658,36 @@ function greet(role){const c=counts();
 const DONE=['freigegeben','termin_noetig','beantwortet','erledigt','termin'];
 function mfaLists(){return{offen:S.reqs.filter(r=>r.status==='neu'),arzt:S.reqs.filter(r=>r.status==='freigabe'),wartet:S.reqs.filter(r=>r.status==='wartet'),fertig:S.reqs.filter(r=>DONE.includes(r.status))}}
 function arztLists(){return{wait:S.reqs.filter(r=>r.status==='freigabe'),done:S.reqs.filter(r=>r.decision)}}
+const mviews=()=>`<div class="mviews" role="toolbar" aria-label="Bereich"><button type="button" data-view="inbox" aria-pressed="${mfaView==='inbox'}">Eingang</button><button type="button" data-view="settings" aria-pressed="${mfaView==='settings'}">Assistent</button></div>`;
+function viewSettings(){
+  if(!ui.set)ui.set=JSON.parse(JSON.stringify(S.settings));
+  const s=ui.set;
+  const T=[['termin','Termin vereinbaren, verschieben, absagen'],['rezept','Rezept bestellen'],['ueberw','Überweisung anfragen'],['frage','Frage an das Praxisteam']];
+  return shell('mfa',`<section class="dash gut">${mviews()}<div class="dhead"><div><h1>Assistent</h1><div class="meta">Einstellungen für den Patienten-Chat · gelten sofort nach dem Speichern</div></div></div>
+   <div class="setgrid">
+    <div class="panel setp"><h2>Urlaub und Vertretung</h2><div class="bd">
+     <label class="sw"><input type="checkbox" data-set="vac" ${s.vac?'checked':''}> Die Praxis ist im Urlaub</label>
+     <div class="row2"><label>Von<input type="text" data-set="vacFrom" value="${esc(s.vacFrom)}"></label><label>Bis<input type="text" data-set="vacTo" value="${esc(s.vacTo)}"></label></div>
+     <label>Vertretung<input type="text" data-set="vertretung" value="${esc(s.vertretung)}"></label>
+     <p class="muted">Patient:innen sehen den Hinweis gleich beim Öffnen des Chats.</p></div></div>
+    <div class="panel setp"><h2>Anfragen im Chat</h2><div class="bd">
+     ${T.map(([k,l])=>`<label class="sw"><input type="checkbox" data-type="${k}" ${s.types[k]?'checked':''}> ${l}</label>`).join('')}
+     <label class="sw dis"><input type="checkbox" checked disabled> Notfall-Hinweis (112 und 116 117) – immer aktiv</label>
+     <p class="muted">Abgeschaltete Anliegen verschwinden aus dem Menü. Wer danach fragt, bekommt die Telefonnummer der Praxis.</p></div></div>
+    <div class="panel setp"><h2>Terminbuchung</h2><div class="bd">
+     <label class="sw"><input type="radio" name="bk" data-bk="chat" ${s.booking==='chat'?'checked':''}> Direkt im Chat, mit dem Praxiskalender</label>
+     <label class="sw"><input type="radio" name="bk" data-bk="extern" ${s.booking==='extern'?'checked':''}> Über das bestehende Online-Buchungssystem, z. B. Doctolib</label>
+     <p class="muted">Rezepte, Überweisungen, Rückrufe und Fragen laufen in beiden Fällen über den Assistenten.</p></div></div>
+   </div>
+   <div class="acts setacts"><button class="btn" data-a2="save">Änderungen speichern</button><button class="btn ghost" data-a2="reset">Verwerfen</button><button class="btn ghost" data-go="patient">Im Patienten-Chat ansehen</button></div>
+  </section>`)}
 function viewMfa(){
+  if(mfaView==='settings')return viewSettings();
   const L=mfaLists();const shown=L[tab];
   if(!sel.mfa||!shown.find(r=>r.id===sel.mfa))sel.mfa=(shown[0]||{}).id||null;
   const r=S.reqs.find(x=>x.id===sel.mfa);
   const emptyMsg={offen:'Alle Anfragen bearbeitet ✓',arzt:'Bei der Ärztin liegt gerade nichts.',wartet:'Keine offenen Rückfragen.',fertig:'Noch nichts erledigt.'}[tab];
-  return shell('mfa',`<section class="dash gut">${greet('mfa')}<div class="dhead"><div><h1>Eingang aus dem Chat</h1><div class="meta">Empfang · Praxis am Kurpark · Donnerstag, 5. November</div></div>
+  return shell('mfa',`<section class="dash gut">${mviews()}${greet('mfa')}<div class="dhead"><div><h1>Eingang aus dem Chat</h1><div class="meta">Empfang · Praxis am Kurpark · Donnerstag, 5. November</div></div>
    <div class="kpis"><span class="kpi">Offen <b>${L.offen.length}</b></span><span class="kpi">Bei Ärztin <b>${L.arzt.length}</b></span><span class="kpi">Notfall-Hinweise heute <b>${S.alerts.length}</b></span></div></div>
    <div class="grid">
     <div class="panel"><div class="tabs" role="toolbar" aria-label="Filter">
@@ -711,6 +769,11 @@ function bindDash(role){
   app.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{tab=b.dataset.tab;sel.mfa=null;ui={};render()});
   app.querySelectorAll('[data-sel]').forEach(b=>b.onclick=()=>{sel[role]=b.dataset.sel;ui={};render()});
   app.querySelectorAll('[data-a]').forEach(b=>b.onclick=()=>doAct(role,b.dataset.a));
+  app.querySelectorAll('[data-view]').forEach(b=>b.onclick=()=>{mfaView=b.dataset.view;ui={};render();window.scrollTo(0,0)});
+  app.querySelectorAll('[data-set]').forEach(el=>{const h=()=>{ui.set[el.dataset.set]=el.type==='checkbox'?el.checked:el.value};el.onchange=h;el.oninput=h});
+  app.querySelectorAll('[data-type]').forEach(el=>el.onchange=()=>{ui.set.types[el.dataset.type]=el.checked});
+  app.querySelectorAll('[data-bk]').forEach(el=>el.onchange=()=>{ui.set.booking=el.dataset.bk});
+  app.querySelectorAll('[data-a2]').forEach(b=>b.onclick=()=>{if(b.dataset.a2==='save'){ui.set.rev=(S.settings.rev||0)+1;S.settings=ui.set;save();toast('Gespeichert – gilt ab sofort im Patienten-Chat.')}else toast('Änderungen verworfen.');ui={};render()});
   const keep=(id,key)=>{const el=$('#'+id);if(el)el.oninput=()=>{ui[key]=el.value;ui.id=ui.id||sel[role]}};
   keep('msgArea','text');keep('askArea','text');keep('tmArea','text');keep('noteArea','note');
 }
