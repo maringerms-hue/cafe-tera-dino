@@ -355,9 +355,9 @@ function seed(){
     settings:DEF_SETTINGS()
   };
 }
-function DEF_SETTINGS(){return {vac:false,vacFrom:deDate(nextMon),vacTo:deDate(new Date(nextMon.getFullYear(),nextMon.getMonth(),nextMon.getDate()+4)),vertretung:'Praxis am Park, Telefon 0611 654 321',types:{termin:true,rezept:true,ueberw:true,frage:true},booking:'chat',rev:0}}
+function DEF_SETTINGS(){return {vac:false,vacFrom:deDate(nextMon),vacTo:deDate(new Date(nextMon.getFullYear(),nextMon.getMonth(),nextMon.getDate()+4)),vertretung:'Praxis am Park, Telefon 0611 654 321',types:{termin:true,rezept:true,ueberw:true,frage:true},booking:'chat',rx:'arzt',rev:0}}
 let S;
-function load(){try{const v=localStorage.getItem(KEY);S=v?JSON.parse(v):seed()}catch(e){S=seed()}if(!S.settings)S.settings=DEF_SETTINGS()}
+function load(){try{const v=localStorage.getItem(KEY);S=v?JSON.parse(v):seed()}catch(e){S=seed()}if(!S.settings)S.settings=DEF_SETTINGS();if(!S.settings.rx)S.settings.rx='arzt'}
 function save(){S.lastActive=Date.now();try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 load();
 /* frischer Testdurchlauf: Link mit ?neu oder nach 2 Stunden ohne Aktivität */
@@ -562,10 +562,12 @@ function confirmAbsage(){const a=S.appts.find(x=>x.id===S.flow.data.apptId);a.st
   newReq({type:'Termin',text:`Termin abgesagt: ${a.day}, ${a.time} Uhr · ${a.what}`,status:'termin',hist:[nowLabel()+' per Chat abgesagt']});S.flow=null;save();
   bot([{who:'card',cls:'ok',html:`<div class="h">✓ Termin abgesagt</div>${a.day}, ${a.time} Uhr · ${esc(a.what)}<div class="note">Der Termin ist für andere frei. Einen neuen Termin können Sie jederzeit hier vereinbaren.</div>`},...followUp()])}
 function sendRezept(){const f=S.flow.data;const t=nowLabel();const txt=`${f.med.name}${f.med.dose?' '+f.med.dose:''} · ${f.qty}`;
-  if(f.dauer){newReq({type:'Rezept',text:txt,detail:f.del,status:'freigabe',auto:true,last:'Dauermedikation · zuletzt verordnet vor 3 Monaten',hist:[t+' per Chat eingegangen',t+' automatisch vorbereitet (Dauermedikation) → Ärztin zur Unterschrift']})}
+  const direct=f.dauer&&S.settings.rx!=='empfang';
+  if(direct){newReq({type:'Rezept',text:txt,detail:f.del,status:'freigabe',auto:true,last:'Dauermedikation · zuletzt verordnet vor 3 Monaten',hist:[t+' per Chat eingegangen',t+' automatisch vorbereitet (Dauermedikation) → Ärztin zur Unterschrift']})}
+  else if(f.dauer){newReq({type:'Rezept',text:txt,detail:f.del,last:'Dauermedikation · zuletzt verordnet vor 3 Monaten',hist:[t+' per Chat eingegangen',t+' Dauermedikation → Empfang prüft zuerst (Einstellung der Praxis)']})}
   else{newReq({type:'Rezept',text:txt,detail:f.del,hist:[t+' per Chat eingegangen',t+' kein Dauermedikament → Empfang prüft zuerst']})}
   S.flow=null;save();
-  bot([{who:'card',cls:'ok',html:`<div class="h">✓ Rezeptanfrage gesendet</div>${esc(txt)} · ${esc(f.del)}<div style="margin-top:6px;color:var(--ink-2)">${f.dauer?'Das ist eines Ihrer Dauermedikamente – die Anfrage liegt direkt der Ärztin zur Unterschrift vor.':'Das Praxisteam prüft die Anfrage zuerst und gibt sie dann an die Ärztin.'} ${WAIT}</div><button class="chip" data-k="meine">Status ansehen</button>`},...followUp()])}
+  bot([{who:'card',cls:'ok',html:`<div class="h">✓ Rezeptanfrage gesendet</div>${esc(txt)} · ${esc(f.del)}<div style="margin-top:6px;color:var(--ink-2)">${direct?'Das ist eines Ihrer Dauermedikamente – die Anfrage liegt direkt der Ärztin zur Unterschrift vor.':'Das Praxisteam prüft die Anfrage zuerst und gibt sie dann an die Ärztin.'} ${WAIT}</div><button class="chip" data-k="meine">Status ansehen</button>`},...followUp()])}
 function sendUeberw(){const f=S.flow.data;newReq({type:'Überweisung',text:f.fach+': '+f.reason});S.flow=null;save();
   bot([{who:'card',cls:'ok',html:`<div class="h">✓ Überweisung angefragt</div>${esc(f.fach)}<div style="margin-top:6px;color:var(--ink-2)">Die Ärztin entscheidet, ob eine Überweisung nötig ist. ${WAIT}</div><button class="chip" data-k="meine">Status ansehen</button>`},...followUp()])}
 
@@ -828,6 +830,10 @@ function viewSettings(){
      <label class="sw"><input type="radio" name="bk" data-bk="chat" ${s.booking==='chat'?'checked':''}> Direkt im Chat, mit dem Praxiskalender</label>
      <label class="sw"><input type="radio" name="bk" data-bk="extern" ${s.booking==='extern'?'checked':''}> Über das bestehende Online-Buchungssystem, z. B. Doctolib</label>
      <p class="muted">Rezepte, Überweisungen, Rückrufe und Fragen laufen in beiden Fällen über den Assistenten.</p></div></div>
+    <div class="panel setp"><h2>Folgerezepte</h2><div class="bd">
+     <label class="sw"><input type="radio" name="rx" data-rx="arzt" ${s.rx!=='empfang'?'checked':''}> Dauermedikation direkt zur Ärztin, anderes zuerst zum Empfang</label>
+     <label class="sw"><input type="radio" name="rx" data-rx="empfang" ${s.rx==='empfang'?'checked':''}> Alle Rezeptanfragen zuerst zum Empfang</label>
+     <p class="muted">Wer prüft und freigibt, legt Ihre Praxis fest. Die Ärztin unterschreibt in jedem Fall selbst.</p></div></div>
    </div>
    <div class="acts setacts"><button class="btn" data-a2="save">Änderungen speichern</button><button class="btn ghost" data-a2="reset">Verwerfen</button><button class="btn ghost" data-go="patient">Im Patienten-Chat ansehen</button></div>
   </section>`)}
@@ -932,6 +938,7 @@ function bindDash(role){
   app.querySelectorAll('[data-set]').forEach(el=>{const h=()=>{ui.set[el.dataset.set]=el.type==='checkbox'?el.checked:el.value};el.onchange=h;el.oninput=h});
   app.querySelectorAll('[data-type]').forEach(el=>el.onchange=()=>{ui.set.types[el.dataset.type]=el.checked});
   app.querySelectorAll('[data-bk]').forEach(el=>el.onchange=()=>{ui.set.booking=el.dataset.bk});
+  app.querySelectorAll('[data-rx]').forEach(el=>el.onchange=()=>{ui.set.rx=el.dataset.rx});
   app.querySelectorAll('[data-a2]').forEach(b=>b.onclick=()=>{if(b.dataset.a2==='save'){ui.set.rev=(S.settings.rev||0)+1;S.settings=ui.set;save();toast('Gespeichert – gilt ab sofort im Patienten-Chat.')}else toast('Änderungen verworfen.');ui={};render()});
   const keep=(id,key)=>{const el=$('#'+id);if(el)el.oninput=()=>{ui[key]=el.value;ui.id=ui.id||sel[role]}};
   keep('msgArea','text');keep('askArea','text');keep('tmArea','text');keep('noteArea','note');
