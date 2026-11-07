@@ -271,6 +271,13 @@ button.nav-i:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
 .setp .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .setp .muted{margin:0;font-size:13px;color:var(--ink-2)}
 .setacts{margin-top:16px}
+.slotgrid{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.btn.sm{font-size:13px;padding:7px 11px}
+.pq{padding:10px 0;border-top:1px solid var(--line);display:flex;flex-direction:column;gap:4px}
+.pq:first-child{border-top:0}
+.lnkbtn{align-self:flex-start;background:none;border:0;padding:2px 0;color:var(--teal);font-weight:700;font-size:13px;cursor:pointer;text-decoration:underline;text-underline-offset:2px}
+.daylbl{position:sticky;top:0;z-index:1}
+.muted{color:var(--ink-2)}
 .mviews{display:none;gap:6px;margin:0 0 14px}
 .mviews button{border:1.5px solid var(--line);background:var(--white);border-radius:999px;padding:7px 14px;font-size:14px;font-weight:600;color:var(--ink-2)}
 .mviews button[aria-pressed="true"]{background:var(--mint);border-color:var(--mint);color:var(--teal)}
@@ -314,10 +321,10 @@ function seed(){
       {name:'Metformin',dose:'500 mg',form:'Tabletten',plan:'1–0–1'}]},
     chat:[], chatOpen:false, unread:0, flow:null, started:false,
     appts:[
-      {id:'A0',day:'Fr., 6. Nov.',time:'08:00',who:'Peter S.',what:'Blutabnahme',status:'ok'},
+      {id:'A0',day:'Fr., 6. Nov.',time:'08:00',who:'Peter S.',born:'03.09.1967',what:'Blutabnahme',status:'ok'},
       {id:'A1',day:'Fr., 6. Nov.',time:'09:30',who:'Anna Becker',what:'Kontrolle Blutdruck',doc:'Dr. A. Smirnova',mine:true,status:'ok'},
-      {id:'A2',day:'Fr., 6. Nov.',time:'10:15',who:'Maria L.',what:'Grippeimpfung',status:'ok'},
-      {id:'A3',day:'Mo., 9. Nov.',time:'08:30',who:'Karin B.',what:'Check-up 35',status:'ok'}
+      {id:'A2',day:'Fr., 6. Nov.',time:'10:15',who:'Maria L.',born:'21.01.1985',what:'Grippeimpfung',status:'ok'},
+      {id:'A3',day:'Mo., 9. Nov.',time:'08:30',who:'Karin B.',born:'17.07.1975',what:'Check-up 35',status:'ok'}
     ],
     reqs:[
       {id:'R1',type:'Rezept',who:'Helga M.',born:'12.03.1948',time:'08:12',text:'L-Thyroxin 75 µg · 100 Tabletten',detail:'E-Rezept auf Gesundheitskarte',status:'freigabe',ex:true,hist:['08:12 per Chat eingegangen','08:20 MFA: an Ärztin weitergeleitet'],last:'Zuletzt verordnet: 14.08.2026'},
@@ -350,7 +357,7 @@ document.querySelectorAll('[data-go]').forEach(b=>b.addEventListener('click',()=
 let resetArm=false;
 $('#resetBtn').addEventListener('click',e=>{
   if(!resetArm){resetArm=true;e.target.textContent='Wirklich neu starten?';setTimeout(()=>{resetArm=false;e.target.textContent='Neu starten'},3500);return}
-  resetArm=false;e.target.textContent='Neu starten';S=seed();save();ui={};sel={mfa:null,arzt:null};mfaView='inbox';toast('Alles zurückgesetzt – Beispieldaten geladen.');go('start')});
+  resetArm=false;e.target.textContent='Neu starten';S=seed();save();ui={};sel={mfa:null,arzt:null,appt:null,pat:null};views={mfa:'inbox',arzt:'inbox'};toast('Alles zurückgesetzt – Beispieldaten geladen.');go('start')});
 function toast(t){const el=$('#toast');el.textContent=t;el.hidden=false;clearTimeout(toast.t);toast.t=setTimeout(()=>el.hidden=true,3000)}
 
 /* ---------- helpers ---------- */
@@ -549,7 +556,7 @@ function paintSheet(){const chat=$('.chat');if(!chat)return;let sh=$('#sheet');i
     if(k.startsWith('reply:')){return act(k,'Auf die Rückfrage antworten')}
     act(k,b.textContent)});
 }
-function notifyPatient(r,text,opts){if(!r.mine)return;push({who:'team',text});if(opts)push({who:'chips',opts});S.unread++;save()}
+function notifyPatient(r,text,opts){if(!r.mine)return;if(!S.started)startChat('notify');push({who:'team',text});if(opts)push({who:'chips',opts});S.unread++;save()}
 
 /* ---------- rendering ---------- */
 function render(){
@@ -636,18 +643,19 @@ function renderChat(){
 function isLastChips(i){for(let j=i+1;j<S.chat.length;j++){const w=S.chat[j].who;if(w!=='card')return false}return true}
 
 /* ---------- dashboards ---------- */
-let sel={mfa:null,arzt:null},tab='offen',ui={},mfaView='inbox';
+let sel={mfa:null,arzt:null,appt:null,pat:null},tab='offen',ui={},views={mfa:'inbox',arzt:'inbox'};
 const ICON={inbox:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 13h5l2 3h4l2-3h5"/><path d="M5 5h14l2 8v6H3v-6z"/></svg>',
 cal:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>',
 rx:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 8h6M9 12h6M9 16h4"/></svg>',
 ppl:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.8-3.5 3.4-5.5 6.5-5.5s5.7 2 6.5 5.5M16 4.5a3.5 3.5 0 0 1 0 7M18 14.6c1.8.8 3 2.6 3.5 5.4"/></svg>',
 alert:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l9.5 17h-19z"/><path d="M12 10v4.5M12 17.6v.1"/></svg>',
 chat:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z"/></svg>'};
+function NAVS(role,c){c=c||counts();return role==='mfa'?[['inbox','Eingang',c.mfa,'inbox'],['cal','Termine',0,'termine'],['ppl','Patient:innen',0,'patienten'],['chat','Assistent',0,'settings']]
+  :[['rx','Zur Unterschrift',c.arzt,'inbox'],['cal','Termine',0,'termine'],['ppl','Patient:innen',0,'patienten']]}
 function shell(role,inner){
   const c=counts();
-  const items=role==='mfa'?[['inbox','Eingang',c.mfa,'inbox'],['cal','Termine',0,null],['ppl','Patient:innen',0,null],['chat','Assistent',0,'settings']]
-                          :[['rx','Zur Unterschrift',c.arzt,'inbox'],['cal','Termine',0,null],['ppl','Patient:innen',0,null]];
-  const cur=role==='mfa'?mfaView:'inbox';
+  const items=NAVS(role,c);
+  const cur=views[role];
   const me=role==='mfa'?['LW','Lisa Weber','Empfang (MFA)']:['AS','Dr. A. Smirnova','Ärztin'];
   const badge=n=>n?`<span class="b">${n}</span>`:'';
   const nav=items.map(([ic,l,n,v])=>v===null?`<div class="nav-i off">${ICON[ic]}<span>${l}<small>Im Prototyp nicht verfügbar</small></span></div>`
@@ -664,7 +672,74 @@ function greet(role){const c=counts();
 const DONE=['freigegeben','termin_noetig','beantwortet','erledigt','termin'];
 function mfaLists(){return{offen:S.reqs.filter(r=>r.status==='neu'),arzt:S.reqs.filter(r=>r.status==='freigabe'),wartet:S.reqs.filter(r=>r.status==='wartet'),fertig:S.reqs.filter(r=>DONE.includes(r.status))}}
 function arztLists(){return{wait:S.reqs.filter(r=>r.status==='freigabe'),done:S.reqs.filter(r=>r.decision)}}
-const mviews=()=>`<div class="mviews" role="toolbar" aria-label="Bereich"><button type="button" data-view="inbox" aria-pressed="${mfaView==='inbox'}">Eingang</button><button type="button" data-view="settings" aria-pressed="${mfaView==='settings'}">Assistent</button></div>`;
+
+/* ---------- Termine & Patient:innen ---------- */
+const ALL_SLOTS=[['Fr., 6. Nov.','11:00'],['Fr., 6. Nov.','11:30'],...SLOTS_NEU,...SLOTS_V];
+function freeSlots(){const taken=new Set(S.appts.filter(a=>a.status==='ok').map(a=>a.day+'|'+a.time));const seen=new Set();
+  return ALL_SLOTS.filter(([d,t])=>{const k=d+'|'+t;if(taken.has(k)||seen.has(k))return false;seen.add(k);return true}).sort((a,b)=>ord(a[0])-ord(b[0])||a[1].localeCompare(b[1]))}
+function apptPill(a){return a.status==='abgesagt'?'<span class="pill p-grey">Abgesagt</span>':'<span class="pill p-ok">Bestätigt</span>'}
+function apptSrc(a){return a.mine?'Patienten-Chat':'Telefon / Empfang'}
+function viewTermine(role){
+  const days=[...new Set(S.appts.map(a=>a.day))].sort((a,b)=>ord(a)-ord(b));
+  if(!sel.appt||!S.appts.find(a=>a.id===sel.appt))sel.appt=(S.appts.find(a=>a.mine&&a.status==='ok')||S.appts[0]||{}).id||null;
+  const a=S.appts.find(x=>x.id===sel.appt);
+  const list=days.map(d=>`<div class="daylbl">${d}</div>`+S.appts.filter(x=>x.day===d).sort((x,y)=>x.time.localeCompare(y.time)).map(x=>`<button class="item" data-appt="${x.id}" aria-selected="${sel.appt===x.id}"><span class="bar"></span><span style="min-width:0"><span class="t"><span class="type">${x.time}</span>${esc(x.who)}${x.mine?'<span class="ex test">Testprofil</span>':''}</span><span class="d" style="display:block">${esc(x.what)}${x.status==='abgesagt'?' · abgesagt':x.isNew?' · neu per Chat':''}</span></span><span class="tm">${apptPill(x)}</span></button>`).join('')).join('');
+  const free=freeSlots();
+  return shell(role,`<section class="dash gut">${mviews(role)}<div class="dhead"><div><h1>Termine</h1><div class="meta">${role==='mfa'?'Alle Termine der nächsten Tage – Buchungen aus dem Chat erscheinen sofort.':'Nur Ansicht – Termine plant der Empfang.'}</div></div>
+   <div class="kpis"><span class="kpi">Termine <b>${S.appts.filter(x=>x.status==='ok').length}</b></span><span class="kpi">Freie Zeiten <b>${free.length}</b></span></div></div>
+   <div class="grid two"><div class="panel"><h2>Tagesplan</h2><div class="list" role="listbox" aria-label="Termine">${list||'<div class="empty">Keine Termine.</div>'}</div></div>
+    <div class="panel">${a?apptDetail(role,a,free):'<div class="empty big-empty">Kein Termin ausgewählt.</div>'}</div></div></section>`)}
+function apptDetail(role,a,free){
+  let acts='';
+  if(role==='mfa'&&a.status==='ok'){
+    if(ui.tmode==='versch')acts=`<div><label>Neue Zeit wählen</label><div class="slotgrid">${free.map(([d,t])=>`<button class="btn ghost sm" data-ta="mv:${d}|${t}">${d} · ${t}</button>`).join('')||'<span class="muted">Keine freien Zeiten.</span>'}</div></div><div class="acts"><button class="btn ghost" data-ta="close">Abbrechen</button></div>`;
+    else if(ui.tmode==='absage')acts=confirmBox(`Termin von ${a.who} am ${a.day}, ${a.time} Uhr absagen?`,['ta-cancel','Ja, absagen']).replace('data-a="ta-cancel"','data-ta="cancel"').replace('data-a="cancelConfirm"','data-ta="close"');
+    else acts=`<div class="acts"><button class="btn" data-ta="versch">Verschieben</button><button class="btn no" data-ta="absage">Absagen</button></div>`;
+  } else if(role==='arzt'){acts='<div style="font-size:13px;color:var(--ink-2)">Nur Ansicht – Verschieben und Absagen macht der Empfang.</div>'}
+  return `<div class="detail"><div><span class="type">Termin</span>${apptPill(a)}</div><h3>${esc(a.who)}</h3>
+   <dl><dt>Wann</dt><dd>${a.day} · ${a.time} Uhr</dd><dt>Anlass</dt><dd>${esc(a.what)}</dd>${a.doc?`<dt>Bei</dt><dd>${esc(a.doc)}</dd>`:''}<dt>Quelle</dt><dd>${apptSrc(a)}</dd>${a.cancelled?`<dt>Abgesagt</dt><dd>${esc(a.cancelled)} Uhr</dd>`:''}</dl>
+   ${a.mine&&a.status==='ok'?'<div style="font-size:13px;color:var(--ink-2)">Änderungen sieht die Patient:in sofort im Chat.</div>':''}
+   ${acts}<div class="acts"><button class="btn ghost" data-to-pat="${esc(a.who)}">Patientenkarte öffnen</button></div></div>`}
+function termAct(role,k){
+  const a=S.appts.find(x=>x.id===sel.appt);if(!a)return;const t=nowLabel();
+  if(k==='versch'||k==='absage'){ui={tmode:k};return render()}
+  if(k==='close'){ui={};return render()}
+  if(k==='cancel'){a.status='abgesagt';a.cancelled=t;
+    if(a.mine){newReq({type:'Termin',text:`Termin von der Praxis abgesagt: ${a.day}, ${a.time} Uhr · ${a.what}`,status:'termin',hist:[t+' Empfang: Termin abgesagt']});
+      notifyPatient({mine:true},`Ihr Termin am ${a.day} um ${a.time} Uhr (${a.what}) musste leider abgesagt werden. Bitte vereinbaren Sie einen neuen Termin – das geht direkt hier im Chat.`,[{k:'termin_neu',l:'Neuen Termin vereinbaren'}])}
+    toast(a.mine?'Abgesagt – die Patient:in wurde im Chat informiert.':'Termin abgesagt.');ui={};save();return render()}
+  if(k.startsWith('mv:')){const[d,tm]=k.slice(3).split('|');const old=`${a.day}, ${a.time}`;a.day=d;a.time=tm;a.isNew=false;a.moved=true;
+    if(a.mine){newReq({type:'Termin',text:`Termin von der Praxis verschoben: ${old} → ${d}, ${tm} Uhr · ${a.what}`,status:'termin',hist:[t+' Empfang: Termin verschoben']});
+      notifyPatient({mine:true},`Ihr Termin wurde verschoben: neu am ${d} um ${tm} Uhr (${a.what}). Passt das nicht? Sie können ihn hier im Chat ändern.`,[{k:'meine',l:'Meine Termine ansehen'}])}
+    toast(a.mine?'Verschoben – die Patient:in wurde im Chat informiert.':'Termin verschoben.');ui={};save();return render()}
+}
+function patients(){const m=new Map();const add=(who,o)=>{if(!who||who==='Anonym')return;const p=m.get(who)||{who,born:'',phone:''};if(o.born&&!p.born)p.born=o.born;if(o.phone&&!p.phone)p.phone=o.phone;m.set(who,p)};
+  add(S.profile.name,{born:S.profile.born,phone:S.profile.phone});S.reqs.forEach(r=>add(r.who,r));S.appts.forEach(a=>add(a.who,a));
+  return [...m.values()].sort((a,b)=>a.who===S.profile.name?-1:b.who===S.profile.name?1:a.who.localeCompare(b.who))}
+function viewPatienten(role){
+  const P=patients();if(!sel.pat||!P.find(p=>p.who===sel.pat))sel.pat=(P[0]||{}).who||null;
+  const p=P.find(x=>x.who===sel.pat);
+  const list=P.map(x=>{const n=S.reqs.filter(r=>r.who===x.who&&!DONE.includes(r.status)).length;return `<button class="item" data-pat="${esc(x.who)}" aria-selected="${sel.pat===x.who}"><span class="bar"></span><span style="min-width:0"><span class="t">${esc(x.who)}${x.who===S.profile.name?'<span class="ex test">Testprofil</span>':''}</span><span class="d" style="display:block">${x.born?'geb. '+esc(x.born):'—'}</span></span><span class="tm">${n?`<span class="pill p-neu">${n} offen</span>`:''}</span></button>`}).join('');
+  return shell(role,`<section class="dash gut">${mviews(role)}<div class="dhead"><div><h1>Patient:innen</h1><div class="meta">Nur Daten aus dem Praxis-Assistenten${role==='arzt'?' · Nur Ansicht':''}</div></div></div>
+   <div class="grid two"><div class="panel"><h2>Alle <span class="n">${P.length}</span></h2><div class="list" role="listbox" aria-label="Patient:innen">${list}</div></div>
+    <div class="panel">${p?patCard(role,p):'<div class="empty big-empty">Niemand ausgewählt.</div>'}</div></div></section>`)}
+function patCard(role,p){
+  const ap=S.appts.filter(a=>a.who===p.who).sort((a,b)=>ord(a.day)-ord(b.day)||a.time.localeCompare(b.time));
+  const rq=S.reqs.filter(r=>r.who===p.who);
+  const meds=p.who===S.profile.name?S.profile.meds:[];
+  return `<div class="detail"><div><span class="type">Patientenkarte</span>${role==='arzt'?'<span class="pill p-grey">Nur Ansicht</span>':''}</div><h3>${esc(p.who)}</h3>
+   <dl>${p.born?`<dt>Geb.-Datum</dt><dd>${esc(p.born)}</dd>`:''}${p.phone?`<dt>Telefon</dt><dd class="tel">${esc(p.phone)}</dd>`:''}</dl>
+   ${meds.length?`<div><label>Dauermedikation</label><ul class="hist">${meds.map(m=>`<li>${esc(m.name)} ${esc(m.dose)} · ${esc(m.plan)}</li>`).join('')}</ul></div>`:''}
+   <div><label>Termine</label>${ap.length?`<ul class="hist">${ap.map(a=>`<li>${a.day} · ${a.time} Uhr – ${esc(a.what)} ${apptPill(a)}</li>`).join('')}</ul>`:'<div class="muted" style="font-size:13px">Keine Termine.</div>'}</div>
+   <div><label>Anfragen & Verlauf</label>${rq.length?`<div class="list">${rq.map(r=>`<div class="pq"><div><span class="type">${esc(r.type)}</span>${pill(r.status,r)} <span class="muted" style="font-size:12px">${r.time} Uhr</span></div><div style="font-size:14px">${esc(r.text)}</div>${reqLink(role,r)}</div>`).join('')}</div>`:'<div class="muted" style="font-size:13px">Keine Anfragen.</div>'}</div></div>`}
+function reqLink(role,r){if(r.type==='Termin')return '';
+  if(role==='mfa')return `<button class="lnkbtn" data-open-req="${r.id}">Im Eingang öffnen ›</button>`;
+  if(r.status==='freigabe'||r.decision)return `<button class="lnkbtn" data-open-req="${r.id}">Zur Entscheidung öffnen ›</button>`;return ''}
+function openReq(role,id){const r=S.reqs.find(x=>x.id===id);if(!r)return;views[role]='inbox';
+  if(role==='mfa'){tab=r.status==='neu'?'offen':r.status==='freigabe'?'arzt':r.status==='wartet'?'wartet':'fertig';sel.mfa=id}else sel.arzt=id;
+  ui={};render();window.scrollTo(0,0)}
+
+const mviews=(role='mfa')=>`<div class="mviews" role="toolbar" aria-label="Bereich">${NAVS(role).map(([ic,l,n,v])=>`<button type="button" data-view="${v}" aria-pressed="${views[role]===v}">${l}</button>`).join('')}</div>`;
 function viewSettings(){
   if(!ui.set)ui.set=JSON.parse(JSON.stringify(S.settings));
   const s=ui.set;
@@ -688,7 +763,9 @@ function viewSettings(){
    <div class="acts setacts"><button class="btn" data-a2="save">Änderungen speichern</button><button class="btn ghost" data-a2="reset">Verwerfen</button><button class="btn ghost" data-go="patient">Im Patienten-Chat ansehen</button></div>
   </section>`)}
 function viewMfa(){
-  if(mfaView==='settings')return viewSettings();
+  if(views.mfa==='settings')return viewSettings();
+  if(views.mfa==='termine')return viewTermine('mfa');
+  if(views.mfa==='patienten')return viewPatienten('mfa');
   const L=mfaLists();const shown=L[tab];
   if(!sel.mfa||!shown.find(r=>r.id===sel.mfa))sel.mfa=(shown[0]||{}).id||null;
   const r=S.reqs.find(x=>x.id===sel.mfa);
@@ -747,10 +824,12 @@ function alertsHtml(){return `<div class="panel alert"><h2>Mögliche Notfälle <
 function apptsHtml(){const days=[...new Set(S.appts.map(a=>a.day))];days.sort((a,b)=>ord(a)-ord(b));
   return days.map(d=>`<div class="daylbl">${d}</div><ul class="appts">${S.appts.filter(a=>a.day===d).sort((a,b)=>a.time.localeCompare(b.time)).map(a=>`<li class="${a.status==='abgesagt'?'cx':''}"><span class="h">${a.time}</span><span><b>${esc(a.who)}</b>${a.status==='abgesagt'?'<span class="new">abgesagt per Chat</span>':a.isNew?'<span class="new">neu per Chat</span>':''}<br><span class="w">${esc(a.what)}</span></span></li>`).join('')}</ul>`).join('')}
 function viewArzt(){
+  if(views.arzt==='termine')return viewTermine('arzt');
+  if(views.arzt==='patienten')return viewPatienten('arzt');
   const L=arztLists();
   if(!sel.arzt||!S.reqs.find(r=>r.id===sel.arzt&&(r.status==='freigabe'||r.decision)))sel.arzt=(L.wait[0]||{}).id||null;
   const r=S.reqs.find(x=>x.id===sel.arzt);
-  return shell('arzt',`<section class="dash gut">${greet('arzt')}<div class="dhead"><div><h1>Zur Entscheidung</h1><div class="meta">Dr. A. Smirnova · nur Anfragen, die eine ärztliche Entscheidung brauchen</div></div>
+  return shell('arzt',`<section class="dash gut">${mviews('arzt')}${greet('arzt')}<div class="dhead"><div><h1>Zur Entscheidung</h1><div class="meta">Dr. A. Smirnova · nur Anfragen, die eine ärztliche Entscheidung brauchen</div></div>
    <div class="kpis"><span class="kpi">Warten <b>${L.wait.length}</b></span><span class="kpi">Heute entschieden <b>${L.done.length}</b></span></div></div>
    <div class="grid">
     <div class="panel"><h2>Wartet auf Entscheidung <span class="n">${L.wait.length}</span></h2>${listHtml(L.wait,'arzt','Alle Anfragen entschieden ✓')}
@@ -775,7 +854,12 @@ function bindDash(role){
   app.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{tab=b.dataset.tab;sel.mfa=null;ui={};render()});
   app.querySelectorAll('[data-sel]').forEach(b=>b.onclick=()=>{sel[role]=b.dataset.sel;ui={};render()});
   app.querySelectorAll('[data-a]').forEach(b=>b.onclick=()=>doAct(role,b.dataset.a));
-  app.querySelectorAll('[data-view]').forEach(b=>b.onclick=()=>{mfaView=b.dataset.view;ui={};render();window.scrollTo(0,0)});
+  app.querySelectorAll('[data-view]').forEach(b=>b.onclick=()=>{views[role]=b.dataset.view;ui={};render();window.scrollTo(0,0)});
+  app.querySelectorAll('[data-appt]').forEach(b=>b.onclick=()=>{sel.appt=b.dataset.appt;ui={};render()});
+  app.querySelectorAll('[data-pat]').forEach(b=>b.onclick=()=>{sel.pat=b.dataset.pat;ui={};render()});
+  app.querySelectorAll('[data-ta]').forEach(b=>b.onclick=()=>termAct(role,b.dataset.ta));
+  app.querySelectorAll('[data-to-pat]').forEach(b=>b.onclick=()=>{sel.pat=b.dataset.toPat;views[role]='patienten';ui={};render();window.scrollTo(0,0)});
+  app.querySelectorAll('[data-open-req]').forEach(b=>b.onclick=()=>openReq(role,b.dataset.openReq));
   app.querySelectorAll('[data-set]').forEach(el=>{const h=()=>{ui.set[el.dataset.set]=el.type==='checkbox'?el.checked:el.value};el.onchange=h;el.oninput=h});
   app.querySelectorAll('[data-type]').forEach(el=>el.onchange=()=>{ui.set.types[el.dataset.type]=el.checked});
   app.querySelectorAll('[data-bk]').forEach(el=>el.onchange=()=>{ui.set.booking=el.dataset.bk});
