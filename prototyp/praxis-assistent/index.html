@@ -124,7 +124,7 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .chips{display:flex;flex-direction:column;gap:6px;align-self:stretch}
 .chips.wrap{flex-direction:row;flex-wrap:wrap}
 .chip{border:1.5px solid var(--teal);background:var(--white);color:var(--teal);font-weight:600;border-radius:12px;padding:10px 12px;font-size:14px;text-align:center}
-.chip:hover{background:var(--mint)}
+@media (hover:hover){.chip:hover{background:var(--mint)}}
 .chip.sec{border-color:var(--line);color:var(--ink-2);font-weight:500}
 .typing{align-self:flex-start;background:var(--mint);border-radius:16px;padding:12px 14px;display:flex;gap:5px}
 .typing i{width:7px;height:7px;border-radius:50%;background:var(--teal-2);opacity:.4}
@@ -151,7 +151,7 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .chipwrap{display:flex;flex-direction:column;gap:6px;align-self:stretch}
 .navrow{display:flex;gap:16px;justify-content:flex-start;padding:2px 2px 0}
 .lnk{border:0;background:none;padding:4px 0;color:var(--ink-2);font-size:13px;font-weight:600;text-decoration:underline;text-underline-offset:3px}
-.lnk:hover{color:var(--teal)}
+@media (hover:hover){.lnk:hover{color:var(--teal)}}
 .btn.sm{font-size:13px;padding:7px 11px}
 .btn.danger{color:var(--red);border-color:var(--red)}
 .ap.cancelled{opacity:.7}.ap.cancelled .when{text-decoration:line-through;text-decoration-thickness:1px}
@@ -225,7 +225,7 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .tabs button[aria-pressed="true"]{background:var(--mint);color:var(--teal)}
 .list{list-style:none;margin:0;padding:0}
 .item{display:grid;grid-template-columns:4px minmax(0,1fr) auto;gap:0 12px;align-items:start;padding:12px 16px 12px 0;border-bottom:1px solid var(--line);cursor:pointer;background:var(--white);width:100%;text-align:left;border-left:0;border-right:0;border-top:0}
-.item:hover{background:var(--mint-3)}
+@media (hover:hover){.item:hover{background:var(--mint-3)}}
 .item[aria-selected="true"]{background:var(--mint)}
 .item .bar{align-self:stretch;border-radius:0 3px 3px 0;background:transparent}
 .item.u .bar{background:var(--coral)}
@@ -259,7 +259,7 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .alert > h2{background:var(--red-bg);color:var(--red)}
 .ex{font-size:10.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-2);border:1px solid var(--line);border-radius:5px;padding:0 5px;margin-left:6px}
 button.nav-i{background:none;border:0;width:100%;text-align:left;font:inherit;font-size:14px;font-weight:600;color:var(--ink-2);cursor:pointer}
-button.nav-i:hover{background:var(--mint-3)}
+@media (hover:hover){button.nav-i:hover{background:var(--mint-3)}}
 button.nav-i:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
 .setgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,290px),1fr));gap:16px;align-items:start}
 .setp .bd{padding:14px 16px 16px;display:flex;flex-direction:column;gap:12px;font-size:14px}
@@ -294,6 +294,27 @@ button.nav-i:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
 @media (max-width:900px){.mviews{display:flex;flex-wrap:wrap}.appshell{grid-template-columns:minmax(0,1fr)}.dash{min-width:0}}
 @media (max-width:420px){.mviews button{padding:6px 11px;font-size:13px}.greet{gap:10px;padding:12px 14px}.greet .gt{font-size:17px}}
 .toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--white);padding:10px 16px;border-radius:12px;font-size:14px;z-index:80;width:max-content;max-width:calc(100vw - 32px);text-align:center}
+/* ---- Feinschliff: Touch-Ziele, Hover nur mit Maus, iOS-Zoom, Chat unter der Leiste ---- */
+.btn,.go,.chip,.compose button,.compose input{min-height:44px}
+.btn.sm{min-height:36px}
+.nav-i,button.nav-i{min-height:40px}
+.tabs button,.mviews button{min-height:36px}
+.lnk,.lnkbtn{min-height:32px;display:inline-flex;align-items:center}
+.foot{padding:0 14px 6px}
+.foot button{min-height:36px;padding:0 2px;font-size:13px;text-underline-offset:3px}
+textarea,.setp input[type=text]{font-size:16px}
+.roles button{white-space:nowrap}
+.chat header .x,.sh-head .x{width:44px;height:44px}
+.roles button::after,.tbar .reset::after{content:"";position:absolute;inset:-6px 0}
+.tbar .reset{position:relative}
+@media (max-width:420px){.mfa-l{display:none}}
+@media (pointer:coarse),(max-width:640px){
+ .btn.sm,.tabs button,.mviews button,.nav-i,button.nav-i,.lnk,.lnkbtn,.foot button{min-height:44px}
+ .sw{min-height:44px;align-items:center}.sw input{margin:0}
+ .roles button{min-height:40px}.tbar .reset{min-height:34px;padding:4px 12px}
+}
+@media (max-width:640px){.kpis{margin-left:0;justify-content:flex-start}.tabs{row-gap:2px}}
+@media (max-width:640px){.chat{top:calc(var(--tbar-h,96px) + env(safe-area-inset-top,0px))}body .toast{top:calc(var(--tbar-h,96px) + 8px + env(safe-area-inset-top,0px))}}
 </style>
 
 <header class="tbar"><div class="tbar-in gut">
@@ -301,7 +322,7 @@ button.nav-i:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
   <span class="note">Praxis am Kurpark · fiktive Praxis · bitte keine echten Gesundheitsdaten eingeben</span>
   <nav class="roles" aria-label="Rolle wählen">
     <button data-go="patient">Patient:in</button>
-    <button data-go="mfa">Empfang (MFA)<span class="cnt" id="cntMfa" hidden></span></button>
+    <button data-go="mfa">Empfang<span class="mfa-l"> (MFA)</span><span class="cnt" id="cntMfa" hidden></span></button>
     <button data-go="arzt">Ärztin<span class="cnt" id="cntArzt" hidden></span></button>
   </nav>
   <button class="reset" id="resetBtn" title="Alle Eingaben löschen und mit Beispieldaten neu beginnen">Neu starten</button>
@@ -367,6 +388,7 @@ const IDLE=2*3600e3;let freshStart=false;
   if(viaLink||(S.lastActive&&Date.now()-S.lastActive>IDLE)){S=seed();freshStart=true;save()}
   if(viaLink){try{history.replaceState(null,'',location.pathname+location.hash)}catch(e){}}})();
 window.addEventListener('storage',e=>{if(e.key===KEY){load();render()}});
+(function(){const t=document.querySelector('.tbar');if(!t)return;const set=()=>document.documentElement.style.setProperty('--tbar-h',t.offsetHeight+'px');set();try{new ResizeObserver(set).observe(t)}catch(e){window.addEventListener('resize',set)}})();
 
 /* ---------- routing ---------- */
 const ROUTES=['start','patient','mfa','arzt'];
