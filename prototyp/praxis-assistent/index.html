@@ -10,15 +10,17 @@
 <title>Praxis-Assistent Prototyp</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600;700&display=swap">
 <style>
 /* Layout: test bar on top (role switch) · each role is its own full screen: practice website + chat (patient), inbox dashboard (MFA), approvals (doctor). Single light look on purpose: it mimics a real practice website. */
 :root{
-  --teal:#0E4A4C; --teal-2:#165E60; --mint:#E6F4EF; --mint-2:#D3EBE2; --mint-3:#F3FAF7;
-  --paper:#FAF8F4; --white:#FFFFFF; --ink:#173033; --ink-2:#4F6466; --line:#D7E2DE;
-  --coral:#E8604C; --coral-dk:#B83A28; --red:#B8303A; --red-bg:#FCEDEE; --amber:#9A6200; --amber-bg:#FFF3DA;
-  --ok:#1D7A4E; --ok-bg:#E3F4EA; --blue:#2C5A8C; --blue-bg:#E7EFF8;
+  --teal:#0F766E; --teal-2:#115E59; --mint:#E6F7F5; --mint-2:#CCEFEA; --mint-3:#F3FBFA;
+  --paper:#F8FAFC; --white:#FFFFFF; --ink:#1E293B; --ink-2:#475569; --line:#E2E8F0;
+  --coral:#0EA5E9; --coral-dk:#B83A28; --red:#B8303A; --red-bg:#FCEDEE; --amber:#9A6200; --amber-bg:#FFF3DA;
+  --ok:#146C36; --ok-bg:#E3F4EA; --blue:#1E3A8A; --blue-bg:#E0F2FE;
+  --navy:#1E3A8A; --brand:#14B8A6; --sky:#0EA5E9;
   --f:"Inter",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+  --fh:"Poppins","Inter",system-ui,sans-serif;
   --r:14px; --r-s:10px;
   color-scheme:light;
 }
@@ -78,7 +80,7 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .hero .row{display:flex;gap:12px;flex-wrap:wrap}
 .hero-art{max-width:100%;display:grid;place-items:center;position:relative;padding-top:24px}
 .hero-art .botlive{width:min(100%,400px)}
-.hero-art .speech{position:absolute;left:4%;top:28px;z-index:1;background:var(--white);border-radius:16px 16px 16px 4px;padding:10px 14px;font-size:14px;font-weight:500;box-shadow:0 6px 20px rgba(14,74,76,.12)}
+.hero-art .speech{position:absolute;left:4%;top:28px;z-index:1;background:var(--white);border-radius:16px 16px 16px 4px;padding:10px 14px;font-size:14px;font-weight:500;box-shadow:0 6px 20px rgba(30,58,138,.12)}
 @media (max-width:760px){.hero{grid-template-columns:1fr;padding-block:32px 24px}.hero-art{order:-1}.hero-art .botlive{width:240px}.hero-art .speech{left:0;top:8px}}
 .info{max-width:1140px;margin:0 auto;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;padding-block:8px 96px}
 .icard{background:var(--white);border:1px solid var(--line);border-radius:var(--r);padding:18px}
@@ -91,14 +93,14 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 
 /* launcher */
 .launch{position:fixed;right:calc(20px + env(safe-area-inset-right,0px));bottom:calc(20px + env(safe-area-inset-bottom,0px));z-index:40;display:flex;align-items:flex-end;gap:10px}
-.launch .tip{background:var(--white);border-radius:16px 16px 4px 16px;padding:10px 14px;font-size:14px;font-weight:500;box-shadow:0 8px 24px rgba(14,74,76,.16);max-width:220px}
-.launch button.face{width:74px;height:74px;border-radius:50%;border:3px solid var(--white);padding:0;background:var(--mint-2);box-shadow:0 10px 26px rgba(14,74,76,.28);position:relative}
+.launch .tip{background:var(--white);border-radius:16px 16px 4px 16px;padding:10px 14px;font-size:14px;font-weight:500;box-shadow:0 8px 24px rgba(30,58,138,.16);max-width:220px}
+.launch button.face{width:74px;height:74px;border-radius:50%;border:3px solid var(--white);padding:0;background:var(--mint-2);box-shadow:0 10px 26px rgba(30,58,138,.28);position:relative}
 .launch button.face img{width:100%;height:100%;border-radius:50%;display:block}
 .launch .dot{position:absolute;top:-2px;right:-2px;min-width:22px;height:22px;border-radius:11px;background:var(--coral-dk);color:var(--white);font-size:12px;font-weight:700;display:grid;place-items:center;border:2px solid var(--white)}
 @media (prefers-reduced-motion:no-preference){.launch button.face{animation:bob 3.2s ease-in-out infinite}@keyframes bob{50%{transform:translateY(-4px)}}}
 
 /* chat panel */
-.chat{position:fixed;z-index:45;right:calc(20px + env(safe-area-inset-right,0px));bottom:calc(20px + env(safe-area-inset-bottom,0px));width:400px;max-width:calc(100vw - 32px);height:min(680px,calc(100% - 100px));background:var(--white);border-radius:22px;box-shadow:0 20px 60px rgba(14,74,76,.28);display:flex;flex-direction:column;overflow:hidden}
+.chat{position:fixed;z-index:45;right:calc(20px + env(safe-area-inset-right,0px));bottom:calc(20px + env(safe-area-inset-bottom,0px));width:400px;max-width:calc(100vw - 32px);height:min(680px,calc(100% - 100px));background:var(--white);border-radius:22px;box-shadow:0 20px 60px rgba(30,58,138,.28);display:flex;flex-direction:column;overflow:hidden}
 .chat header{display:flex;align-items:center;gap:10px;padding:12px 14px;border-bottom:1px solid var(--line)}
 .chat header img{width:40px;height:40px;border-radius:50%}
 .chat header .t{font-weight:700;font-size:15px}
@@ -294,6 +296,19 @@ button.nav-i:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
 @media (max-width:900px){.mviews{display:flex;flex-wrap:wrap}.appshell{grid-template-columns:minmax(0,1fr)}.dash{min-width:0}}
 @media (max-width:420px){.mviews button{padding:6px 11px;font-size:13px}.greet{gap:10px;padding:12px 14px}.greet .gt{font-size:17px}}
 .toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--white);padding:10px 16px;border-radius:12px;font-size:14px;z-index:80;width:max-content;max-width:calc(100vw - 32px);text-align:center}
+/* ---- Klinische Markenfarben: Navy für Überschriften und Leiste, Teal für Aktionen ---- */
+.tbar{background:var(--navy)}
+.start h1,.hero h1,.icard h2,.sh-head h2,.greet .gt,.dhead h1,.side-nav .brand b,.rcard .who{color:var(--navy);font-family:var(--fh);letter-spacing:-.01em}
+.start h1,.hero h1,.dhead h1{font-weight:600}
+.eyebrow{color:var(--teal)}
+
+.lockup{display:flex;align-items:center;gap:14px;margin-bottom:22px}
+.lockup img{width:56px;height:56px;border-radius:50%;flex:none}
+.lockup .lk-bar{width:2px;align-self:stretch;margin:4px 0;background:var(--brand);border-radius:1px}
+.lockup .lk-t{display:flex;flex-direction:column;line-height:1.1}
+.lockup b{font-family:var(--fh);font-weight:600;font-size:24px;color:var(--navy);letter-spacing:-.01em}
+.lockup small{margin-top:6px;font-size:11px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--navy)}
+.chat header .t{color:var(--navy);font-family:var(--fh);font-weight:600}
 /* ---- Feinschliff: Touch-Ziele, Hover nur mit Maus, iOS-Zoom, Chat unter der Leiste ---- */
 .btn,.go,.chip,.compose button,.compose input{min-height:44px}
 .btn.sm{min-height:36px}
@@ -660,7 +675,7 @@ function render(){
   botMount();
 }
 function viewStart(){return `<section class="start gut">
-  <div class="lead"><div><div class="eyebrow">Testversion · Praxis am Kurpark</div>
+  <div class="lead"><div><div class="lockup" role="img" aria-label="Praxis-Assistent – Digitaler Praxis-Service"><img src="${IMG.neutral}" alt=""><span class="lk-bar"></span><span class="lk-t"><b>Praxis-Assistent</b><small>Digitaler Praxis-Service</small></span></div><div class="eyebrow">Testversion · Praxis am Kurpark</div>
   <h1>Testen Sie den digitalen Praxis-Assistenten</h1>
   <p class="sub">Ein Chat auf der Praxis-Website, der Termine bucht, Rezepte und Überweisungen annimmt und Fragen an das Team weitergibt. Probieren Sie ihn aus der Sicht von Patient:innen, Empfang und Ärztin aus – alle drei sehen dieselben Anfragen.</p></div>
   ${botStatic('start','Das Maskottchen des Praxis-Assistenten winkt')}</div>
