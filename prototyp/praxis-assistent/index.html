@@ -14,11 +14,13 @@
 <style>
 /* Layout: test bar on top (role switch) · each role is its own full screen: practice website + chat (patient), inbox dashboard (MFA), approvals (doctor). Single light look on purpose: it mimics a real practice website. */
 :root{
-  --teal:#0F766E; --teal-2:#115E59; --mint:#E6F7F5; --mint-2:#CCEFEA; --mint-3:#F3FBFA;
-  --paper:#F8FAFC; --white:#FFFFFF; --ink:#1E293B; --ink-2:#475569; --line:#E2E8F0;
-  --coral:#0EA5E9; --coral-dk:#B83A28; --red:#B8303A; --red-bg:#FCEDEE; --amber:#9A6200; --amber-bg:#FFF3DA;
-  --ok:#0F766E; --ok-bg:#CCFBF1; --blue:#1E3A8A; --blue-bg:#E0F2FE;
-  --navy:#1E3A8A; --brand:#14B8A6; --sky:#0EA5E9;
+  /* Neutral (60 %) · Marke Türkis (30 %) · Signal Rot/Gelb (10 %) */
+  --teal:#0F766E; --teal-2:#115E59; --brand:#14B8A6; --mint:#F0FDFA; --mint-2:#CCFBF1; --mint-3:#F8FAFC;
+  --paper:#F8FAFC; --white:#FFFFFF; --ink:#1E293B; --ink-h:#0F172A; --ink-2:#475569; --line:#E2E8F0; --muted-bg:#F1F5F9;
+  --red:#B8303A; --red-bg:#FCEDEE; --coral-dk:#B83A28; --amber:#9A6200; --amber-bg:#FFF3DA;
+  --ok:#0F766E; --ok-bg:#F0FDFA;
+  /* Alias-Namen, damit ältere Regeln weiter funktionieren */
+  --navy:var(--ink-h); --blue:var(--ink-2); --blue-bg:var(--muted-bg); --coral:var(--teal); --sky:var(--brand);
   --f:"Inter",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
   --fh:"Poppins","Inter",system-ui,sans-serif;
   --r:14px; --r-s:10px;
@@ -80,7 +82,7 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .hero .row{display:flex;gap:12px;flex-wrap:wrap}
 .hero-art{max-width:100%;display:grid;place-items:center;position:relative;padding-top:24px}
 .hero-art .botlive{width:min(100%,400px)}
-.hero-art .speech{position:absolute;left:4%;top:28px;z-index:1;background:var(--white);border-radius:14px 14px 14px 4px;padding:10px 14px;font-size:14px;font-weight:500;box-shadow:0 6px 20px rgba(30,58,138,.12)}
+.hero-art .speech{position:absolute;left:4%;top:28px;z-index:1;background:var(--white);border-radius:14px 14px 14px 4px;padding:10px 14px;font-size:14px;font-weight:500;box-shadow:0 6px 20px rgba(15,23,42,.12)}
 @media (max-width:760px){.hero{grid-template-columns:1fr;padding-block:32px 24px}.hero-art{order:-1}.hero-art .botlive{width:240px}.hero-art .speech{left:0;top:8px}}
 .info{max-width:1140px;margin:0 auto;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;padding-block:8px 96px}
 .icard{background:var(--white);border:1px solid var(--line);border-radius:var(--r);padding:18px}
@@ -93,14 +95,14 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 
 /* launcher */
 .launch{position:fixed;right:calc(20px + env(safe-area-inset-right,0px));bottom:calc(20px + env(safe-area-inset-bottom,0px));z-index:40;display:flex;align-items:flex-end;gap:10px}
-.launch .tip{background:var(--white);border-radius:14px 14px 4px 14px;padding:10px 14px;font-size:14px;font-weight:500;box-shadow:0 8px 24px rgba(30,58,138,.16);max-width:220px}
-.launch button.face{width:74px;height:74px;border-radius:50%;border:3px solid var(--white);padding:0;background:var(--mint-2);box-shadow:0 10px 26px rgba(30,58,138,.28);position:relative}
+.launch .tip{background:var(--white);border-radius:14px 14px 4px 14px;padding:10px 14px;font-size:14px;font-weight:500;box-shadow:0 8px 24px rgba(15,23,42,.16);max-width:220px}
+.launch button.face{width:74px;height:74px;border-radius:50%;border:3px solid var(--white);padding:0;background:var(--mint-2);box-shadow:0 10px 26px rgba(15,23,42,.28);position:relative}
 .launch button.face img{width:100%;height:100%;border-radius:50%;display:block}
 .launch .dot{position:absolute;top:-2px;right:-2px;min-width:22px;height:22px;border-radius:11px;background:var(--coral-dk);color:var(--white);font-size:12px;font-weight:700;display:grid;place-items:center;border:2px solid var(--white)}
 @media (prefers-reduced-motion:no-preference){.launch button.face{animation:bob 3.2s ease-in-out infinite}@keyframes bob{50%{transform:translateY(-4px)}}}
 
 /* chat panel */
-.chat{position:fixed;z-index:45;right:calc(20px + env(safe-area-inset-right,0px));bottom:calc(20px + env(safe-area-inset-bottom,0px));width:400px;max-width:calc(100vw - 32px);height:min(680px,calc(100% - 100px));background:var(--white);border-radius:18px;box-shadow:0 20px 60px rgba(30,58,138,.28);display:flex;flex-direction:column;overflow:hidden}
+.chat{position:fixed;z-index:45;right:calc(20px + env(safe-area-inset-right,0px));bottom:calc(20px + env(safe-area-inset-bottom,0px));width:400px;max-width:calc(100vw - 32px);height:min(680px,calc(100% - 100px));background:var(--white);border-radius:18px;box-shadow:0 20px 60px rgba(15,23,42,.28);display:flex;flex-direction:column;overflow:hidden}
 .chat header{display:flex;align-items:center;gap:10px;padding:12px 14px;border-bottom:1px solid var(--line)}
 .chat header img{width:40px;height:40px;border-radius:50%}
 .chat header .t{font-weight:700;font-size:15px}
@@ -230,7 +232,7 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 @media (hover:hover){.item:hover{background:var(--mint-3)}}
 .item[aria-selected="true"]{background:var(--mint)}
 .item .bar{align-self:stretch;border-radius:0 3px 3px 0;background:transparent}
-.item.u .bar{background:var(--coral)}
+.item.u .bar{background:var(--amber)}
 .item .t{font-weight:600;font-size:14px}
 .item .d{font-size:13px;color:var(--ink-2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .item .tm{font-size:12px;color:var(--ink-2);font-variant-numeric:tabular-nums;text-align:right}
@@ -297,7 +299,7 @@ button.nav-i:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
 @media (max-width:420px){.mviews button{padding:6px 11px;font-size:13px}.greet{gap:10px;padding:12px 14px}.greet .gt{font-size:17px}}
 .toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--white);padding:10px 16px;border-radius:var(--r-s);font-size:14px;z-index:80;width:max-content;max-width:calc(100vw - 32px);text-align:center}
 /* ---- Klinische Markenfarben: Navy für Überschriften und Leiste, Teal für Aktionen ---- */
-.tbar{background:var(--navy)}
+.tbar{background:var(--ink-h)}
 .start h1,.hero h1,.icard h2,.sh-head h2,.greet .gt,.dhead h1,.side-nav .brand b,.rcard .who{color:var(--navy);font-family:var(--fh);letter-spacing:-.01em}
 .start h1,.hero h1,.dhead h1{font-weight:600}
 .eyebrow{color:var(--teal)}
@@ -902,9 +904,9 @@ function listHtml(arr,role,emptyMsg){if(!arr.length)return `<div class="empty">$
 function head(r){return `<div><span class="type">${esc(r.type)}</span>${pill(r.status,r)}</div><h3>${esc(r.who)}</h3>
    <dl><dt>Eingang</dt><dd>${r.time} Uhr · Chat</dd><dt>Geb.-Datum</dt><dd>${esc(r.born)}</dd>${r.phone&&!(r.type==='Rückruf'&&r.status==='neu')?`<dt>Telefon</dt><dd class="tel">${esc(r.phone)}</dd><dt>Erreichbar</dt><dd>${esc(r.reach||'—')}</dd>`:''}${r.detail?`<dt>Weg</dt><dd>${esc(r.detail)}</dd>`:''}${r.last?`<dt>Historie</dt><dd>${esc(r.last)}</dd>`:''}${r.next?`<dt>Nächster Versuch</dt><dd>${esc(r.next)} Uhr</dd>`:''}</dl>
    <div class="quote">${esc(r.text)}</div>
-   ${r.question?`<div><label>Rückfrage der Praxis</label><div class="quote" style="border-color:var(--blue)">${esc(r.question)}</div></div>`:''}
+   ${r.question?`<div><label>Rückfrage der Praxis</label><div class="quote" style="border-color:#94A3B8">${esc(r.question)}</div></div>`:''}
    ${r.patientReply?`<div><label>Antwort der Patient:in</label><div class="quote reply">${esc(r.patientReply)}</div></div>`:''}
-   ${r.answer&&!r.question?`<div><label>An Patient:in gesendet</label><div class="quote" style="border-color:var(--blue)">${esc(r.answer)}</div></div>`:''}`}
+   ${r.answer&&!r.question?`<div><label>An Patient:in gesendet</label><div class="quote" style="border-color:#94A3B8">${esc(r.answer)}</div></div>`:''}`}
 function histHtml(r){return `<div><label>Verlauf</label><ul class="hist">${r.hist.map(h=>`<li>${esc(h)}</li>`).join('')}</ul></div>`}
 function confirmBox(q,yes,no){return `<div class="confirm" role="alertdialog" aria-label="${esc(q)}"><b>${esc(q)}</b><div class="acts"><button class="btn" data-a="${yes[0]}">${yes[1]}</button><button class="btn ghost" data-a="cancelConfirm">${no||'Abbrechen'}</button></div></div>`}
 function detailMfa(r){
@@ -924,7 +926,7 @@ function detailMfa(r){
   } else if(r.status==='freigabe'){
     acts=`<div class="quote">${r.auto?'Automatisch vorbereitet: Dauermedikation erkannt. ':''}Liegt bei Dr. A. Smirnova – hier ist nichts zu tun.</div>`;
   } else if(r.status==='wartet'){
-    acts=`<div class="quote" style="border-color:var(--blue)">Wartet seit ${esc(r.askedAt||'')} Uhr auf die Antwort der Patient:in. Sobald sie antwortet, kommt die Anfrage zurück nach „Zu bearbeiten“.</div>
+    acts=`<div class="quote" style="border-color:#94A3B8">Wartet seit ${esc(r.askedAt||'')} Uhr auf die Antwort der Patient:in. Sobald sie antwortet, kommt die Anfrage zurück nach „Zu bearbeiten“.</div>
       ${conf?confirmBox('Anfrage ohne Antwort der Patient:in abschließen?',['done','Ja, abschließen']):'<div class="acts"><button class="btn ghost" data-a="doneAsk">Ohne Antwort abschließen</button></div>'}`;
   } else if(r.status==='freigegeben'&&r.detail==='Abholung am Empfang'&&!r.picked){
     acts=`<div class="acts"><button class="btn" data-a="pickup">Abgeholt – erledigen</button></div>`;
