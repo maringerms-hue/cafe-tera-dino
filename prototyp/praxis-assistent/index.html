@@ -639,7 +639,7 @@ function notifyPatient(r,text,opts){if(!r.mine)return;if(!S.started)startChat('n
 
 
 /* ---------- lebendiges Maskottchen (Canvas-Sprite, 24 fps) ---------- */
-const BOTA={clips:{hello:{src:'assets/bot-hello.webp',n:48},idle:{src:'assets/bot-idle.webp',n:72}},cols:12,fs:360,img:{},ready:false,loading:false,seen:new Set(),live:[]};
+const BOTA={clips:{hello:{src:'assets/bot-hello.webp?v=tk2',n:48},idle:{src:'assets/bot-idle.webp?v=tk2',n:72}},cols:12,fs:360,img:{},ready:false,loading:false,seen:new Set(),live:[]};
 const botStatic=(key,alt)=>`<div class="botlive" data-key="${key}" role="img" aria-label="${alt||'Maskottchen des Praxis-Assistenten'}"><img src="${IMG.bot0}" alt=""></div>`;
 function botLoad(){if(BOTA.loading)return;BOTA.loading=true;let c=0;
   for(const k of Object.keys(BOTA.clips)){const im=new Image();im.onload=()=>{BOTA.img[k]=im;if(++c===2){BOTA.ready=true;botMount()}};im.src=BOTA.clips[k].src}}
